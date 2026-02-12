@@ -30,7 +30,10 @@ fetime > 0 are in the world
 #include <fstream>
 #include <list>
 #include <vector>
+#include <string>
 #include "Particle.h"
+
+using P = Particle;
 
 typedef int Pos;
 typedef int Amt;
@@ -42,6 +45,9 @@ private:
 	Pos rows{}, cols{}; // WxH of World
 	Map map; // FLATTENED map
 	Ps ps; // list of Particles
+
+	void parseParticlesFromJSON(std::string &s);
+
 public:
 	P* at(const Pos& row, const Pos& col) const; // .at() 
 	void physics(); // physics() iterates all P.
