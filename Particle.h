@@ -59,8 +59,9 @@ e x water, water x lightning, etc.) */
 #define PARTICLE_H
 
 #include <cstdint>
-#include "World.h"
-using namespace std;
+typedef float Pc; // P-coordinates
+typedef uint8_t Color;
+typedef int32_t Tick;
 
 // type enum. 3 TBDs if feasible, 1 unknown, and as requirement stated.
 // init enum defaults to `none` (0).
@@ -78,14 +79,16 @@ enum Type {
 	tbd3
 };
 
+class World; // stub for forward-dependency
+
 // X leftright, Y updown, starting at top left.
 class Particle {
 protected:
-	float row{}, col{}; // coords of P, as P(row, col)
-	float x_vel{}, y_vel{};  // velocity
-	uint8_t r{}, g{}, b{}; // color RGB
+	Pc row{}, col{}; // coords of P, as P(row, col)
+	Pc x_vel{}, y_vel{};  // velocity
+	Color r{}, g{}, b{}; // color RGB
 	bool stationary = false; // self-explanatory
-	int32_t lifetime{}; // choosing type int32_t is arbitrary
+	Tick lifetime{}; // choosing type int32_t is arbitrary
 public:
 	// These functions MUST BE IMPLEMENTED in derived classes.
 	virtual void physics(World& world) = 0;
