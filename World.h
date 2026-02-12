@@ -34,8 +34,8 @@ fetime > 0 are in the world
 
 typedef int Pos;
 typedef int Amt;
-typedef list<P> Ps; // ParticleS
-typedef vector<char> Map;
+typedef std::list<P> Ps; // ParticleS
+typedef std::vector<char> Map;
 
 class World {
 private:
@@ -46,7 +46,7 @@ public:
 	P* at(const Pos& row, const Pos& col) const; // .at() 
 	void physics(); // physics() iterates all P.
 	Amt size() const; // get amt of P
-	Ant alive_count() const; // get amt of LIVING P.
+	Amt alive_count() const; // get amt of LIVING P.
 	
 	// One preset save-file is enough?
 	void save();
