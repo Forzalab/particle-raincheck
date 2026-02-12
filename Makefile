@@ -1,11 +1,22 @@
-CCFLAGS = -I/libs/include/ -Wall -Wextra -Wfatal-errors -fcompare-debug-second -pedantic -pedantic-errors -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -std=c++26 -g -D_GLIBCXX_DEBUG -fsanitize=undefined -fsanitize=address -std=c++26
+CCFLAGS = -Ilibs/include/ -Wfatal-errors -pedantic -pedantic-errors -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -g -D_GLIBCXX_DEBUG -fsanitize=undefined -fsanitize=address -std=c++26
 
-a.out: *.o
-	g++ $(CCFLAGS) $^ -o a.out -std=c++26
-	rm -f *.o
+SRCS = $(wildcard *.cc)
+OBJS = $(SRCS:.cc=.o)
+
+a.out: $(OBJS)
+	@g++ $(CCFLAGS) $^ -o $@ 
+	@echo Done linking
+	@echo -e '\t$(OBJS)'
+	@echo to 'a.out'!
 
 %.o: %.cc %.h
-	g++ $(CCFLAGS) $^ -c $<
+	@g++ $(CCFLAGS) -c $< -o $@
+	@echo Done compiling '$@'!
+
+# main.cc and testing files
+%.o: %.cc
+	@g++ $(CCFLAGS) -c $< -o $@
+	@echo Done compiling '$@'!
 
 clean:
 	rm -f *.o a.out
