@@ -40,13 +40,15 @@ typedef std::vector<char> Map;
 class World {
 private:
 	Pos rows{}, cols{}; // WxH of World
-	Map map{}; // FLATTENED map
-	Ps ps{}; // list of Particles
+	Map map; // FLATTENED map
+	Ps ps; // list of Particles
 public:
 	P* at(const Pos& row, const Pos& col) const; // .at() 
 	void physics(); // physics() iterates all P.
 	Amt size() const; // get amt of P
 	Amt alive_count() const; // get amt of LIVING P.
+
+	void add_particle(const P &p);
 	
 	// One preset save-file is enough?
 	void save();
