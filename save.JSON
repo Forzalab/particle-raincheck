@@ -3,52 +3,52 @@
 	"cols": 0,
 	"Ps": [
 		{
-			"row": 0
-			"col": 0
-			"x_vel": 0
-			"y_vel": 0
-			"r": 0
-			"g": 0
-			"b": 0
-			"stationary": 0
-			"lifetime": 0
-			"type": 0
+			"row": 0,
+			"col": 0,
+			"x_vel": 0,
+			"y_vel": 0,
+			"r": 0,
+			"g": 0,
+			"b": 0,
+			"stationary": 0,
+			"lifetime": 0,
+			"type": 0,
 		},
 		{
-			"row": 0
-			"col": 0
-			"x_vel": 0
-			"y_vel": 0
-			"r": 0
-			"g": 0
-			"b": 0
-			"stationary": 0
-			"lifetime": 0
-			"type": 0
+			"row": 0,
+			"col": 0,
+			"x_vel": 0,
+			"y_vel": 0,
+			"r": 0,
+			"g": 0,
+			"b": 0,
+			"stationary": 0,
+			"lifetime": 0,
+			"type": 0,
 		},
 		{
-			"row": 0
-			"col": 0
-			"x_vel": 0
-			"y_vel": 0
-			"r": 0
-			"g": 0
-			"b": 0
-			"stationary": 0
-			"lifetime": 0
-			"type": 0
+			"row": 0,
+			"col": 0,
+			"x_vel": 0,
+			"y_vel": 0,
+			"r": 0,
+			"g": 0,
+			"b": 0,
+			"stationary": 0,
+			"lifetime": 0,
+			"type": 0,
 		},
 		{
-			"row": 0
-			"col": 0
-			"x_vel": 0
-			"y_vel": 0
-			"r": 0
-			"g": 0
-			"b": 0
-			"stationary": 0
-			"lifetime": 0
-			"type": 0
+			"row": 0,
+			"col": 0,
+			"x_vel": 0,
+			"y_vel": 0,
+			"r": 0,
+			"g": 0,
+			"b": 0,
+			"stationary": 0,
+			"lifetime": 0,
+			"type": 0,
 		}
 	]
 }

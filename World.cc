@@ -59,16 +59,16 @@ void World::save(){
 		size_t counter = 0;
 		for(const auto &p : ps) {
 			std::string val = "\t\t{";
-			val += "\n\t\t\t\"row\": " + std::to_string(p.get_row());
-			val += "\n\t\t\t\"col\": " + std::to_string(p.get_col());
-			val += "\n\t\t\t\"x_vel\": " + std::to_string(p.get_x_vel());
-			val += "\n\t\t\t\"y_vel\": " + std::to_string(p.get_y_vel());
-			val += "\n\t\t\t\"r\": " + std::to_string(p.get_r());
-			val += "\n\t\t\t\"g\": " + std::to_string(p.get_g());
-			val += "\n\t\t\t\"b\": " + std::to_string(p.get_b());
-			val += "\n\t\t\t\"stationary\": " + std::to_string(p.get_stationary());
-			val += "\n\t\t\t\"lifetime\": " + std::to_string(p.get_lifetime());
-			val += "\n\t\t\t\"type\": " + std::to_string(p.get_type());
+			val += "\n\t\t\t\"row\": " + std::to_string(p.get_row()) + ",";
+			val += "\n\t\t\t\"col\": " + std::to_string(p.get_col()) + ",";
+			val += "\n\t\t\t\"x_vel\": " + std::to_string(p.get_x_vel()) + ",";
+			val += "\n\t\t\t\"y_vel\": " + std::to_string(p.get_y_vel()) + ",";
+			val += "\n\t\t\t\"r\": " + std::to_string(p.get_r()) + ",";
+			val += "\n\t\t\t\"g\": " + std::to_string(p.get_g()) + ",";
+			val += "\n\t\t\t\"b\": " + std::to_string(p.get_b()) + ",";
+			val += "\n\t\t\t\"stationary\": " + std::to_string(p.get_stationary()) + ",";
+			val += "\n\t\t\t\"lifetime\": " + std::to_string(p.get_lifetime()) + ",";
+			val += "\n\t\t\t\"type\": " + std::to_string(p.get_type()) + ",";
 			val += "\n\t\t}";
 			if(counter < ps.size() - 1) val+= ",";
 			counter++;
