@@ -1,0 +1,151 @@
+===============================================================
+ ____            _   _      _        ____            _         
+|  _ \ __ _ _ __| |_(_) ___| | ___  |  _ \ __ _ _ __| |_ _   _ 
+| |_) / _` | '__| __| |/ __| |/ _ \ | |_) / _` | '__| __| | | |
+|  __/ (_| | |  | |_| | (__| |  __/ |  __/ (_| | |  | |_| |_| |
+|_|   \__,_|_|   \__|_|\___|_|\___| |_|   \__,_|_|   \__|\__, |
+                                                         |___/ 
+===============================================================
+
+In this assignment you will make a cool particle simulation
+
+AI Note: No AI is allowed on this project. You must use Vim on the server and checkpoint regularly on git so that I can examine your work history and see that you did it yourself.
+
+In this project you will learn how to:
+1. Use Github to collaborate with branches and Pull Requests
+2. Implement 'proper' class design 
+3. Make a particle physics simulation
+4. Understanding APIs (the BRIDGES API in this case)
+5. Exercise your creativity to do cool things with code
+
+Milestone Checkpoint Due: 2/20/26
+Due Date: 2/25/26
+
+By the due date you need to have:
+1. A Particle class. You must use 'proper' class design. Each particle has:
+--A position (.row, .col float) which indicates where it is on the screen
+----No two Particles can be on the same location
+--A velocity (.x_vel and .y_vel float) indicating how many cells per tick it moves
+--A .type which must be an enum which indicates if it is air, dust, fire, water, earth, dirt, lightning
+----Each type has a different physics movement type:
+------Air moves in a straight line (ignoring gravity) bouncing off solid 
+------Dust has a small amount of gravity and randomly moves left and right every frame
+------Fire is stationary and shoots sparks of lightning in different directions over time
+------Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
+------Earth is always stationary and solid
+------Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt
+------Dirt travels downwards and forms piles when it hits something solid
+------You can add your own types as well for extra credit
+--Color (.r .g .b uint8_t) that should be set initially by its type (fire should be red) but can change
+--A boolean named .stationary that if true means it is solid and does not move/simulate physics
+----So if you turn stationary true on water it will not move even if a spot opens up beneath it
+----Stationary Particles can still be destroyed or transformed by other Particles
+----Stationary particles have a lifetime of -1 (see below)
+--A .lifetime variable which holds how many frames more it will exist for
+----Physics (see below) will decrement it each frame by 1 to a minimum of 0.
+----Fire and lightning should have relatively short lifetimes, stone should have a lifetime of -1.
+----A lifetime of -1 means infinite lifetime (it will not go away over time)
+--Member variables must be in the private section, methods in the public section
+----Make the usual constructors, getters/setters, and so forth. You should use the Rule of 0
+--A .physics() method that gets the world map passed in by reference, that runs physics for the particle and updates the world map if it moved. If it runs into another particle, it calls .touch() on the other particle.
+----Physics also decrements .lifetime by one each frame
+--A .touch() method that gets called when another particle touches it. 
+--Between .physics and .touch you can handle all interactions (fire x water, water x lightning, etc.)
+
+2. A World class that has a 2D grid of Particles (or are empty). World has:
+--A size (.rows .cols int) that is the boundary of the world.
+----Any point which leaves the boundary must be deleted
+--A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world
+--A list (must be std::list) of Particles which holds all particles in the world
+--An .at(row,col) method that returns a pointer to the Particle at the location row x col in the world (or nullptr if there is no particle there)
+--A .physics() method which runs through the list of Particles and runs .physics() on each one
+----If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list
+----If a particle now has a lifetime of exactly 0, delete it from the list
+--A .size() method which returns how many particles are in the world
+--A .alive_count() method which returns how many particles with lifetime > 0 are in the world
+--A .save() method which saves the state of the world to disk
+--A .load() method which loads the state of the world to disk
+
+3. A Game class that is responsible for processing input
+--It has the world (.world World) as a member variable
+----The world should be initialized with the screen_size as the row and col, but leave some lines open on the bottom of the screen to show the frame count and a helpful list of commands
+--A .frame member variable that starts at 0 and counts up by 1 each time physics is run
+--It has to handle all input from mouse and keyboard using non-blocking I/O
+--Implement a command to start simulating the world
+--Implement a command to pause simulating the world
+--Implement a command to quit
+--Implement a command to load the world from disk
+--Implement a command to save the world to disk
+--Implement a command to increase frame rate
+--Implement a command to decrease frame rate
+--Implement a command to draw the world on BRIDGES (see below)
+----Simulation should also automatically pause when world.alive_count is 0
+--A .render() method which draws all the particles in the list to the screen using their position and color
+----Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc)
+----It must be rendered across the full screen using the color library, using 32 bit colors
+--The user must be able to edit the game world by adding and deleting particles while the world is paused
+----It must work with mouse input
+--A .run() method that starts the game. Your main() function should just be this: Game game; game.run();
+----On launch draw a splash screen
+----Then go into an infinite loop of: handling user input, running physics, drawing the world, delaying
+----It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number)
+----Use clock (or std::chrono) to see how long it has been since the last frame began
+----Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
+
+4. You need to make a BRIDGES output option. When the user hits the "D)raw the World on BRIDGES" command you should render the world on BRIDGES using the ColorGrid class:
+--Read the BRIDGES documentation: https://bridgesuncc.github.io/ and comprehend it
+--Add in your username and API key
+--Make a ColorGrid class and fill it with the colors of the world (or test data)
+--Add in a call to bridges.setDataStructure() to tell BRIDGES to render the ColorGrid
+--Add in a call to bridges.visualize() to send it off to the web site
+----This will give you a URL that you can use to visualize your world in a browser
+
+RULES:
+
+**Collaboration Rules**
+
+You must collaborate in a group of 4. Share your Discord information and be in communication. Partners who do not communicate will be removed from the group and have to do it solo.
+
+There are no fixed roles, so you will need to work with each other to determine which bullet points each person will do, and what order you should do them in.
+
+Come up with a name and design collaboratively.
+
+**Github**
+
+You must use Github, each partner making their own branches, to collaborate on the project. You must invite me to be a collaborator so that I can view the commit history and activity of each partner.
+
+Your README.md should include a short description of what you have done, a list of commands to run it, whose account I should use when running your project, a list of collaborators, and then each bullet point that each collaborator completed. (Start by copying the bullet points above into the README.md into a section called "Unassignmed Work" and then when someone COMPLETES a bullet point, copy that line under their name to give them credit.) Each bullet point must be assigned to, and done by, exactly one partner. You can help them, but all the code must come from them.
+
+So your README.md will look something like this:
+
+Bill
+--Make a ColorGrid class and fill it with the colors of the world (or test data)
+--Add in a call to bridges.setDataStructure() to tell BRIDGES to render the ColorGrid
+--Add in a call to bridges.visualize() to send it off to the web site
+--Implement a command to increase frame rate
+--Implement a command to decrease frame rate
+
+Mencarelli
+--Implement a command to load the world from disk
+--Implement a command to save the world to disk
+
+Unassigned Work
+...all the rest of the bullet points...
+
+**Work Balance Rules**
+Ideally, each partner will do 25% of the assignment, but in real life it rarely works out that way, which I understand. However if it is too unbalanced, then there will be penalties. If one person does below 10% on the project, they will get a 0 on the assignment. If one person does more than 50% of the assignment, they will get no higher than an 80% on the assignment. You can help your partners with words, but don't write their code for them. If someone is not communicating or not doing work, then tell me and I will remove them from the project
+
+Auditing for this will be done on the server. You must do all coding in Nvim on the server, and you must commit regularly so there is an audit log I can inspect to see what person was working on what when. You don't need to push it to Github every time you make a change, but you should be commiting regularly. You cannot use VS Code for this assignment. Everything must be done on the server.
+
+**Timeline Rules**
+This project will be graded twice. You need half the work done by the Milestone date, and everything done by the final date. Do not wait to the last minute. Your partners will need your code done to get their code done.
+
+On the Milestone date, half of all of the bullet points must be completed. Submit on Canvas a screenshot of your README.md of what has been completed so far, and who did which bullet points.
+
+On the final date, you will present your project before the class and all bullet points must be done
+
+**Grading**
+
+Grading is simple - whatever percentage of the bullet points your group did is the grade everyone in the group gets, with individual grades only for people who did too much or too little.
+
+Extra credit will be awarded liberally. Add more particle types, compose some music for it, go wild. Impress me and you will not only get above 100%, but you will become infamous. (That's better than just being famous.)
