@@ -79,7 +79,7 @@ enum Type {
 	tbd3
 };
 
-// class World; // stub for forward-dependency
+class World; // stub for forward-dependency
 
 // X leftright, Y updown, starting at top left.
 class Particle {
@@ -90,14 +90,14 @@ private:
 	Color r{}, g{}, b{}; // color RGB
 	bool stationary = false; // self-explanatory
 	Tick lifetime{}; // choosing type int32_t is arbitrary
-	uint8_t type{}; //which particle type this is.
+	Type type{}; //which particle type this is.
 public:
 	Particle() {}
 	Pc get_row() const; void set_row(const Pc& _row);
 	Pc get_col() const; void set_col(const Pc& _col); 
 	Pc get_x_vel() const; void set_x_vel(const Pc& _x_vel);
 	Pc get_y_vel() const; void set_y_vel(const Pc& _y_vel);
-	uint8_t get_type() const; void set_type(const uint8_t &new_type);
+	Type get_type() const; void set_type(const uint8_t &new_type);
 
 	Color get_r() const; void set_r(const Color& _r);
 	Color get_g() const; void set_g(const Color& _g);
@@ -108,23 +108,23 @@ public:
 	Tick get_lifetime() const; void set_lifetime(const Tick& _lifetime);
 
 	// These functions below MUST BE IMPLEMENTED in derived classes.
-	// virtual void physics(World& world) = 0;
-	// virtual void touch(Particle& nbr) = 0; // Rationale: https://stackoverflow.com/questions/3644065/how-to-write-an-elegant-collision-handling-mechanism
+	virtual void physics(World& world) final;
+	virtual void touch(Particle& nbr) final; // Rationale: https://stackoverflow.com/questions/3644065/how-to-write-an-elegant-collision-handling-mechanism
 };
 
 using P = Particle; // for lazy fuckers like us
 
 // TODO: add constructor WITH MEM-INIT-LIST
 //       (r,g,b, stationary, lifetime) to definitions
-// class Air : public P {};
-// class Dust : public P {};
-// class Fire : public P {};
-// class Water : public P {};
-// class Earth : public P {};
-// class Dirt : public P {};
-// class Lightning : public P {};
-// class TBD_1 : public P {};
-// class TBD_2 : public P {};
-// class TBD_3 : public P {};
+class Air : public P {};
+class Dust : public P {};
+class Fire : public P {};
+class Water : public P {};
+class Earth : public P {};
+class Dirt : public P {};
+class Lightning : public P {};
+class TBD_1 : public P {};
+class TBD_2 : public P {};
+class TBD_3 : public P {};
 
 #endif
