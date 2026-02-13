@@ -58,6 +58,7 @@ e x water, water x lightning, etc.) */
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include <random>
 #include <cstdint>
 typedef float Pc; // P-coordinates
 typedef uint8_t Color;
@@ -148,10 +149,20 @@ public:
 
 using P = Particle; // for lazy fuckers like us
 
+std::random_device rd;
+std::mt19937 gen(rd());
+std::binomial_distribution<> bd(50, 0.5);
+
 class Air : public P {
 public:
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
-	Air() : Particle(255, 255, 255, false, INT32_MAX, air) {}
+	Air() : Particle(255, 255, 255, false, INT32_MAX, air) {
+	auto rnd = []() -> float { return bd(gen); };
+        Pc dx_scale = 3, dy_scale = 3;
+        set_x_vel(((int)(rnd()*100) % 3) * dx_scale);
+        set_y_vel(((int)(rnd()*100) % 1 + 1) * dy_scale);
+	}
+
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };

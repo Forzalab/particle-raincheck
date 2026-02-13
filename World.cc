@@ -12,8 +12,8 @@ static_assert(sizeof(World) > 0);
 const std::string SAVEFILE = "save.JSON";
 
 P* World::at(const Pos& row, const Pos& col) const { 
-	auto val = Ps.find(
-	return nullptr;
+	P* p = Ps.find(row + col*cols);
+	return (p!=Ps.end()?p:nullptr);
 } // .at() 
 
 void World::physics(){ ; } // physics() iterates all P.

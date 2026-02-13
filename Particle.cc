@@ -116,16 +116,6 @@ void P::set_type(const Type &_type) {
 // TODO: add constructor WITH MEM-INIT-LIST
 //       (r,g,b, stationary, lifetime) to definitions
 
-Air() {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	float rnd = []() { std::binomial_distribution<> bd(50 > return bd(gen); };
-	
-	Pc dx_scale = dy_scale = 3; 
-	x_vel = (rnd % 3) * dx_scale;
-	y_vel = (rnd % 1 + 1) * dy_scale;
-}
-
 void Air::physics(World &world) {
 	P* p = world.at(row, col); // cur pos
 	
@@ -133,6 +123,7 @@ void Air::physics(World &world) {
 	if (lifetime == 0) {
 		world.ps.remove(p);
 		world.map.erase(row+col*world.cols);
+		return;
 	}
 	
 	// if not (not st.) = stay still 
