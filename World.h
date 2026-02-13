@@ -29,32 +29,37 @@ fetime > 0 are in the world
 
 #include <fstream>
 #include <list>
+#include <cstdint>
 #include <vector>
 #include <string>
 #include "Particle.h"
 
 using P = Particle;
 
-typedef int Pos;
-typedef int Amt;
-typedef std::list<P> Ps; // ParticleS
-typedef std::vector<char> Map;
+typedef uint32_t Pos;
+typedef int32_t Amt;
+typedef std::list<P*> Ps; // ParticleS
+typedef std::map<Amt, Type> Map;
 
 class World {
 private:
 	Pos rows{}, cols{}; // WxH of World
 	Map map; // FLATTENED map
-	Ps ps; // list of Particles
+	Ps ps; // list of Particles' POINTERS
+	// Pointer is used for flexible intercasting to
+	// derived 'Particle' type
 
+ 
 	void parseParticlesFromJSON(std::string &s);
 
 public:
+	World(Pos rows, Pos cols) : rows(rows), cols(cols);
 	P* at(const Pos& row, const Pos& col) const; // .at() 
 	void physics(); // physics() iterates all P.
 	Amt size() const; // get amt of P
 	Amt alive_count() const; // get amt of LIVING P.
 
-	void add_particle(const P &p);
+	void add_particle(P &p);
 	
 	// One preset save-file is enough?
 	void save();

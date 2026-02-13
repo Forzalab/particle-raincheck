@@ -99,8 +99,7 @@ protected:
 			 const bool &stationary, const Tick &lifetime, const Type& type)
 		: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime), type(type) {}
 
-	// Nothing except Particle::physics can touch
-	// type, pos, vel
+public:
 	void set_type(const Type& _type);
 	void set_row(const Pc &_row);
 	void set_col(const Pc &_col);
@@ -110,13 +109,10 @@ protected:
 // if have time, remove cmt & impl multiple particle color in one type
 // maybe fire? conffeti if have time. water waves...
 
-//	void set_r(const Color &_r);
-//	void set_g(const Color &_g);
-//	void set_b(const Color &_b);	
+	void set_r(const Color &_r);
+	void set_g(const Color &_g);
+	void set_b(const Color &_b);	
 
-
-
-public:
 	Pc get_row() const;
 	Pc get_col() const;
 	Pc get_x_vel() const;
@@ -128,19 +124,16 @@ public:
 // A particle changes by its type - touch() will
 // handle it using set_type() in "protected" scope
 	Color get_r() const;
-//	void set_r(const Color &_r);
 	Color get_g() const;
-//	void set_g(const Color &_g);
 	Color get_b() const;
-//	void set_b(const Color &_b);
 	
 	Type get_type() const;
 
 	bool get_stationary() const;
-//	void set_stationary(const bool &_stationary);
+	void set_stationary(const bool &_stationary);
 
 	Tick get_lifetime() const;
-//	void set_lifetime(const Tick &_lifetime);
+	void set_lifetime(const Tick &_lifetime);
 
 	// These functions below MUST BE IMPLEMENTED in derived classes.
 	virtual void physics(World &world) = 0;
@@ -148,6 +141,9 @@ public:
 		Particle &
 			nbr) = 0; // Rationale:
 					  // https://stackoverflow.com/questions/3644065/how-to-write-an-elegant-collision-handling-mechanism
+	// Friend for full acess
+//	friend Particle extractParticle(string s);
+
 };
 
 using P = Particle; // for lazy fuckers like us
@@ -161,54 +157,63 @@ public:
 };
 
 class Dust : public P {
+public:
 	Dust() : Particle(120, 120, 120, false, INT32_MAX, dust) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Fire : public P {
+public:
 	Fire() : Particle(227, 68, 32, false, INT32_MAX, fire) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Water : public P {
+public:
 	Water() : Particle(70, 155, 235, false, INT32_MAX, water) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Earth : public P {
+public:
 	Earth() : Particle(97, 29, 25, false, INT32_MAX, earth) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Dirt : public P {
+public:
 	Dirt() : Particle(138, 52, 26, false, INT32_MAX, dirt) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Lightning : public P {
+public:
 	Lightning() : Particle(255, 255, 0, false, INT32_MAX, lightning) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_1 : public P {
+public:
 	TBD_1() : Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_2 : public P {
+public:
 	TBD_2() : Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_3 : public P {
+public:
 	TBD_3() : Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;

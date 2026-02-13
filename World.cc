@@ -11,13 +11,17 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
-P* World::at(const Pos& row, const Pos& col) const { return nullptr; } // .at() 
+P* World::at(const Pos& row, const Pos& col) const { 
+	auto val = Ps.find(
+	return nullptr;
+} // .at() 
+
 void World::physics(){ ; } // physics() iterates all P.
 Amt World::size() const{ return 0; } // get amt of P
 Amt World::alive_count() const{ return 0;} // get amt of LIVING P.
 	
-void World::add_particle(const P &p) {
-	ps.push_back(p);
+void World::add_particle(P& p) {
+	ps.push_back(&p);
 }
 // One preset save-file is enough?
 //	Yeah. Will be saved in JSON (IMMITATED) Format. If we want, we can implement a way to save to a specific filename after finishing everything else.
@@ -62,18 +66,18 @@ void World::save(){
 	if(ps.size() > size_t(0)) {
 		size_t counter = 0;
 		for(const auto &p : ps) {
-			std::string temp = p.get_stationary() ? "true" : "false";
+			std::string temp = p->get_stationary() ? "true" : "false";
 			std::string val = "\t\t{";
-			val += "\n\t\t\t\"row\": " + std::to_string(p.get_row()) + ",";
-			val += "\n\t\t\t\"col\": " + std::to_string(p.get_col()) + ",";
-			val += "\n\t\t\t\"x_vel\": " + std::to_string(p.get_x_vel()) + ",";
-			val += "\n\t\t\t\"y_vel\": " + std::to_string(p.get_y_vel()) + ",";
-			val += "\n\t\t\t\"r\": " + std::to_string(p.get_r()) + ",";
-			val += "\n\t\t\t\"g\": " + std::to_string(p.get_g()) + ",";
-			val += "\n\t\t\t\"b\": " + std::to_string(p.get_b()) + ",";
+			val += "\n\t\t\t\"row\": " + std::to_string(p->get_row()) + ",";
+			val += "\n\t\t\t\"col\": " + std::to_string(p->get_col()) + ",";
+			val += "\n\t\t\t\"x_vel\": " + std::to_string(p->get_x_vel()) + ",";
+			val += "\n\t\t\t\"y_vel\": " + std::to_string(p->get_y_vel()) + ",";
+			val += "\n\t\t\t\"r\": " + std::to_string(p->get_r()) + ",";
+			val += "\n\t\t\t\"g\": " + std::to_string(p->get_g()) + ",";
+			val += "\n\t\t\t\"b\": " + std::to_string(p->get_b()) + ",";
 			val += "\n\t\t\t\"stationary\": " + temp + ",";
-			val += "\n\t\t\t\"lifetime\": " + std::to_string(p.get_lifetime()) + ",";
-			val += "\n\t\t\t\"type\": " + std::to_string(p.get_type()) + ",";
+			val += "\n\t\t\t\"lifetime\": " + std::to_string(p->get_lifetime()) + ",";
+			val += "\n\t\t\t\"type\": " + std::to_string(p->get_type()) + ",";
 			val += "\n\t\t}";
 			if(counter < ps.size() - 1) val+= ",";
 			counter++;
@@ -109,19 +113,32 @@ std::vector<std::string> explodeStr(std::string &s) {
 //Extracts vals from JSON and creates a new particle
 //Very disgusting manual function, buuuuuuuut writing a fully functioning JSON parser is out of the question for this assignment.
 //Was JSON necessary for this? Absolutely not, for the scope of what we are doing. HOWEVER- our save files will look fancy. NO ONE needs to see this mess but us and the Kernel.
-Particle extractParticle(std::string &s) {
-	Particle p{};
+Particle* extractParticle(std::string &s) {
+	// Any Particle-derived class shares the same
+	// function pointers. Thus, we hack shit together.
+	// Choose any particular Particle-derived
+	// pointer type (like Air) as placeholder
+	// for "generic Particle" data without
+	// offending the Abstract-Class god.
+	Air* p = new Air;
+
+	// We will cast back to Particle* near return...
 	std::vector<std::string> Pvals = explodeStr(s);
-	p.set_row(stof(Pvals.at(0)));
-	p.set_col(stof(Pvals.at(1)));
-	p.set_x_vel(stof(Pvals.at(2)));
-	p.set_y_vel(stof(Pvals.at(3)));
-	p.set_r(stoi(Pvals.at(4)));
-	p.set_b(stoi(Pvals.at(5)));
-	p.set_stationary((Pvals.at(6)) == "true");
-	p.set_lifetime(stoi(Pvals.at(8)));
-	p.set_type(stoi(Pvals.at(9)));
-	return p;
+	p->set_row(stof(Pvals.at(0)));
+	p->set_col(stof(Pvals.at(1)));
+	p->set_x_vel(stof(Pvals.at(2)));
+	p->set_y_vel(stof(Pvals.at(3)));
+	p->set_r(stoi(Pvals.at(4)));
+	p->set_g(stoi(Pvals.at(5)));
+	p->set_b(stoi(Pvals.at(6)));
+	p->set_stationary((Pvals.at(7)) == "true");
+	p->set_lifetime(stoi(Pvals.at(8)));
+	p->set_type(static_cast<Type>(stoi(Pvals.at(9))));
+	
+	// ...right here. Magic lol
+	Particle* pp = static_cast<Air*>(p);
+
+	return pp;
 }
 
 //seperate string manip function for particles
@@ -130,8 +147,8 @@ void World::parseParticlesFromJSON(std::string &s) {
 	std::string particle;
 	std::getline(ss, particle, '}');
 	while(!ss.eof()) {
-		Particle p = extractParticle(particle);
-		add_particle(p);
+		Particle* p = extractParticle(particle);
+		add_particle(*p);
 		std::getline(ss, particle, ',');//Throw out comma inbetween each particle.
 		std::getline(ss, particle, '}');
 	}

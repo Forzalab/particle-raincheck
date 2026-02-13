@@ -59,7 +59,10 @@ ist for
  min
 imum of 0.
 */
-
+#include <cstdlib>
+#include <stdexcept>
+#include <ctime>
+#include <random>
 #include "Particle.h"
 
 using P = Particle;
@@ -77,33 +80,87 @@ Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
 
 // setters
-void P::get_row() const { row = _row; }
-void P::get_col() const { col = _col; }
-void P::get_x_vel() const { x_vel = _x_vel; }
-void P::set_y_vel() const { y_vel = _y_vel; }
-void P::set_type(const Type& _type) { type = ((E_MIN <= _type)&&(_type <= E_MAX)) ? _type : none;  }
+void P::set_row(const Pc &_row) {
+	if (_row < 0)
+		throw std::runtime_error("Row OOB.");
+	row = _row;
+}
+void P::set_col(const Pc &_col) {
+	if (_col < 0)
+		throw std::runtime_error("Col OOB.");
+	col = _col;
+}
+void P::set_x_vel(const Pc &_x_vel) { x_vel = _x_vel; }
+void P::set_y_vel(const Pc &_y_vel) { y_vel = _y_vel; }
+void P::set_r(const Color &_r) { r = _r; }
+void P::set_g(const Color &_g) { g = _g; }
+void P::set_b(const Color &_b) { b = _b; }
+void P::set_stationary(const bool &_stationary) {
+	stationary = _stationary;
+	if (stationary == true) {
+		set_x_vel(0);
+		set_y_vel(0);
+	}
+}
+void P::set_lifetime(const Tick &_lifetime) {
+	if (_lifetime < -1)
+		throw std::runtime_error("Lifetime OOB.");
+	lifetime = _lifetime;
+}
+void P::set_type(const Type &_type) {
+	if (!((E_MIN <= _type) && (_type <= E_MAX)))
+		throw std::runtime_error("Type OOB.");
+	type = _type;
+}
 
 // TODO: add constructor WITH MEM-INIT-LIST
 //       (r,g,b, stationary, lifetime) to definitions
 
-void Air::physics(World& world) {}
-void Air::touch(P& nbr) {}
-void Dust::physics(World& world) {}
-void Dust::touch(P& nbr) {}
-void Fire::physics(World& world) {}
-void Fire::touch(P& nbr) {}
-void Water::physics(World& world) {}
-void Water::touch(P& nbr) {}
-void Earth::physics(World& world) {}
-void Earth::touch(P& nbr) {}
-void Dirt::physics(World& world) {}
-void Dirt::touch(P& nbr) {}
-void Lightning::physics(World& world) {}
-void Lightning::touch(P& nbr) {}
-void TBD_1::physics(World& world) {}
-void TBD_1::touch(P& nbr) {}
-void TBD_2::physics(World& world) {}
-void TBD_2::touch(P& nbr) {}
-void TBD_3::physics(World& world) {}
-void TBD_3::touch(P& nbr) {}
+Air() {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	float rnd = []() { std::binomial_distribution<> bd(50 > return bd(gen); };
+	
+	Pc dx_scale = dy_scale = 3; 
+	x_vel = (rnd % 3) * dx_scale;
+	y_vel = (rnd % 1 + 1) * dy_scale;
+}
 
+void Air::physics(World &world) {
+	P* p = world.at(row, col); // cur pos
+	
+	// lifetime expiry check
+	if (lifetime == 0) {
+		world.ps.remove(p);
+		world.map.erase(row+col*world.cols);
+	}
+	
+	// if not (not st.) = stay still 
+	// ==> change nothing about pos
+	if (!stationary) {
+		p->set_row(p.row + x_vel);
+		p->set_col(p.col + y_vel);
+	}
+
+	set_lifetime(lifetime-1);
+}
+
+void Air::touch(P &nbr) {}
+void Dust::physics(World &world) {}
+void Dust::touch(P &nbr) {}
+void Fire::physics(World &world) {}
+void Fire::touch(P &nbr) {}
+void Water::physics(World &world) {}
+void Water::touch(P &nbr) {}
+void Earth::physics(World &world) {}
+void Earth::touch(P &nbr) {}
+void Dirt::physics(World &world) {}
+void Dirt::touch(P &nbr) {}
+void Lightning::physics(World &world) {}
+void Lightning::touch(P &nbr) {}
+void TBD_1::physics(World &world) {}
+void TBD_1::touch(P &nbr) {}
+void TBD_2::physics(World &world) {}
+void TBD_2::touch(P &nbr) {}
+void TBD_3::physics(World &world) {}
+void TBD_3::touch(P &nbr) {}
