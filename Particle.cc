@@ -77,10 +77,10 @@ Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
 
 // setters
-void P::get_row() const { row = _row; }
-void P::get_col() const { col = _col; }
-void P::get_x_vel() const { x_vel = _x_vel; }
-void P::set_y_vel() const { y_vel = _y_vel; }
+void P::set_row(const Pc& _row) { row = _row; }
+void P::set_col(const Pc& _col) { col = _col; }
+void P::set_x_vel(const Pc& _x_vel) { x_vel = _x_vel; }
+void P::set_y_vel(const Pc& _y_vel) { y_vel = _y_vel; }
 void P::set_type(const Type& _type) { type = ((E_MIN <= _type)&&(_type <= E_MAX)) ? _type : none;  }
 
 // TODO: add constructor WITH MEM-INIT-LIST

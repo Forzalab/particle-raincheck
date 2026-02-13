@@ -114,8 +114,6 @@ protected:
 //	void set_g(const Color &_g);
 //	void set_b(const Color &_b);	
 
-
-
 public:
 	Pc get_row() const;
 	Pc get_col() const;
@@ -161,54 +159,63 @@ public:
 };
 
 class Dust : public P {
+public:
 	Dust() : Particle(120, 120, 120, false, INT32_MAX, dust) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Fire : public P {
+public:
 	Fire() : Particle(227, 68, 32, false, INT32_MAX, fire) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Water : public P {
+public:
 	Water() : Particle(70, 155, 235, false, INT32_MAX, water) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Earth : public P {
+public:
 	Earth() : Particle(97, 29, 25, false, INT32_MAX, earth) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Dirt : public P {
+public:
 	Dirt() : Particle(138, 52, 26, false, INT32_MAX, dirt) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Lightning : public P {
+public:
 	Lightning() : Particle(255, 255, 0, false, INT32_MAX, lightning) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_1 : public P {
+public:
 	TBD_1() : Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_2 : public P {
+public:
 	TBD_2() : Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_3 : public P {
+public:
 	TBD_3() : Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
 	void physics(World &world) final;
 	void touch(Particle &nbr) final;
