@@ -11,7 +11,11 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
-P* World::at(const Pos& row, const Pos& col) const { return nullptr; } // .at() 
+P* World::at(const Pos& row, const Pos& col) const { 
+	auto val = Ps.find(
+	return nullptr;
+} // .at() 
+
 void World::physics(){ ; } // physics() iterates all P.
 Amt World::size() const{ return 0; } // get amt of P
 Amt World::alive_count() const{ return 0;} // get amt of LIVING P.
@@ -110,18 +114,30 @@ std::vector<std::string> explodeStr(std::string &s) {
 //Very disgusting manual function, buuuuuuuut writing a fully functioning JSON parser is out of the question for this assignment.
 //Was JSON necessary for this? Absolutely not, for the scope of what we are doing. HOWEVER- our save files will look fancy. NO ONE needs to see this mess but us and the Kernel.
 Particle* extractParticle(std::string &s) {
+	// Any Particle-derived class shares the same
+	// function pointers. Thus, we hack shit together.
+	// Choose any particular Particle-derived
+	// pointer type (like Air) as placeholder
+	// for "generic Particle" data without
+	// offending the Abstract-Class god.
 	Air* p = new Air;
+
+	// We will cast back to Particle* near return...
 	std::vector<std::string> Pvals = explodeStr(s);
 	p->set_row(stof(Pvals.at(0)));
 	p->set_col(stof(Pvals.at(1)));
 	p->set_x_vel(stof(Pvals.at(2)));
 	p->set_y_vel(stof(Pvals.at(3)));
 	p->set_r(stoi(Pvals.at(4)));
-	p->set_b(stoi(Pvals.at(5)));
-	p->set_stationary((Pvals.at(6)) == "true");
+	p->set_g(stoi(Pvals.at(5)));
+	p->set_b(stoi(Pvals.at(6)));
+	p->set_stationary((Pvals.at(7)) == "true");
 	p->set_lifetime(stoi(Pvals.at(8)));
 	p->set_type(static_cast<Type>(stoi(Pvals.at(9))));
+	
+	// ...right here. Magic lol
 	Particle* pp = static_cast<Air*>(p);
+
 	return pp;
 }
 
