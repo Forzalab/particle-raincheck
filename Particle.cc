@@ -81,6 +81,11 @@ void P::set_row(const Pc& _row) { row = _row; }
 void P::set_col(const Pc& _col) { col = _col; }
 void P::set_x_vel(const Pc& _x_vel) { x_vel = _x_vel; }
 void P::set_y_vel(const Pc& _y_vel) { y_vel = _y_vel; }
+void P::set_r(const Color& _r) { r = _r; }
+void P::set_g(const Color& _g) { g = _g; }
+void P::set_b(const Color& _b) { b = _b; }
+void P::set_stationary(const bool& _stationary) { stationary = _stationary; }
+void P::set_lifetime(const Tick& _lifetime) { lifetime = _lifetime; }
 void P::set_type(const Type& _type) { type = ((E_MIN <= _type)&&(_type <= E_MAX)) ? _type : none;  }
 
 // TODO: add constructor WITH MEM-INIT-LIST

@@ -37,7 +37,7 @@ using P = Particle;
 
 typedef int Pos;
 typedef int Amt;
-typedef std::list<P> Ps; // ParticleS
+typedef std::list<P*> Ps; // ParticleS
 typedef std::vector<char> Map;
 
 class World {
@@ -54,7 +54,7 @@ public:
 	Amt size() const; // get amt of P
 	Amt alive_count() const; // get amt of LIVING P.
 
-	void add_particle(const P &p);
+	void add_particle(P &p);
 	
 	// One preset save-file is enough?
 	void save();
