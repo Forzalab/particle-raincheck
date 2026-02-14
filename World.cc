@@ -28,7 +28,7 @@ void World::updateMap() {
 	//Iter over list of Particles and update map at those indecies
 	//Also add a true to the mask to prevent from being set to none.
 	for(const auto &p : ps) {
-		Wc index = Wc(p->get_row()) * rows + Wc(p->get_col());
+		Wc index = Wc(p->get_row()) * cols + Wc(p->get_col());
 		hasParticle.at(index) = true;
 		map.at(index) = p->get_type();
 	}
