@@ -1,64 +1,12 @@
-/* the due date you need to have:
-1. A Particle class. You must use 'proper' class design. Each part
-icle has:
---A position (.row, .col float) which indicates where it is on the
- screen
-----No two Particles can be on the same location
---A velocity (.x_vel and .y_vel float) indicating how many cells p
-er tick it moves
---A .type which must be an enum which indicates if it is air, dust
-, fire, water, earth, dirt, lightning
-----Each type has a different physics movement type:
-------Air moves in a straight line (ignoring gravity) bouncing off
- solid
-------Dust has a small amount of gravity and randomly moves left a
-nd right every frame
-------Fire is stationary and shoots sparks of lightning in differe
-nt directions over time
-------Water drips down and if it hits something solid it will slid
-e sideways to find the lowest level. Water touching fire turns int
-o air moving upwards
-------Earth is always stationary and solid
-------Lightning travels in a straight line and stops when it hits
-something solid. If it touches water, the water turns into lightni
-ng. If it hits earth it turns into dirt
-------Dirt travels downwards and forms piles when it hits somethin
-g solid
-------You can add your own types as well for extra credit
---Color (.r .g .b uint8_t) that should be set initially by its typ
-e (fire should be red) but can change
---A boolean named .stationary that if true means it is solid and d
-oes not move/simulate physics
-----So if you turn stationary true on water it will not move even
-if a spot opens up beneath it
-----Stationary Particles can still be destroyed or transformed by
-other Particles
-----Stationary particles have a lifetime of -1 (see below)
---A .lifetime variable which holds how many frames more it will ex
-ist for
-----Physics (see below) will decrement it each frame by 1 to a min
-imum of 0.                                                        ----Fire and
-lightning should have relatively short lifetimes, sto ne should have a lifetime
-of -1.
-----A lifetime of -1 means infinite lifetime (it will not go away
-over time)
---Member variables must be in the private section, methods in the
-public section
-----Make the usual constructors, getters/setters, and so forth. Yo
-u should use the Rule of 0
---A .physics() method that gets the world map passed in by referen
-ce, that runs physics for the particle and updates the world map i
-f it moved. If it runs into another particle, it calls .touch() on
- the other particle.
-----Physics also decrements .lifetime by one each frame
---A .touch() method that gets called when another particle touches
- it.
---Between .physics and .touch you can handle all interactions (fir
-e x water, water x lightning, etc.) */
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include <random>
 #include <cstdint>
+#include <cstdlib>
+#include <stdexcept>
+#include <ctime>
+#include <random>
 typedef float Pc; // P-coordinates
 typedef uint8_t Color;
 typedef int32_t Tick;
@@ -95,38 +43,44 @@ private:
 	Type type{};
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
 protected:
+	static std::random_device rd;
+	static std::mt19937 gen;
+	static std::binomial_distribution<> bd;
+		
 	Particle(const Color &r, const Color &g, const Color &b,
-			 const bool &stationary, const Tick &lifetime, const Type& type)
-		: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime), type(type) {}
+			 const bool &stationary, const Tick &lifetime, const Type &type)
+		: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime),
+		  type(type) {
+	}
 
 public:
-	void set_type(const Type& _type);
+	void set_type(const Type &_type);
 	void set_row(const Pc &_row);
 	void set_col(const Pc &_col);
 	void set_x_vel(const Pc &_x_vel);
 	void set_y_vel(const Pc &_y_vel);
 
-// if have time, remove cmt & impl multiple particle color in one type
-// maybe fire? conffeti if have time. water waves...
+	// if have time, remove cmt & impl multiple particle color in one type
+	// maybe fire? conffeti if have time. water waves...
 
 	void set_r(const Color &_r);
 	void set_g(const Color &_g);
-	void set_b(const Color &_b);	
+	void set_b(const Color &_b);
 
 	Pc get_row() const;
 	Pc get_col() const;
 	Pc get_x_vel() const;
 	Pc get_y_vel() const;
 
-// No setters for color, stationary, lifetime
-// as they are PREdefined/characterized for 
-// the corresponding type.
-// A particle changes by its type - touch() will
-// handle it using set_type() in "protected" scope
+	// No setters for color, stationary, lifetime
+	// as they are PREdefined/characterized for
+	// the corresponding type.
+	// A particle changes by its type - touch() will
+	// handle it using set_type() in "protected" scope
 	Color get_r() const;
 	Color get_g() const;
 	Color get_b() const;
-	
+
 	Type get_type() const;
 
 	bool get_stationary() const;
@@ -135,15 +89,16 @@ public:
 	Tick get_lifetime() const;
 	void set_lifetime(const Tick &_lifetime);
 
+	virtual void physics(World &world) final;
+
 	// These functions below MUST BE IMPLEMENTED in derived classes.
-	virtual void physics(World &world) = 0;
+	virtual void physics_spec(World &world) = 0;
 	virtual void touch(
 		Particle &
 			nbr) = 0; // Rationale:
 					  // https://stackoverflow.com/questions/3644065/how-to-write-an-elegant-collision-handling-mechanism
-	// Friend for full acess
-//	friend Particle extractParticle(string s);
-
+					  // Friend for full acess
+					  //	friend Particle extractParticle(string s);
 };
 
 using P = Particle; // for lazy fuckers like us
@@ -151,72 +106,80 @@ using P = Particle; // for lazy fuckers like us
 class Air : public P {
 public:
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
-	Air() : Particle(255, 255, 255, false, INT32_MAX, air) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	Air() : Particle(255, 255, 255, false, INT32_MAX, air) {
+		auto rnd = [&]() -> float {
+			return P::bd(P::gen);
+		};
+		Pc dx_scale = 3, dy_scale = 3;
+		set_x_vel(((int)(rnd() * 100) % 3) * dx_scale);
+		set_y_vel(((int)(rnd() * 100) % 1 + 1) * dy_scale);
+	}
+
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class Dust : public P {
 public:
 	Dust() : Particle(120, 120, 120, false, INT32_MAX, dust) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class Fire : public P {
 public:
 	Fire() : Particle(227, 68, 32, false, INT32_MAX, fire) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class Water : public P {
 public:
 	Water() : Particle(70, 155, 235, false, INT32_MAX, water) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class Earth : public P {
 public:
 	Earth() : Particle(97, 29, 25, false, INT32_MAX, earth) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class Dirt : public P {
 public:
 	Dirt() : Particle(138, 52, 26, false, INT32_MAX, dirt) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class Lightning : public P {
 public:
 	Lightning() : Particle(255, 255, 0, false, INT32_MAX, lightning) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class TBD_1 : public P {
 public:
 	TBD_1() : Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class TBD_2 : public P {
 public:
 	TBD_2() : Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 class TBD_3 : public P {
 public:
 	TBD_3() : Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
-	void physics(World &world) final;
-	void touch(Particle &nbr) final;
+	virtual void physics_spec(World &world) final;
+	virtual void touch(Particle &nbr) final;
 };
 
 #endif
