@@ -55,16 +55,16 @@ By the due date you need to have:
 2. A World class that has a 2D grid of Particles (or are empty). World has:
 --A size (.rows .cols int) that is the boundary of the world.
 ----Any point which leaves the boundary must be deleted
---A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world
+--A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world ******* raymond_0865098
 --A list (must be std::list) of Particles which holds all particles in the world
 --An .at(row,col) method that returns a pointer to the Particle at the location row x col in the world (or nullptr if there is no particle there)
 --A .physics() method which runs through the list of Particles and runs .physics() on each one
 ----If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list
 ----If a particle now has a lifetime of exactly 0, delete it from the list
---A .size() method which returns how many particles are in the world
---A .alive_count() method which returns how many particles with lifetime > 0 are in the world
---A .save() method which saves the state of the world to disk
---A .load() method which loads the state of the world to disk
+--A .size() method which returns how many particles are in the world ******* raymond_0865098
+--A .alive_count() method which returns how many particles with lifetime > 0 are in the world ******* raymond_0865098
+--A .save() method which saves the state of the world to disk ******* raymond_0865098
+--A .load() method which loads the state of the world to disk ******* raymond_0865098
 
 3. A Game class that is responsible for processing input
 --It has the world (.world World) as a member variable

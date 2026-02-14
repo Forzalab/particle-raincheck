@@ -14,9 +14,13 @@
 - Implement a command to increase frame rate
 - Implement a command to decrease frame rate
 
-### Mencarelli
-- Implement a command to load the world from disk
-- Implement a command to save the world to disk
+### Raymond 
+- A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world ******* raymond_0865098
+- A .size() method which returns how many particles are in the world ******* raymond_0865098
+- A .alive_count() method which returns how many particles with lifetime > 0 are in the world ******* raymond_0865098
+- A .save() method which saves the state of the world to disk ******* raymond_0865098
+- A .load() method which loads the state of the world to disk ******* raymond_0865098
+ to save the world to disk
 
 ### Unassigned Work
 
