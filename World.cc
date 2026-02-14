@@ -31,7 +31,9 @@ void World::set_rows(const Wc &_rows) { rows = _rows; }
 
 P *World::at(const Wc &row, const Wc &col) const {
 	auto p = ps.begin(); 
+	Wc pos = row + col * cols;
 	// todo: Ps.find(row + col * cols);
+	for (;(pos >= 0 && p != ps.end());) { pos--; p++; }
 	return (p != ps.end() ? *p : nullptr);
 } // .at()
 
