@@ -32,10 +32,11 @@ void World::set_cols(const Wc &_cols) { cols = _cols; }
 void World::set_rows(const Wc &_rows) { rows = _rows; }
 
 P_ptr World::at(const Wc &row, const Wc &col) const {
-	auto p = ps.begin(); 
-	Wc pos = col + row * cols;
-	// todo: Ps.find(row + col * cols);
-	for (Wc _pos = 0; (_pos < pos && p != ps.end());) { _pos++; p++; }
+	auto p = ps.begin();
+	for (; p != ps.end(); p++) {
+		if (row == (*p)->get_row() && col == (*p)->get_col())
+			break;
+	}
 	return (p != ps.end() ? *p : nullptr);
 } // .at()
 
@@ -44,9 +45,10 @@ Amt World::size() const { return 0; }		 // get amt of P
 Amt World::alive_count() const { return 0; } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
+
 // One preset save-file is enough?
 //	Yeah. Will be saved in JSON (IMMITATED) Format. If we want, we can implement
-//a way to save to a specific filename after finishing everything else.
+// a way to save to a specific filename after finishing everything else.
 /*
 {
 	"key": val,
@@ -150,7 +152,7 @@ P_ptr extractParticle(std::string &s) {
 	// for "generic Particle" data without
 	// offending the Abstract-Class god.
 	// Air *p = new Air;
-	
+
 	P_ptr p;
 
 	// We will cast back to Particle* near return...
@@ -167,7 +169,7 @@ P_ptr extractParticle(std::string &s) {
 	p->set_type(static_cast<Type>(stoi(Pvals.at(9))));
 
 	// ...right here. Magic lol
-	//P_ptr pp = std::make_shared<P>(p);
+	// P_ptr pp = std::make_shared<P>(p);
 
 	return p;
 }

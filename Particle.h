@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <ctime>
 #include <random>
+#include <iostream>
 typedef float Pc; // P-coordinates
 typedef uint8_t Color;
 typedef int32_t Tick;
@@ -53,7 +54,7 @@ protected:
 		: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime),
 		  type(type) {
 	}
-
+	
 public:
 	void set_type(const Type &_type);
 	void set_row(const Pc &_row);
@@ -107,14 +108,11 @@ using P = Particle; // for lazy fuckers like us
 class Air : public P {
 public:
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
-	Air() : Particle(255, 255, 255, false, INT32_MAX, air) {
-		auto rnd = [&]() -> float {
-                        return Particle::bd(Particle::gen);
-                };
-
-		Pc dx_scale = 3, dy_scale = 3;
-		set_x_vel(((int)(rnd() * 100) % 3) * dx_scale);
-		set_y_vel(((int)(rnd() * 100) % 2 + 1) * dy_scale);
+	Air(const Pc& row, const Pc& col) : Particle(255, 255, 255, false, INT32_MAX, air) {
+		Pc dx_scale = 5, dy_scale = 5;
+		set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
+		set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
+		set_row(row); set_col(col);
 	}
 
 	void physics_spec(World &world) final;
@@ -123,63 +121,70 @@ public:
 
 class Dust : public P {
 public:
-	Dust() : Particle(120, 120, 120, false, INT32_MAX, dust) {}
+	Dust(const Pc& row, const Pc& col) : Particle(120, 120, 120, false, INT32_MAX, dust) {
+		Pc dx_scale = 2;
+		Pc dy_scale = 2;
+		set_x_vel(((P::bd(P::gen))-24) * dx_scale);
+		set_y_vel(((P::bd(P::gen))-24) * dy_scale);
+		set_row(row); set_col(col);
+	}
+
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Fire : public P {
 public:
-	Fire() : Particle(227, 68, 32, false, INT32_MAX, fire) {}
+	Fire(const Pc& row, const Pc& col) : Particle(227, 68, 32, false, INT32_MAX, fire) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Water : public P {
 public:
-	Water() : Particle(70, 155, 235, false, INT32_MAX, water) {}
+	Water(const Pc& row, const Pc& col) : Particle(70, 155, 235, false, INT32_MAX, water) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Earth : public P {
 public:
-	Earth() : Particle(97, 29, 25, false, INT32_MAX, earth) {}
+	Earth(const Pc& row, const Pc& col) : Particle(97, 29, 25, true, INT32_MAX, earth) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Dirt : public P {
 public:
-	Dirt() : Particle(138, 52, 26, false, INT32_MAX, dirt) {}
+	Dirt(const Pc& row, const Pc& col) : Particle(138, 52, 26, false, INT32_MAX, dirt) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class Lightning : public P {
 public:
-	Lightning() : Particle(255, 255, 0, false, INT32_MAX, lightning) {}
+	Lightning(const Pc& row, const Pc& col) : Particle(255, 255, 0, false, INT32_MAX, lightning) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_1 : public P {
 public:
-	TBD_1() : Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
+	TBD_1(const Pc& row, const Pc& col) : Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_2 : public P {
 public:
-	TBD_2() : Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
+	TBD_2(const Pc& row, const Pc& col) : Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };
 
 class TBD_3 : public P {
 public:
-	TBD_3() : Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
+	TBD_3(const Pc& row, const Pc& col) : Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
 	void physics_spec(World &world) final;
 	void touch(Particle &nbr) final;
 };

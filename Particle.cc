@@ -18,6 +18,7 @@ Color P::get_b() const { return b; }
 bool P::get_stationary() const { return stationary; }
 Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
+// float P::rnd() { return Particle::bd(Particle::gen); }
 
 // setters
 void P::set_row(const Pc &_row) {
@@ -58,14 +59,16 @@ void P::set_type(const Type &_type) {
 }
 
 void P::physics(World &world) {
-	const P_ptr _p = world.at(get_row(), get_col());
+	Wc wrow = (Wc)get_row(), wcol = (Wc)get_col();
+	const P_ptr _p = world.at(wrow, wcol);
+
 	if (_p != nullptr) {
 		// general guard for all particles
 		/* here */
 
 		// lifetime expiry check
 		if (get_lifetime() == 0) {
-			world.erase(get_row(), get_col());
+			world.erase(wrow, wcol);
 			return;
 		}
 
@@ -87,21 +90,43 @@ void Air::physics_spec(World &world) {
 	// if not (not st.) = stay still
 	// ==> change nothing about pos
 	if (!get_stationary()) {
-		set_row(get_row() + get_x_vel());
-		set_col(get_col() + get_y_vel());
+		set_row(get_row() + (Wc)get_y_vel());
+		set_col(get_col() + (Wc)get_x_vel());
 	}
 
 	return;
 }
 
 void Air::touch(P &nbr) {}
-void Dust::physics_spec(World &world) {}
+
+void Dust::physics_spec(World &world) {
+	Pc gravity = 0.2;
+
+	Pc dx_scale = 20 * ((P::bd(P::gen)) > 27) ? -1 : 1;
+	Pc dy_scale = 30 * ((P::bd(P::gen)) > 27) ? -1 : 1;
+
+	set_x_vel(((P::bd(P::gen)) > 27) ? -1 : 1 * dx_scale);
+	set_y_vel(((P::bd(P::gen)) > 27) ? -1 : 1 * dy_scale);
+
+	if (!get_stationary()) {
+		set_row(get_row() + get_y_vel());
+		set_col(get_col() + get_x_vel());
+	}
+
+	return;
+}
+
 void Dust::touch(P &nbr) {}
 void Fire::physics_spec(World &world) {}
 void Fire::touch(P &nbr) {}
 void Water::physics_spec(World &world) {}
 void Water::touch(P &nbr) {}
-void Earth::physics_spec(World &world) {}
+
+void Earth::physics_spec(World &world) {
+	// nothing 2 impl.
+	// Earth is stationary!
+}
+
 void Earth::touch(P &nbr) {}
 void Dirt::physics_spec(World &world) {}
 void Dirt::touch(P &nbr) {}
