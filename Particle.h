@@ -35,6 +35,7 @@ class World; // stub for forward-dependency
 class Particle {
 	// req needs all var tobe priv!
 private:
+	// row is y, col is x !!!!
 	Pc row{}, col{};		 // coords of P, as P(row, col)
 	Pc x_vel{}, y_vel{};	 // velocity
 	Color r{}, g{}, b{};	 // color RGB
