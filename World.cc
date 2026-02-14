@@ -15,6 +15,8 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
+// World::World(const Wc& rows, const Wc& cols) : rows(rows), cols(cols) {}
+
 Wc World::get_rows() const { return rows; }
 
 Wc World::get_cols() const { return cols; }
@@ -29,9 +31,12 @@ void World::set_cols(const Wc &_cols) { cols = _cols; }
 
 void World::set_rows(const Wc &_rows) { rows = _rows; }
 
-P *World::at(const Wc &row, const Wc &col) const {
-	auto p = ps.begin(); 
-	// todo: Ps.find(row + col * cols);
+P_ptr World::at(const Wc &row, const Wc &col) const {
+	auto p = ps.begin();
+	for (; p != ps.end(); p++) {
+		if (row == (*p)->get_row() && col == (*p)->get_col())
+			break;
+	}
 	return (p != ps.end() ? *p : nullptr);
 } // .at()
 
@@ -39,10 +44,11 @@ void World::physics() { ; }					 // physics() iterates all P.
 Amt World::size() const { return 0; }		 // get amt of P
 Amt World::alive_count() const { return 0; } // get amt of LIVING P.
 
-void World::add_particle(P &p) { ps.push_back(&p); }
+void World::add_particle(P_ptr p) { ps.push_back(p); }
+
 // One preset save-file is enough?
 //	Yeah. Will be saved in JSON (IMMITATED) Format. If we want, we can implement
-//a way to save to a specific filename after finishing everything else.
+// a way to save to a specific filename after finishing everything else.
 /*
 {
 	"key": val,
@@ -138,14 +144,16 @@ std::vector<std::string> explodeStr(std::string &s) {
 // parser is out of the question for this assignment. Was JSON necessary for
 // this? Absolutely not, for the scope of what we are doing. HOWEVER- our save
 // files will look fancy. NO ONE needs to see this mess but us and the Kernel.
-Particle *extractParticle(std::string &s) {
+P_ptr extractParticle(std::string &s) {
 	// Any Particle-derived class shares the same
 	// function pointers. Thus, we hack shit together.
 	// Choose any particular Particle-derived
 	// pointer type (like Air) as placeholder
 	// for "generic Particle" data without
 	// offending the Abstract-Class god.
-	Air *p = new Air;
+	// Air *p = new Air;
+
+	P_ptr p;
 
 	// We will cast back to Particle* near return...
 	std::vector<std::string> Pvals = explodeStr(s);
@@ -161,9 +169,9 @@ Particle *extractParticle(std::string &s) {
 	p->set_type(static_cast<Type>(stoi(Pvals.at(9))));
 
 	// ...right here. Magic lol
-	Particle *pp = static_cast<Air *>(p);
+	// P_ptr pp = std::make_shared<P>(p);
 
-	return pp;
+	return p;
 }
 
 // seperate string manip function for particles
@@ -172,8 +180,8 @@ void World::parseParticlesFromJSON(std::string &s) {
 	std::string particle;
 	std::getline(ss, particle, '}');
 	while (!ss.eof()) {
-		Particle *p = extractParticle(particle);
-		add_particle(*p);
+		P_ptr p = extractParticle(particle);
+		add_particle(p);
 		std::getline(ss, particle,
 					 ','); // Throw out comma inbetween each particle.
 		std::getline(ss, particle, '}');

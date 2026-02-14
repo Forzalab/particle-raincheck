@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <list>
+#include <memory>
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -12,7 +13,8 @@ using P = Particle;
 
 typedef uint32_t Wc; // World-coords
 typedef int32_t Amt;
-typedef std::list<P*> Ps; // ParticleS
+typedef std::shared_ptr<P> P_ptr;
+typedef std::list<P_ptr> Ps; // ParticleS
 typedef std::vector<Type> Map;
 
 class World {
@@ -27,18 +29,18 @@ private:
 	void parseParticlesFromJSON(std::string &s);
 
 public:
+	World(const Wc& rows, const Wc& cols) : rows(rows), cols(cols) {};
+
 	Wc get_rows() const; Wc get_cols() const;
 	void set_rows(const Wc& _rows); void set_cols(const Wc& _cols);
 
-	World(const Wc& rows, Wc& cols) : rows(rows), cols(cols) {};
-
 	void erase(const Wc& row, const Wc& col);
-	P* at(const Wc& row, const Wc& col) const; // .at() 
+	P_ptr at(const Wc& row, const Wc& col) const; // .at() 
 	void physics(); // physics() iterates all P.
 	Amt size() const; // get amt of P
 	Amt alive_count() const; // get amt of LIVING P.
 
-	void add_particle(P &p);
+	void add_particle(P_ptr p);
 	
 	// One preset save-file is enough?
 	void save();
