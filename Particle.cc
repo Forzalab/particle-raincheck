@@ -58,7 +58,7 @@ void P::set_type(const Type &_type) {
 }
 
 void P::physics(World &world) {
-	const P *_p = world.at(get_row(), get_col());
+	const P_ptr _p = world.at(get_row(), get_col());
 	if (_p != nullptr) {
 		// general guard for all particles
 		/* here */

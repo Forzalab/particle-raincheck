@@ -109,78 +109,79 @@ public:
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
 	Air() : Particle(255, 255, 255, false, INT32_MAX, air) {
 		auto rnd = [&]() -> float {
-			return P::bd(P::gen);
-		};
+                        return Particle::bd(Particle::gen);
+                };
+
 		Pc dx_scale = 3, dy_scale = 3;
 		set_x_vel(((int)(rnd() * 100) % 3) * dx_scale);
-		set_y_vel(((int)(rnd() * 100) % 1 + 1) * dy_scale);
+		set_y_vel(((int)(rnd() * 100) % 2 + 1) * dy_scale);
 	}
 
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class Dust : public P {
 public:
 	Dust() : Particle(120, 120, 120, false, INT32_MAX, dust) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class Fire : public P {
 public:
 	Fire() : Particle(227, 68, 32, false, INT32_MAX, fire) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class Water : public P {
 public:
 	Water() : Particle(70, 155, 235, false, INT32_MAX, water) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class Earth : public P {
 public:
 	Earth() : Particle(97, 29, 25, false, INT32_MAX, earth) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class Dirt : public P {
 public:
 	Dirt() : Particle(138, 52, 26, false, INT32_MAX, dirt) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class Lightning : public P {
 public:
 	Lightning() : Particle(255, 255, 0, false, INT32_MAX, lightning) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class TBD_1 : public P {
 public:
 	TBD_1() : Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class TBD_2 : public P {
 public:
 	TBD_2() : Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 class TBD_3 : public P {
 public:
 	TBD_3() : Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
-	virtual void physics_spec(World &world) final;
-	virtual void touch(Particle &nbr) final;
+	void physics_spec(World &world) final;
+	void touch(Particle &nbr) final;
 };
 
 #endif

@@ -34,8 +34,6 @@ public:
 	Wc get_rows() const; Wc get_cols() const;
 	void set_rows(const Wc& _rows); void set_cols(const Wc& _cols);
 
-	World(const Wc& rows, Wc& cols) : rows(rows), cols(cols) {};
-
 	void erase(const Wc& row, const Wc& col);
 	P_ptr at(const Wc& row, const Wc& col) const; // .at() 
 	void physics(); // physics() iterates all P.
