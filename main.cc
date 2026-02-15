@@ -1,7 +1,14 @@
 #include "/public/read.h" // IWYU pragma: keep
+#include "Game.h"
 #include "World.h"
 #include <iostream>
 
+int main() {
+	Game game;
+	game.run();
+}
+
+/*
 int main() {
 	World w(300, 400);
 	Air p1(10, 10), p2(20, 20);
@@ -22,12 +29,12 @@ int main() {
 	w.add_particle(p4);
 	P_ptr p5 = w.at(40, 40);
 	std::cout << p5->get_row() << " " << p5->get_col() << std::endl;
-	/*	while(true) {
+		while(true) {
 			p4->physics(w);
 			std::cout << p4->get_row() << " " << p4->get_col();
 			std::cin.get();
 		}
-	*/
+	
 
 	p4->touch(std::make_shared<Air>(p2), w);
 	p4->touch(p5, w);
@@ -67,4 +74,4 @@ int main() {
 	// The obj of .touch() (aka lhs particle) can stay
 	// a cpy of ptr, as the ptr points to obj no matter
 	// which copy version it is.
-}
+}*/

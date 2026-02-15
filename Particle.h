@@ -15,7 +15,7 @@ typedef int32_t Tick;
 
 // type enum. 3 TBDs if feasible, 1 unknown, and as requirement stated.
 // init enum defaults to `none` (0).
-enum Type {
+enum P_Type : uint8_t {
 	none,
 	air,
 	dust,
@@ -43,7 +43,7 @@ private:
 	Color r{}, g{}, b{};	 // color RGB
 	bool stationary = false; // self-explanatory
 	Tick lifetime{};		 // choosing type int32_t is arbitrary
-	Type type{};
+	P_Type type{};
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
 protected:
 	static std::random_device rd;
@@ -51,12 +51,12 @@ protected:
 	static std::binomial_distribution<> bd;
 
 	Particle(const Color &r, const Color &g, const Color &b,
-			 const bool &stationary, const Tick &lifetime, const Type &type)
+			 const bool &stationary, const Tick &lifetime, const P_Type &type)
 		: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime),
 		  type(type) {}
 
 public:
-	void set_type(const Type &_type);
+	void set_type(const P_Type &_type);
 	void set_row(const Pc &_row);
 	void set_col(const Pc &_col);
 	void set_x_vel(const Pc &_x_vel);
@@ -83,7 +83,7 @@ public:
 	Color get_g() const;
 	Color get_b() const;
 
-	Type get_type() const;
+	P_Type get_type() const;
 
 	bool get_stationary() const;
 	void set_stationary(const bool &_stationary);

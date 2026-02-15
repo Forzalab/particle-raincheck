@@ -230,7 +230,7 @@ P_ptr extractParticle(std::string &s) {
 	// Air *p = new Air;
 
 	std::vector<std::string> Pvals = explodeStr(s);
-	Type type = static_cast<Type>(stoi(Pvals.at(9)));
+	P_Type type = static_cast<P_Type>(stoi(Pvals.at(9)));
 	Pc row(stof(Pvals.at(0)));
 	Pc col(stof(Pvals.at(1)));
 	P_ptr p;

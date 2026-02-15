@@ -69,9 +69,13 @@ typedef uint32_t GameTick;
 
 class Game {
 private:
-	World world{};
+	//Cannot default init with current setup- must be init in ::run() I may change this later when we are done and have time to refactor
+	World world;
 	GameTick frame{};
+	//Default of 5. Tickrate is directly proportional to framerate. 60 tickrate -> 1 / tickrate = 60fps.
+	GameTick tickrate = 5;
 public:
+	Game() : world() {}
 	void start();
 	void pause();
 	void quit();

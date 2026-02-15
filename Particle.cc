@@ -16,7 +16,7 @@ Color P::get_r() const { return r; }
 Color P::get_g() const { return g; }
 Color P::get_b() const { return b; }
 bool P::get_stationary() const { return stationary; }
-Type P::get_type() const { return type; }
+P_Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
 // float P::rnd() { return Particle::bd(Particle::gen); }
 
@@ -53,9 +53,9 @@ void P::set_lifetime(const Tick &_lifetime) {
 	lifetime = _lifetime;
 }
 
-void P::set_type(const Type &_type) {
+void P::set_type(const P_Type &_type) {
 	if (!((E_MIN <= _type) && (_type <= E_MAX)))
-		throw std::runtime_error("Type OOB.");
+		throw std::runtime_error("P_Type OOB.");
 	type = _type;
 }
 
