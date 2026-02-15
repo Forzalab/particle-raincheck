@@ -1,5 +1,6 @@
 // I do not understand why, but without this World.h
 // only partially compiles and throws an error.
+#include <memory>
 #include <numeric>
 #pragma message("")
 
@@ -22,12 +23,11 @@ void World::updateMap() {
 		map.clear();
 		return;
 	}
-	// Vector mask. saves positions that contain a particle.
-	std::vector<bool> hasParticle(size_t(rows) * size_t(cols), false);
-
-	// Iter over list of Particles and update map at those indecies
-	// Also add a true to the mask to prevent from being set to none.
-	for (const auto &p : ps) {
+	//Vector mask. saves positions that contain a particle.
+	std::vector<bool> hasParticle(static_cast<size_t>(rows) * static_cast<size_t>(cols), false);
+	//Iter over list of Particles and update map at those indecies
+	//Also add a true to the mask to prevent from being set to none.
+	for(const auto &p : ps) {
 		Wc index = Wc(p->get_row()) * cols + Wc(p->get_col());
 		hasParticle.at(index) = true;
 		map.at(index) = p->get_type();
@@ -78,28 +78,28 @@ bool World::isInBounds(const auto &p) {
 	return (!inclusiveInRange(0, cols, col) || !inclusiveInRange(0, rows, row));
 }
 
-// Since this function is essentially the update loop of World
-// Map map will be updated here too
-void World::physics() {
+//Since this function is essentially the update loop of World
+//Map map will be updated here too
+void World::physics() { 
+	
+	if(size() == 0) return;	
+	
+	//If the particle is "dead" aka lifetime is exactly 0
+	//OR
+	//If it's out of bounds
+	std::erase_if(ps, [](const auto &p) {
+				return p->get_lifetime() == 0 && p->get_stationary() == false;
+			});
 
-	if (size() == 0)
-		return;
-
-	for (const auto &p : ps) {
-		// If the particle is "dead" aka lifetime is exactly 0
-		// OR
-		// If it's out of bounds
-		if (p->get_lifetime() == 0 || !isInBounds(p)) {
-			//: skull_emoji: *I don't remember how to get emojis.*
-			ps.remove(p);
-		}
-		// Do particle physics calls here
-
-		// Decrement p lifetime if it is not a permanent particle
-		if (p->get_lifetime() != -1)
-			p->set_lifetime(p->get_lifetime() - 1);
+	for(auto &p : ps) {
+		//Do particle physics calls here
+		p->physics(*this);
+		//Decrement p lifetime if it is not a permanent particle
+		if(p->get_lifetime() != -1) p->set_lifetime(p->get_lifetime()-1);		
 	}
-} // physics() iterates all P.
+
+	updateMap();
+}	 // physics() iterates all P.
 
 Amt World::size() const {
 	// casting just to get rid of annoying warning.
@@ -229,12 +229,20 @@ P_ptr extractParticle(std::string &s) {
 	// offending the Abstract-Class god.
 	// Air *p = new Air;
 
-	P_ptr p;
-
-	// We will cast back to Particle* near return...
 	std::vector<std::string> Pvals = explodeStr(s);
-	p->set_row(stof(Pvals.at(0)));
-	p->set_col(stof(Pvals.at(1)));
+	Type type = static_cast<Type>(stoi(Pvals.at(9)));
+	Pc row(stof(Pvals.at(0)));
+	Pc col(stof(Pvals.at(1)));
+	P_ptr p;
+	//If type == 0 this BREAKS, so we need to be very sure no type = 0 exists in a save
+	if(type == 1) p = std::make_shared<Air>(row, col);
+	if(type == 2) p = std::make_shared<Dust>(row, col);
+	if(type == 3) p = std::make_shared<Fire>(row, col);
+	if(type == 4) p = std::make_shared<Water>(row, col);
+	if(type == 5) p = std::make_shared<Earth>(row, col);
+	if(type == 6) p = std::make_shared<Dirt>(row, col);
+	if(type == 7) p = std::make_shared<Lightning>(row, col);
+
 	p->set_x_vel(stof(Pvals.at(2)));
 	p->set_y_vel(stof(Pvals.at(3)));
 	p->set_r(stoi(Pvals.at(4)));
@@ -242,10 +250,6 @@ P_ptr extractParticle(std::string &s) {
 	p->set_b(stoi(Pvals.at(6)));
 	p->set_stationary((Pvals.at(7)) == "true");
 	p->set_lifetime(stoi(Pvals.at(8)));
-	p->set_type(static_cast<Type>(stoi(Pvals.at(9))));
-
-	// ...right here. Magic lol
-	// P_ptr pp = std::make_shared<P>(p);
 
 	return p;
 }
