@@ -31,7 +31,7 @@ private:
 
 public:
 	//Reserve mem for map in construction. 
-	World(const Wc& rows, const Wc& cols) : rows(rows), cols(cols) { map.resize(size_t(rows) * size_t(cols)); }
+	World(Wc newrows, Wc newcols) : rows(newrows), cols(newcols) { map.resize(size_t(newrows) * size_t(newcols)); }
 
 	Wc get_rows() const; Wc get_cols() const;
 	void set_rows(const Wc& _rows); void set_cols(const Wc& _cols);

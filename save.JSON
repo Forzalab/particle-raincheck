@@ -24,7 +24,7 @@
 			"b": 0,
 			"stationary": false,
 			"lifetime": 0,
-			"type": 0,
+			"type": 1,
 		},
 		{
 			"row": 0,
@@ -36,7 +36,7 @@
 			"b": 0,
 			"stationary": false,
 			"lifetime": 0,
-			"type": 0,
+			"type": 1,
 		},
 		{
 			"row": 0,
@@ -48,7 +48,7 @@
 			"b": 0,
 			"stationary": false,
 			"lifetime": 0,
-			"type": 0,
+			"type": 1,
 		}
 	]
 }
