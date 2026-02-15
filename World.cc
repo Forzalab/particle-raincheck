@@ -56,13 +56,13 @@ void World::set_cols(const Wc &_cols) { cols = _cols; }
 
 void World::set_rows(const Wc &_rows) { rows = _rows; }
 
-P_ptr World::at(const Wc &row, const Wc &col) const {
+P_ptr& World::at(const Wc &row, const Wc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
 		if (row == (*p)->get_row() && col == (*p)->get_col())
 			break;
 	}
-	return (p != ps.end() ? *p : nullptr);
+	return (p != ps.end() ? *p : nullp);
 } // .at()
 
 // because cpp doesnt support range conditionals Sadge

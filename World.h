@@ -28,6 +28,7 @@ private:
 	void parseParticlesFromJSON(std::string &s);
 
 public:
+	P_ptr nullp = nullptr; // null object pattern
 	// Reserve mem for map in construction.
 	World(const Wc &rows, const Wc &cols) : rows(rows), cols(cols) {
 		map.resize(size_t(rows) * size_t(cols));
@@ -39,7 +40,7 @@ public:
 	void set_cols(const Wc &_cols);
 
 	void erase(const Wc &row, const Wc &col);
-	P_ptr at(const Wc &row, const Wc &col) const; // .at()
+	P_ptr& at(const Wc &row, const Wc &col); // .at()
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
 	void physics();			 // physics() iterates all P.
