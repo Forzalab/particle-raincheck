@@ -2,6 +2,7 @@
 #define PARTICLE_H
 
 #include <random>
+#include <memory>
 #include <cstdint>
 #include <cstdlib>
 #include <stdexcept>
@@ -104,6 +105,7 @@ public:
 };
 
 using P = Particle; // for lazy fuckers like us
+typedef std::shared_ptr<P> P_ptr;
 
 class Air : public P {
 public:

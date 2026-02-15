@@ -116,7 +116,10 @@ void Dust::physics_spec(World &world) {
 	return;
 }
 
-void Dust::touch(P &nbr) {}
+void Dust::touch(P &nbr) {
+	
+
+}
 void Fire::physics_spec(World &world) {}
 void Fire::touch(P &nbr) {}
 void Water::physics_spec(World &world) {}

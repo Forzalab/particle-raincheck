@@ -13,7 +13,6 @@ using P = Particle;
 
 typedef uint32_t Wc; // World-coords
 typedef int32_t Amt;
-typedef std::shared_ptr<P> P_ptr;
 typedef std::list<P_ptr> Ps; // ParticleS
 typedef std::vector<Type> Map;
 
