@@ -43,6 +43,7 @@ void P::set_stationary(const bool &_stationary) {
 	if (stationary == true) {
 		set_x_vel(0);
 		set_y_vel(0);
+		set_lifetime(-1);
 	}
 }
 
@@ -118,7 +119,6 @@ void Dust::physics_spec(World &world) {
 
 void Dust::touch(P_ptr nbr) {
 	
-
 }
 void Fire::physics_spec(World &world) {}
 void Fire::touch(P_ptr nbr) {}
