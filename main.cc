@@ -19,7 +19,7 @@ int main() {
 	World w(static_cast<Wc>(300),static_cast<Wc>(400));
 	w.load();
 	w.physics();
-	// w.save();
+	w.save();
 	// Air p1(10,10), p2(20,20);
 	// Dust p3(30,30);
 

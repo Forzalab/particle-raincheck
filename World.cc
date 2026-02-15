@@ -24,7 +24,6 @@ void World::updateMap() {
 		return;
 	}
 	//Vector mask. saves positions that contain a particle.
-	std::cout << rows << " " << cols << std::endl;
 	std::vector<bool> hasParticle(static_cast<size_t>(rows) * static_cast<size_t>(cols), false);
 	//Iter over list of Particles and update map at those indecies
 	//Also add a true to the mask to prevent from being set to none.
