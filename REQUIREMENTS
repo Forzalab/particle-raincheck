@@ -58,7 +58,7 @@ By the due date you need to have:
 --A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world ******* raymond_0865098
 --A list (must be std::list) of Particles which holds all particles in the world
 --An .at(row,col) method that returns a pointer to the Particle at the location row x col in the world (or nullptr if there is no particle there)
---A .physics() method which runs through the list of Particles and runs .physics() on each one
+--A .physics() method which runs through the list of Particles and runs .physics() on each one ******* raymond_865098
 ----If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list
 ----If a particle now has a lifetime of exactly 0, delete it from the list
 --A .size() method which returns how many particles are in the world ******* raymond_0865098
