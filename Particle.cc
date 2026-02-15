@@ -98,7 +98,7 @@ void Air::physics_spec(World &world) {
 	return;
 }
 
-void Air::touch(P_ptr nbr) {}
+void Air::touch(const P_ptr &nbr, World &world) {}
 
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.2;
@@ -117,27 +117,42 @@ void Dust::physics_spec(World &world) {
 	return;
 }
 
-void Dust::touch(P_ptr nbr) {
-	
-}
+void Dust::touch(const P_ptr &nbr, World &world) {}
 void Fire::physics_spec(World &world) {}
-void Fire::touch(P_ptr nbr) {}
+
+void Fire::touch(const P_ptr &nbr, World &world) {
+	if (nbr->get_type() == water) {
+		// create new upwards Air
+		Air a(nbr->get_row(), nbr->get_col());
+		P_ptr p_a = std::make_shared<Air>(a);
+		world.at(nbr->get_row(), nbr->get_col()) = p_a;
+
+		// make it go upwards
+		// y starts at 0 and ends with world.height
+		// so going up means decreasing y.
+		nbr->set_y_vel(std::abs(get_y_vel()) * (-4));
+
+		// delete water? it has been "replaced"
+		std::cout << "Water touched\n";
+	}
+}
+
 void Water::physics_spec(World &world) {}
-void Water::touch(P_ptr nbr) {}
+void Water::touch(const P_ptr &nbr, World &world) {}
 
 void Earth::physics_spec(World &world) {
 	// nothing 2 impl.
 	// Earth is stationary!
 }
 
-void Earth::touch(P_ptr nbr) {}
+void Earth::touch(const P_ptr &nbr, World &world) {}
 void Dirt::physics_spec(World &world) {}
-void Dirt::touch(P_ptr nbr) {}
+void Dirt::touch(const P_ptr &nbr, World &world) {}
 void Lightning::physics_spec(World &world) {}
-void Lightning::touch(P_ptr nbr) {}
+void Lightning::touch(const P_ptr &nbr, World &world) {}
 void TBD_1::physics_spec(World &world) {}
-void TBD_1::touch(P_ptr nbr) {}
+void TBD_1::touch(const P_ptr &nbr, World &world) {}
 void TBD_2::physics_spec(World &world) {}
-void TBD_2::touch(P_ptr nbr) {}
+void TBD_2::touch(const P_ptr &nbr, World &world) {}
 void TBD_3::physics_spec(World &world) {}
-void TBD_3::touch(P_ptr nbr) {}
+void TBD_3::touch(const P_ptr &nbr, World &world) {}

@@ -17,27 +17,27 @@ static_assert(sizeof(World) > 0);
 const std::string SAVEFILE = "save.JSON";
 
 void World::updateMap() {
-	//If no particles, clear list and return early
-	if(ps.size() == 0) {
+	// If no particles, clear list and return early
+	if (ps.size() == 0) {
 		map.clear();
 		return;
 	}
-	//Vector mask. saves positions that contain a particle.
+	// Vector mask. saves positions that contain a particle.
 	std::vector<bool> hasParticle(size_t(rows) * size_t(cols), false);
 
-	//Iter over list of Particles and update map at those indecies
-	//Also add a true to the mask to prevent from being set to none.
-	for(const auto &p : ps) {
+	// Iter over list of Particles and update map at those indecies
+	// Also add a true to the mask to prevent from being set to none.
+	for (const auto &p : ps) {
 		Wc index = Wc(p->get_row()) * cols + Wc(p->get_col());
 		hasParticle.at(index) = true;
 		map.at(index) = p->get_type();
 	}
 
-	//If not updated above, set to none based on hasParticle mask.
-	for(int i = 0; i < map.size(); i++) {
-		if(!hasParticle.at(i)) map.at(i) = none; 
+	// If not updated above, set to none based on hasParticle mask.
+	for (int i = 0; i < map.size(); i++) {
+		if (!hasParticle.at(i))
+			map.at(i) = none;
 	}
-
 }
 
 // World::World(const Wc& rows, const Wc& cols) : rows(rows), cols(cols) {}
@@ -78,42 +78,46 @@ bool World::isInBounds(const auto &p) {
 	return (!inclusiveInRange(0, cols, col) || !inclusiveInRange(0, rows, row));
 }
 
-//Since this function is essentially the update loop of World
-//Map map will be updated here too
-void World::physics() { 
-	
-	if(size() == 0) return;	
-	
-	for(const auto &p : ps) {
-		//If the particle is "dead" aka lifetime is exactly 0
-		//OR
-		//If it's out of bounds
-		if(p->get_lifetime() == 0 || !isInBounds(p)) {
-			//:skull_emoji: *I don't remember how to get emojis.*
+// Since this function is essentially the update loop of World
+// Map map will be updated here too
+void World::physics() {
+
+	if (size() == 0)
+		return;
+
+	for (const auto &p : ps) {
+		// If the particle is "dead" aka lifetime is exactly 0
+		// OR
+		// If it's out of bounds
+		if (p->get_lifetime() == 0 || !isInBounds(p)) {
+			//: skull_emoji: *I don't remember how to get emojis.*
 			ps.remove(p);
 		}
-		//Do particle physics calls here
+		// Do particle physics calls here
 
-		//Decrement p lifetime if it is not a permanent particle
-		if(p->get_lifetime() != -1) p->set_lifetime(p->get_lifetime()-1);		
+		// Decrement p lifetime if it is not a permanent particle
+		if (p->get_lifetime() != -1)
+			p->set_lifetime(p->get_lifetime() - 1);
 	}
-}	 // physics() iterates all P.
+} // physics() iterates all P.
 
-Amt World::size() const { 
+Amt World::size() const {
 	// casting just to get rid of annoying warning.
 	return Amt(ps.size());
-}		 // get amt of P
-Amt World::alive_count() const { 
-	//Guard from empty list, return -1 as err
-	if(ps.size() == 0) return -1;
+} // get amt of P
+Amt World::alive_count() const {
+	// Guard from empty list, return -1 as err
+	if (ps.size() == 0)
+		return -1;
 
-	// 1st param of lambda is the current count, init to 0 in 3rd param of std::accumulate
-	// 2nd param is the current element in the loop
-	// Returning 0 is still a valid count, -1 as error prevents exception via error as return,
-	// Allowing us to detect empty list vs none above 0 lfetime particles.
-	return std::accumulate(ps.begin(), ps.end(), 0, [](int count, const auto &p) {
-				return p->get_lifetime() > 0;
-			});
+	// 1st param of lambda is the current count, init to 0 in 3rd param of
+	// std::accumulate 2nd param is the current element in the loop Returning 0
+	// is still a valid count, -1 as error prevents exception via error as
+	// return, Allowing us to detect empty list vs none above 0 lfetime
+	// particles.
+	return std::accumulate(
+		ps.begin(), ps.end(), 0,
+		[](int count, const auto &p) { return p->get_lifetime() > 0; });
 } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
