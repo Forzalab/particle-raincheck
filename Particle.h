@@ -97,7 +97,7 @@ public:
 	// These functions below MUST BE IMPLEMENTED in derived classes.
 	virtual void physics_spec(World &world) = 0;
 	virtual void touch(
-		Particle &
+		std::shared_ptr<Particle>
 			nbr) = 0; // Rationale:
 					  // https://stackoverflow.com/questions/3644065/how-to-write-an-elegant-collision-handling-mechanism
 					  // Friend for full acess
@@ -118,7 +118,7 @@ public:
 	}
 
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class Dust : public P {
@@ -132,63 +132,63 @@ public:
 	}
 
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class Fire : public P {
 public:
 	Fire(const Pc& row, const Pc& col) : Particle(227, 68, 32, false, INT32_MAX, fire) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class Water : public P {
 public:
 	Water(const Pc& row, const Pc& col) : Particle(70, 155, 235, false, INT32_MAX, water) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class Earth : public P {
 public:
 	Earth(const Pc& row, const Pc& col) : Particle(97, 29, 25, true, INT32_MAX, earth) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class Dirt : public P {
 public:
 	Dirt(const Pc& row, const Pc& col) : Particle(138, 52, 26, false, INT32_MAX, dirt) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class Lightning : public P {
 public:
 	Lightning(const Pc& row, const Pc& col) : Particle(255, 255, 0, false, INT32_MAX, lightning) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class TBD_1 : public P {
 public:
 	TBD_1(const Pc& row, const Pc& col) : Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class TBD_2 : public P {
 public:
 	TBD_2(const Pc& row, const Pc& col) : Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 class TBD_3 : public P {
 public:
 	TBD_3(const Pc& row, const Pc& col) : Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
 	void physics_spec(World &world) final;
-	void touch(Particle &nbr) final;
+	void touch(P_ptr nbr) final;
 };
 
 #endif

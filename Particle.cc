@@ -97,7 +97,7 @@ void Air::physics_spec(World &world) {
 	return;
 }
 
-void Air::touch(P &nbr) {}
+void Air::touch(P_ptr nbr) {}
 
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.2;
@@ -116,28 +116,28 @@ void Dust::physics_spec(World &world) {
 	return;
 }
 
-void Dust::touch(P &nbr) {
+void Dust::touch(P_ptr nbr) {
 	
 
 }
 void Fire::physics_spec(World &world) {}
-void Fire::touch(P &nbr) {}
+void Fire::touch(P_ptr nbr) {}
 void Water::physics_spec(World &world) {}
-void Water::touch(P &nbr) {}
+void Water::touch(P_ptr nbr) {}
 
 void Earth::physics_spec(World &world) {
 	// nothing 2 impl.
 	// Earth is stationary!
 }
 
-void Earth::touch(P &nbr) {}
+void Earth::touch(P_ptr nbr) {}
 void Dirt::physics_spec(World &world) {}
-void Dirt::touch(P &nbr) {}
+void Dirt::touch(P_ptr nbr) {}
 void Lightning::physics_spec(World &world) {}
-void Lightning::touch(P &nbr) {}
+void Lightning::touch(P_ptr nbr) {}
 void TBD_1::physics_spec(World &world) {}
-void TBD_1::touch(P &nbr) {}
+void TBD_1::touch(P_ptr nbr) {}
 void TBD_2::physics_spec(World &world) {}
-void TBD_2::touch(P &nbr) {}
+void TBD_2::touch(P_ptr nbr) {}
 void TBD_3::physics_spec(World &world) {}
-void TBD_3::touch(P &nbr) {}
+void TBD_3::touch(P_ptr nbr) {}
