@@ -14,7 +14,7 @@ using P = Particle;
 typedef uint32_t Wc; // World-coords
 typedef int32_t Amt;
 typedef std::list<P_ptr> Ps; // ParticleS
-typedef std::vector<Type> Map;
+typedef std::vector<P_Type> Map;
 
 class World {
 private:
@@ -30,7 +30,7 @@ private:
 public:
 	P_ptr nullp = nullptr; // null object pattern
 	// Reserve mem for map in construction.
-	World(const Wc &rows, const Wc &cols) : rows(rows), cols(cols) {
+	World(const Wc &rows = 400, const Wc &cols = 300) : rows(rows), cols(cols) {
 		map.resize(size_t(rows) * size_t(cols));
 	}
 

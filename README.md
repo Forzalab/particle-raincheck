@@ -21,6 +21,9 @@
 - A .save() method which saves the state of the world to disk ******* raymond_0865098
 - A .load() method which loads the state of the world to disk ******* raymond_0865098
  to save the world to disk
+- A .physics() method which runs through the list of Particles and runs .physics() on each one ******* raymond_0865098
+- If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list ******* raymond_0865098
+- If a particle now has a lifetime of exactly 0, delete it from the list ******* raymond_0865098
 
 ### Unassigned Work
 
