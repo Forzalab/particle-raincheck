@@ -83,8 +83,8 @@ void Air::physics_spec(World &world) {
 	// if not (not st.) = stay still
 	// ==> change nothing about pos
 	if (!get_stationary()) {
-		set_row(get_row() + (Wc)get_y_vel());
-		set_col(get_col() + (Wc)get_x_vel());
+		set_row(get_row() + get_y_vel());
+		set_col(get_col() + get_x_vel());
 	}
 
 	return;

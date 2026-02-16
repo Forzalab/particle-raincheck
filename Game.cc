@@ -40,7 +40,7 @@ void Game::run() {
 	auto prev_frame = clock::now();
 	int count = 0;
 	std::vector<pair<Wc, Wc>> prevPs;
-	while(count < 120) {
+	while(count < 3600) {
 		printFPS(prev_frame, world.get_rows());
 		prev_frame = clock::now();
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
