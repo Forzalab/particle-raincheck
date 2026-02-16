@@ -14,6 +14,13 @@ void printFPS(const auto &lastFrameStart, Wc rows) {
 	if(diff.count() > 0.05) std::cout << 1.0 / diff.count() << " / 60FPS"; 
 }
 
+void resetTerminal() {
+	resetcolor();
+	clearscreen();
+	show_cursor(true);
+	movecursor(0,0);
+}
+
 void Game::run() {
 	show_cursor(false);
 	clearscreen();
@@ -46,10 +53,7 @@ void Game::run() {
 		}
 		std::this_thread::sleep_until(next_frame);
 	}
-	resetcolor();
-	clearscreen();
-	show_cursor(true);
-	movecursor(0,0);
+	resetTerminal();
 }
 
 //Janky way to clear screen without iterating over every pixel or flickering the screen with clearscreen();
