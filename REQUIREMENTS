@@ -86,7 +86,7 @@ By the due date you need to have:
 --The user must be able to edit the game world by adding and deleting particles while the world is paused
 ----It must work with mouse input
 --A .run() method that starts the game. Your main() function should just be this: Game game; game.run();
-----On launch draw a splash screen
+----On launch draw a splash screen ****** romero_1048121
 ----Then go into an infinite loop of: handling user input, running physics, drawing the world, delaying
 ----It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number)
 ----Use clock (or std::chrono) to see how long it has been since the last frame began

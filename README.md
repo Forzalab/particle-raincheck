@@ -25,6 +25,8 @@
 - If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list ******* raymond_0865098
 - If a particle now has a lifetime of exactly 0, delete it from the list ******* raymond_0865098
 
+### Romero
+- On launch draw a splash screen ****** romero_1048121
 ### Unassigned Work
 
 > ...all the rest of the bullet points...

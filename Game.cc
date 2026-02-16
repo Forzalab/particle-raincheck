@@ -14,6 +14,9 @@ void Game::run() {
 
 	{
 	//Draw a splash screen here.
+		system("figlet =======");
+		system("figlet Particles");
+		system("figlet =======");
 	}
 	auto next_frame = clock::now();
 	int count = 0;

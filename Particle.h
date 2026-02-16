@@ -185,7 +185,14 @@ public:
 class Lightning : public P {
 public:
 	Lightning(const Pc &row, const Pc &col)
-		: Particle(255, 255, 0, false, INT32_MAX, lightning) {}
+		: Particle(255, 255, 0, false, INT32_MAX, lightning) {
+		Pc dx_scale = 5;
+		Pc dy_scale = 5;
+		set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
+		set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
+		set_row(row);
+		set_col(col);
+		}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };

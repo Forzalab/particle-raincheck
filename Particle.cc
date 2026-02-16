@@ -98,7 +98,9 @@ void Air::physics_spec(World &world) {
 	return;
 }
 
-void Air::touch(const P_ptr &nbr, World &world) {}
+void Air::touch(const P_ptr &nbr, World &world) {
+
+}
 
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.2;
@@ -118,7 +120,9 @@ void Dust::physics_spec(World &world) {
 }
 
 void Dust::touch(const P_ptr &nbr, World &world) {}
-void Fire::physics_spec(World &world) {}
+void Fire::physics_spec(World &world) {
+	//Fire is stationary
+}
 
 void Fire::touch(const P_ptr &nbr, World &world) {
 	if (nbr->get_type() == water) {
@@ -148,8 +152,35 @@ void Earth::physics_spec(World &world) {
 void Earth::touch(const P_ptr &nbr, World &world) {}
 void Dirt::physics_spec(World &world) {}
 void Dirt::touch(const P_ptr &nbr, World &world) {}
-void Lightning::physics_spec(World &world) {}
-void Lightning::touch(const P_ptr &nbr, World &world) {}
+void Lightning::physics_spec(World &world) {
+	Pc gravity = 9.8;
+
+	set_x_vel(get_x_vel() + gravity);
+	set_y_vel(get_y_vel() + gravity);
+	if (!get_stationary()) {
+		set_row(get_row() + get_y_vel());
+		set_col(get_col() + get_x_vel());
+	}
+}
+void Lightning::touch(const P_ptr &nbr, World &world) {
+	/*
+	if (nbr->get_type() == earth) {
+		Dirt a(nbr->get_row(), nbr->get_col());
+		P_ptr p_a = std::make_shared<Dirt>(a);
+		world.at(nbr->get_row(), nbr->get_col()) = p_a;
+
+		//Delete Lightning
+					
+	}
+	else if (nbr->get_type() == water) {
+		Lightning b(nbr->get_row(), nbr->get_col());
+		P_ptr p_b = std::make_shared<Lightning>(b);
+		world.at(nbr->get_row(), nbr->get_col()) = p_b;	
+		
+		//Delete Water 
+	}	
+	*/
+}
 void TBD_1::physics_spec(World &world) {}
 void TBD_1::touch(const P_ptr &nbr, World &world) {}
 void TBD_2::physics_spec(World &world) {}
