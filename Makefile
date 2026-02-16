@@ -2,7 +2,6 @@ CCFLAGS = -Ilibs/include -Wall -Wfatal-errors -pedantic -pedantic-errors -Wno-si
 SRCS = $(wildcard *.cc)
 OBJS = $(SRCS:.cc=.o)
 DEPS = $(OBJS:.o=.d)
--include $(DEPS)
 
 a.out: $(OBJS)
 	@g++ $(CCFLAGS) $^ -o $@
@@ -10,10 +9,11 @@ a.out: $(OBJS)
 	@echo -e '\t$(OBJS)'
 	@echo to 'a.out'!
 
-%.o: %.cc 
+%.o: %.cc /public/colors.h 
 	@g++ $(CCFLAGS) -MMD -MP -c $< -o $@
 	@echo Done compiling '$<'!
 
+-include $(DEPS)
+
 clean:
 	rm -f *.o *.d a.out
-

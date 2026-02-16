@@ -73,7 +73,7 @@ private:
 	World world;
 	GameTick frame{};
 	//Default of 5. Tickrate is directly proportional to framerate. 60 tickrate -> 1 / tickrate = 60fps.
-	GameTick tickrate = 5;
+	GameTick tickrate = 1;
 public:
 	Game() : world() {}
 	void start();
