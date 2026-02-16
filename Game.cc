@@ -24,6 +24,7 @@ void Game::run() {
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
 		count++;
+		clearscreen();
 		if(!world.alive_count()) continue;
 		world.physics();
 		render();
@@ -36,7 +37,6 @@ void Game::run() {
 }
 
 void Game::render() {
-	clearscreen();
 	Ps particles = world.getParticles();
 	for(const auto& p : particles) {
 		movecursor(std::floor(p->get_row()), std::floor(p->get_col()));

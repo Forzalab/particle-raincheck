@@ -84,19 +84,18 @@ void World::physics() {
 	
 	if(size() == 0) return;	
 	
-	//If the particle is "dead" aka lifetime is exactly 0
-	//OR
-	//If it's out of bounds
-	std::erase_if(ps, [](const auto &p) {
-				return p->get_lifetime() == 0 && p->get_stationary() == false;
-			});
-
 	for(auto &p : ps) {
 		//Do particle physics calls here
 		p->physics(*this);
 		//Decrement p lifetime if it is not a permanent particle
 		if(p->get_lifetime() != -1) p->set_lifetime(p->get_lifetime()-1);		
 	}
+	//If the particle is "dead" aka lifetime is exactly 0
+	//OR
+	//If it's out of bounds
+	std::erase_if(ps, [](const auto &p) {
+				return p->get_lifetime() == 0 && p->get_stationary() == false;
+			});
 
 	updateMap();
 }	 // physics() iterates all P.
