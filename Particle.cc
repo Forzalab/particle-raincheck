@@ -147,8 +147,8 @@ void Dirt::touch(const P_ptr &nbr, World &world) {}
 void Lightning::physics_spec(World &world) {
 	Pc gravity = 9.8;
 
-	set_x_vel(get_x_vel() + gravity);
-	set_y_vel(get_y_vel() + gravity);
+	set_x_vel(0);
+	set_y_vel(get_y_vel() - gravity); //Negative because it is traveling down
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());
 		set_col(get_col() + get_x_vel());

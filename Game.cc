@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <thread>
 #include "Game.h"
 #include "/public/colors.h"
@@ -34,6 +35,7 @@ void Game::run() {
 	world.load();
 	{
 	//Draw a splash screen here.
+		clearscreen();
 		system("figlet =======");
 		system("figlet Particles");
 		system("figlet =======");
