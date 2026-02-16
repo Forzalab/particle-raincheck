@@ -87,9 +87,9 @@ void World::physics() {
 	//If the particle is "dead" aka lifetime is exactly 0
 	//OR
 	//If it's out of bounds
-	// std::erase_if(ps, [](const auto &p) {
-				// return p->get_lifetime() == 0 && p->get_stationary() == false;
-			// });
+	std::erase_if(ps, [](const auto &p) {
+				return p->get_lifetime() == 0 && p->get_stationary() == false;
+			});
 
 	for(auto &p : ps) {
 		//Do particle physics calls here
@@ -245,9 +245,9 @@ P_ptr extractParticle(std::string &s) {
 
 	p->set_x_vel(stof(Pvals.at(2)));
 	p->set_y_vel(stof(Pvals.at(3)));
-	p->set_r(stoi(Pvals.at(4)));
-	p->set_g(stoi(Pvals.at(5)));
-	p->set_b(stoi(Pvals.at(6)));
+	// p->set_r(stoi(Pvals.at(4)));
+	// p->set_g(stoi(Pvals.at(5)));
+	// p->set_b(stoi(Pvals.at(6)));
 	p->set_stationary((Pvals.at(7)) == "true");
 	p->set_lifetime(stoi(Pvals.at(8)));
 
