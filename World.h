@@ -44,7 +44,7 @@ public:
 	}
 	
 	void erase(const Wc &row, const Wc &col);
-	P_ptr& at(const Wc &row, const Wc &col); // .at()
+	P_ptr& at(const Pc &row, const Pc &col); // .at()
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
 	void physics();			 // physics() iterates all P.

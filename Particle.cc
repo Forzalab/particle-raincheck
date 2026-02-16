@@ -60,7 +60,7 @@ void P::set_type(const P_Type &_type) {
 }
 
 void P::physics(World &world) {
-	Wc wrow = (Wc)get_row(), wcol = (Wc)get_col();
+	Pc wrow = get_row(), wcol = get_col();
 	const P_ptr _p = world.at(wrow, wcol);
 
 	if (_p != nullptr) {
