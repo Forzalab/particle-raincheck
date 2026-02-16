@@ -49,6 +49,7 @@ public:
 
 	void add_particle(P_ptr p);
 
+	const Ps& getParticles() { return ps; }
 	// One preset save-file is enough?
 	void save();
 	void load();
