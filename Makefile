@@ -15,5 +15,5 @@ a.out: $(OBJS)
 	@echo Done compiling '$<'!
 
 clean:
-	rm -f *.o a.out
+	rm -f *.o *.d a.out
 
