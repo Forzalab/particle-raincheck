@@ -52,7 +52,7 @@ void Game::run() {
 		for(const auto &p : world.getParticles()) {
 			movecursor(0,0);
 			std::cout << world.size();
-			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()), std::floor(p->get_col())));
+			prevPs.push_back(pair<Wc, Wc>(std::round(p->get_row()), std::round(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
 	}
@@ -74,10 +74,10 @@ void unrender(auto &prevPs) {
 void Game::render() {
 	Ps particles = world.getParticles();
 	for(const auto& p : particles) {
-		Wc row = std::floor(p->get_row());
-		Wc col = std::floor(p->get_col());
+		Wc row = std::round(p->get_row());
+		Wc col = std::round(p->get_col());
 		if(col < 0 || col > world.get_cols() || row > world.get_rows() || row < 0) continue; // Do not print particles that are OOB and not yet culled by world::physics()
-		movecursor(std::floor(row), std::floor(col));
+		movecursor(std::round(row), std::round(col));
 		setbgcolor(p->get_r(), p->get_g(), p->get_b());
 		std::cout << " ";
 		resetcolor();
