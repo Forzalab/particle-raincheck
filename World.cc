@@ -1,5 +1,8 @@
 // I do not understand why, but without this World.h
 // only partially compiles and throws an error.
+#include <algorithm>
+#include <cmath>
+#include <limits>
 #include <memory>
 #include <numeric>
 #pragma message("")
@@ -23,20 +26,15 @@ void World::updateMap() {
 		map.clear();
 		return;
 	}
+	map.assign(map.size(), none);
 	//Vector mask. saves positions that contain a particle.
-	std::vector<bool> hasParticle(static_cast<size_t>(rows) * static_cast<size_t>(cols), false);
 	//Iter over list of Particles and update map at those indecies
 	//Also add a true to the mask to prevent from being set to none.
 	for(const auto &p : ps) {
-		Wc index = Wc(p->get_row()) * cols + Wc(p->get_col());
-		hasParticle.at(index) = true;
+		Wc index = std::floor(p->get_row()) * cols + std::floor(p->get_col());
+		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " " << rows << " " << cols;
+		// std::cin.get();
 		map.at(index) = p->get_type();
-	}
-
-	// If not updated above, set to none based on hasParticle mask.
-	for (int i = 0; i < map.size(); i++) {
-		if (!hasParticle.at(i))
-			map.at(i) = none;
 	}
 }
 
@@ -67,15 +65,15 @@ P_ptr& World::at(const Wc &row, const Wc &col) {
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool inclusiveInRange(Pc min, Pc max, Pc val) {
-	return min <= val && val <= max;
+bool exclusiveInRange(Wc min, Wc max, Wc val) {
+	return min < val && val < max;
 }
 
 bool World::isInBounds(const auto &p) {
-	Pc col = p->get_col();
-	Pc row = p->get_row();
+	Wc col = std::floor(p->get_col());
+	Wc row = std::floor(p->get_row());
 
-	return (!inclusiveInRange(0, cols, col) || !inclusiveInRange(0, rows, row));
+	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
 
 //Since this function is essentially the update loop of World
@@ -93,11 +91,11 @@ void World::physics() {
 	//If the particle is "dead" aka lifetime is exactly 0
 	//OR
 	//If it's out of bounds
-	std::erase_if(ps, [](const auto &p) {
-				return p->get_lifetime() == 0 && p->get_stationary() == false;
+	std::erase_if(ps, [this](const auto &p) {
+				return (p->get_lifetime() == 0 && p->get_stationary() == false) || !isInBounds(p);
 			});
 
-	updateMap();
+	updateMap(); // currently our limiting factor performance wise. 15-17 fps with, at least 60 without
 }	 // physics() iterates all P.
 
 Amt World::size() const {
@@ -244,6 +242,7 @@ P_ptr extractParticle(std::string &s) {
 
 	p->set_x_vel(stof(Pvals.at(2)));
 	p->set_y_vel(stof(Pvals.at(3)));
+	//TODO: stretch goal -> custom particles use these V but default particles use default cstor vals.
 	// p->set_r(stoi(Pvals.at(4)));
 	// p->set_g(stoi(Pvals.at(5)));
 	// p->set_b(stoi(Pvals.at(6)));

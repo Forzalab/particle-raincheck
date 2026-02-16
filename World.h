@@ -30,7 +30,7 @@ private:
 public:
 	P_ptr nullp = nullptr; // null object pattern
 	// Reserve mem for map in construction.
-	World(const Wc &rows = 400, const Wc &cols = 300) : rows(rows), cols(cols) {
+	World(const Wc &rows = 50, const Wc &cols = 70) : rows(rows), cols(cols) {
 		map.resize(size_t(rows) * size_t(cols));
 	}
 
@@ -39,6 +39,10 @@ public:
 	void set_rows(const Wc &_rows);
 	void set_cols(const Wc &_cols);
 
+	void updateVecs() {
+		map.resize(size_t(rows) * size_t(cols));
+	}
+	
 	void erase(const Wc &row, const Wc &col);
 	P_ptr& at(const Wc &row, const Wc &col); // .at()
 	// Helper func to make World::physics() cleaner
