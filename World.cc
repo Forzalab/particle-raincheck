@@ -54,7 +54,7 @@ void World::set_cols(const Wc &_cols) { cols = _cols; }
 
 void World::set_rows(const Wc &_rows) { rows = _rows; }
 
-P_ptr& World::at(const Wc &row, const Wc &col) {
+P_ptr& World::at(const Pc &row, const Pc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
 		if (row == (*p)->get_row() && col == (*p)->get_col())
