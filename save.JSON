@@ -1,6 +1,6 @@
 {
-	"rows": 300,
-	"cols": 400,
+	"rows": 50,
+	"cols": 70,
 	"Ps": [
 		{
 			"row": 9,
@@ -10,8 +10,8 @@
 			"r": 1,
 			"g": 1,
 			"b": 1,
-			"stationary": true,
-			"lifetime": 1,
+			"stationary": false,
+			"lifetime": 100,
 			"type": 1,
 		},
 		{
@@ -23,7 +23,7 @@
 			"g": 0,
 			"b": 0,
 			"stationary": false,
-			"lifetime": 2,
+			"lifetime": 70,
 			"type": 2,
 		},
 		{
@@ -35,7 +35,7 @@
 			"g": 0,
 			"b": 0,
 			"stationary": false,
-			"lifetime": 3,
+			"lifetime": 40,
 			"type": 3,
 		},
 		{
@@ -47,7 +47,7 @@
 			"g": 0,
 			"b": 0,
 			"stationary": false,
-			"lifetime": 4,
+			"lifetime": 10,
 			"type": 4,
 		}
 	]
