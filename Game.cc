@@ -35,6 +35,9 @@ void Game::run() {
 	world.load();
 	{
 	//Draw a splash screen here.
+		system("figlet =======");
+		system("figlet Particles");
+		system("figlet =======");
 	}
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
