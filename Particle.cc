@@ -137,8 +137,42 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 	}
 }
 
-void Water::physics_spec(World &world) {}
-void Water::touch(const P_ptr &nbr, World &world) {}
+void Water::physics_spec(World &world) {
+	// (Physics are the same as dirt for 
+	Pc gravity = 9.8;
+	set_x_vel(0); // no lateral movement in air
+	// initial velocity + acceleration due to gravity 
+	set_y_vel(get_y_vel() + 20);
+
+
+	if (!get_stationary()) {
+		set_row(get_row() + get_y_vel());
+		set_col(get_col() + get_x_vel());
+	}
+
+	return;
+}
+
+void Water::touch(const P_ptr &nbr, World &world) {
+	// if stationary, stop
+	if (get_stationary()) return;
+	// trying to fix random crap to make it easier
+	Wc row = (Wc)get_row();
+	Wc col = (Wc)get_col();
+	// now checking neighbors 
+	// if it can move left, move left
+	if (world.at(row, col - 1) == nullptr) {
+		set_col(get_col() - 1);
+		return;
+	}
+	// same thing, if can move right, move right
+	if (world.at(row, col + 1) == nullptr) {
+		set_col(get_col() + 1);
+		return;
+	}
+	set_stationary(true);
+}
+
 
 void Earth::physics_spec(World &world) {
 	// nothing 2 impl.
@@ -146,8 +180,30 @@ void Earth::physics_spec(World &world) {
 }
 
 void Earth::touch(const P_ptr &nbr, World &world) {}
-void Dirt::physics_spec(World &world) {}
-void Dirt::touch(const P_ptr &nbr, World &world) {}
+
+
+void Dirt::physics_spec(World &world) {	
+	Pc gravity = 9.8;
+	set_x_vel(0); // no lateral movement in air
+	// initial velocity + acceleration due to gravity 
+	set_y_vel(get_y_vel() + 20);
+
+	if (!get_stationary()) {
+		set_row(get_row() + get_y_vel());
+		set_col(get_col() + get_x_vel());
+	}
+	return;
+}
+
+// primitive touch for the time being, can revisit if causes problems
+void Dirt::touch(const P_ptr &nbr, World &world) {
+	// If neighbors are stationary, it also becomes stationary
+	if (nbr->get_stationary()) {
+		set_stationary(true);
+	}
+}
+
+
 void Lightning::physics_spec(World &world) {}
 void Lightning::touch(const P_ptr &nbr, World &world) {}
 void TBD_1::physics_spec(World &world) {}
