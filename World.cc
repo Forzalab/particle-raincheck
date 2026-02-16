@@ -1,5 +1,6 @@
 // I do not understand why, but without this World.h
 // only partially compiles and throws an error.
+#include <limits>
 #include <memory>
 #include <numeric>
 #pragma message("")
@@ -67,15 +68,15 @@ P_ptr& World::at(const Wc &row, const Wc &col) {
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool inclusiveInRange(Pc min, Pc max, Pc val) {
+bool inclusiveInRange(Wc min, Wc max, Wc val) {
 	return min <= val && val <= max;
 }
 
 bool World::isInBounds(const auto &p) {
-	Pc col = p->get_col();
-	Pc row = p->get_row();
+	Wc col = std::floor(p->get_col());
+	Wc row = std::floor(p->get_row());
 
-	return (!inclusiveInRange(0, cols, col) || !inclusiveInRange(0, rows, row));
+	return (inclusiveInRange(0, cols, col) && inclusiveInRange(0, rows, row));
 }
 
 //Since this function is essentially the update loop of World
@@ -93,8 +94,8 @@ void World::physics() {
 	//If the particle is "dead" aka lifetime is exactly 0
 	//OR
 	//If it's out of bounds
-	std::erase_if(ps, [](const auto &p) {
-				return p->get_lifetime() == 0 && p->get_stationary() == false;
+	std::erase_if(ps, [this](const auto &p) {
+				return (p->get_lifetime() == 0 && p->get_stationary() == false) || !isInBounds(p);
 			});
 
 	updateMap();

@@ -11,7 +11,7 @@ void unrender(auto &prevPs);
 void printFPS(const auto &lastFrameStart, Wc rows) {
 	auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - lastFrameStart);
 	movecursor(rows + 5, 0);
-	if(diff.count() > 0.05) std::cout << 1.0 / diff.count() << " / 60FPS"; 
+	if(diff.count() > 0.05) std::cout << 1.0 / diff.count() <<" FPS"; 
 }
 
 void resetTerminal() {
@@ -39,7 +39,7 @@ void Game::run() {
 	auto prev_frame = clock::now();
 	int count = 0;
 	std::vector<pair<Wc, Wc>> prevPs;
-	while(count < 100) {
+	while(count < 120) {
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		printFPS(prev_frame, world.get_rows());
 		prev_frame = next_frame;
@@ -49,6 +49,8 @@ void Game::run() {
 		unrender(prevPs);
 		render();
 		for(const auto &p : world.getParticles()) {
+			movecursor(0,0);
+			std::cout << world.size();
 			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()), std::floor(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
@@ -58,17 +60,23 @@ void Game::run() {
 
 //Janky way to clear screen without iterating over every pixel or flickering the screen with clearscreen();
 void unrender(auto &prevPs) {
+	movecursor(0,0);
+	setbgcolor(0,0,0);
 	for(const auto &p : prevPs) {
 		movecursor(p.first, p.second);
 		std::cout << " ";
 	}
 	prevPs.clear();
+	resetcolor();
 }
 
 void Game::render() {
 	Ps particles = world.getParticles();
 	for(const auto& p : particles) {
-		movecursor(std::floor(p->get_row()), std::floor(p->get_col()));
+		Wc row = std::floor(p->get_row());
+		Wc col = std::floor(p->get_col());
+		// if(col < 0 || row > world.get_rows()) continue; // Do not print particles that are OOB and not yet culled by world::physics()
+		movecursor(std::floor(row), std::floor(col));
 		setbgcolor(p->get_r(), p->get_g(), p->get_b());
 		std::cout << " ";
 		resetcolor();
