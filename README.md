@@ -24,7 +24,6 @@
 - A .physics() method which runs through the list of Particles and runs .physics() on each one ******* raymond_0865098
 - If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list ******* raymond_0865098
 - If a particle now has a lifetime of exactly 0, delete it from the list ******* raymond_0865098
-<<<<<<< HEAD
 
 ### Jackson
 Working on the actual physics simulation of the particles
