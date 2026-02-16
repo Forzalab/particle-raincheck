@@ -27,6 +27,12 @@
 
 ### Romero
 - On launch draw a splash screen ****** romero_1048121
+
+### Jackson
+Working on the actual physics simulation of the particles
+------Dirt travels downwards and forms piles when it hits something solid
+------Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
+
 ### Unassigned Work
 
 > ...all the rest of the bullet points...
