@@ -21,9 +21,10 @@ void Game::run() {
 	while(count < 5) {
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
-		// world.physics();
-		// render();
 		count++;
+		if(!world.alive_count()) continue;
+		world.physics();
+		// render();
 		std::this_thread::sleep_until(next_frame);
 	}
 }
