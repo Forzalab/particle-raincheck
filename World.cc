@@ -98,7 +98,7 @@ void World::physics() {
 				return (p->get_lifetime() == 0 && p->get_stationary() == false) || !isInBounds(p);
 			});
 
-	updateMap();
+	updateMap(); // currently our limiting factor performance wise. 15-17 fps with, at least 60 without
 }	 // physics() iterates all P.
 
 Amt World::size() const {
