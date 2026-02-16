@@ -31,10 +31,10 @@ By the due date you need to have:
 ------Air moves in a straight line (ignoring gravity) bouncing off solid 
 ------Dust has a small amount of gravity and randomly moves left and right every frame
 ------Fire is stationary and shoots sparks of lightning in different directions over time
-------Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
+------Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards ******* cook_1055355
 ------Earth is always stationary and solid
 ------Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt
-------Dirt travels downwards and forms piles when it hits something solid
+------Dirt travels downwards and forms piles when it hits something solid ******* cook_1055355
 ------You can add your own types as well for extra credit
 --Color (.r .g .b uint8_t) that should be set initially by its type (fire should be red) but can change
 --A boolean named .stationary that if true means it is solid and does not move/simulate physics
