@@ -67,17 +67,9 @@ void P::physics(World &world) {
 		// general guard for all particles
 		/* here */
 
-		// lifetime expiry check
-		if (get_lifetime() == 0) {
-			world.erase(wrow, wcol);
-			return;
-		}
-
 		// type-specific physics
 		physics_spec(world);
 
-		// post specific-physics
-		set_lifetime(get_lifetime() - 1);
 	}
 
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
