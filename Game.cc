@@ -31,7 +31,7 @@ void Game::run() {
 	Wc rows = 50, cols = 70;
 	world.set_rows(rows);
 	world.set_cols(cols);
-
+	world.updateVecs();
 	world.load();
 	{
 	//Draw a splash screen here.

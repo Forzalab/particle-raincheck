@@ -1,5 +1,7 @@
 // I do not understand why, but without this World.h
 // only partially compiles and throws an error.
+#include <algorithm>
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -24,20 +26,15 @@ void World::updateMap() {
 		map.clear();
 		return;
 	}
+	map.assign(map.size(), none);
 	//Vector mask. saves positions that contain a particle.
-	std::vector<bool> hasParticle(static_cast<size_t>(rows) * static_cast<size_t>(cols), false);
 	//Iter over list of Particles and update map at those indecies
 	//Also add a true to the mask to prevent from being set to none.
 	for(const auto &p : ps) {
-		Wc index = Wc(p->get_row()) * cols + Wc(p->get_col());
-		hasParticle.at(index) = true;
+		Wc index = std::floor(p->get_row()) * cols + std::floor(p->get_col());
+		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " " << rows << " " << cols;
+		// std::cin.get();
 		map.at(index) = p->get_type();
-	}
-
-	// If not updated above, set to none based on hasParticle mask.
-	for (int i = 0; i < map.size(); i++) {
-		if (!hasParticle.at(i))
-			map.at(i) = none;
 	}
 }
 
@@ -68,15 +65,15 @@ P_ptr& World::at(const Wc &row, const Wc &col) {
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool inclusiveInRange(Wc min, Wc max, Wc val) {
-	return min <= val && val <= max;
+bool exclusiveInRange(Wc min, Wc max, Wc val) {
+	return min < val && val < max;
 }
 
 bool World::isInBounds(const auto &p) {
 	Wc col = std::floor(p->get_col());
 	Wc row = std::floor(p->get_row());
 
-	return (inclusiveInRange(0, cols, col) && inclusiveInRange(0, rows, row));
+	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
 
 //Since this function is essentially the update loop of World
