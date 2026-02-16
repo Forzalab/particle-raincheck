@@ -245,6 +245,7 @@ P_ptr extractParticle(std::string &s) {
 
 	p->set_x_vel(stof(Pvals.at(2)));
 	p->set_y_vel(stof(Pvals.at(3)));
+	//TODO: stretch goal -> custom particles use these V but default particles use default cstor vals.
 	// p->set_r(stoi(Pvals.at(4)));
 	// p->set_g(stoi(Pvals.at(5)));
 	// p->set_b(stoi(Pvals.at(6)));
