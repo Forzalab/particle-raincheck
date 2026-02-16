@@ -5,13 +5,13 @@
 		{
 			"row": 9,
 			"col": 1,
-			"x_vel": 0.5,
-			"y_vel": 0.5,
+			"x_vel": 0.1,
+			"y_vel": 0.1,
 			"r": 1,
 			"g": 1,
 			"b": 1,
 			"stationary": false,
-			"lifetime": 100,
+			"lifetime": 20000,
 			"type": 1,
 		},
 		{
