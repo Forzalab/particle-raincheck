@@ -31,7 +31,7 @@ void World::updateMap() {
 	//Iter over list of Particles and update map at those indecies
 	//Also add a true to the mask to prevent from being set to none.
 	for(const auto &p : ps) {
-		Wc index = std::floor(p->get_row()) * cols + std::floor(p->get_col());
+		Wc index = std::round(p->get_row()) * cols + std::round(p->get_col());
 		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " " << rows << " " << cols;
 		// std::cin.get();
 		map.at(index) = p->get_type();
@@ -54,7 +54,7 @@ void World::set_cols(const Wc &_cols) { cols = _cols; }
 
 void World::set_rows(const Wc &_rows) { rows = _rows; }
 
-P_ptr& World::at(const Wc &row, const Wc &col) {
+P_ptr& World::at(const Pc &row, const Pc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
 		if (row == (*p)->get_row() && col == (*p)->get_col())
@@ -70,8 +70,8 @@ bool exclusiveInRange(Wc min, Wc max, Wc val) {
 }
 
 bool World::isInBounds(const auto &p) {
-	Wc col = std::floor(p->get_col());
-	Wc row = std::floor(p->get_row());
+	Wc col = std::round(p->get_col());
+	Wc row = std::round(p->get_row());
 
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
