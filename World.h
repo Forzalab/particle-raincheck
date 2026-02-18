@@ -39,6 +39,8 @@ public:
 	void set_rows(const Wc &_rows);
 	void set_cols(const Wc &_cols);
 
+	P_Type atMap(Wc row, Wc col);
+
 	void updateVecs() {
 		map.resize(size_t(rows) * size_t(cols));
 	}
