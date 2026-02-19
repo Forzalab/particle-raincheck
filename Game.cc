@@ -38,14 +38,12 @@ void Game::run() {
 	}
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
-	int count = 0;
 	std::vector<pair<Wc, Wc>> prevPs;
-	while(count < 3600) {
+	while(frame < 3600) {
 		printFPS(prev_frame, world.get_rows());
 		prev_frame = clock::now();
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
-		count++;
 		frame += world.physics(); //Physics will always return 1, unless there are no particles.
 		unrender(prevPs);
 		render();
