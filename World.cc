@@ -85,25 +85,27 @@ bool World::isInBounds(const auto &p) {
 
 //Since this function is essentially the update loop of World
 //Map map will be updated here too
-void World::physics() { 
+//This returns an int used to increment Game.frame. 
+int World::physics() { 
 	
-	if(size() == 0) return;	
+	if(size() == 0) return 0;	
 	
 	for(auto &p : ps) {
 		//Do particle physics calls here
 		p->physics(*this);
 		//Decrement p lifetime if it is not a permanent particle
 		if(p->get_lifetime() != -1) p->set_lifetime(p->get_lifetime()-1);		
+		updateMap(); // Moved this in here because I realized that each time a particle moves per frame, it needs this to be as up to date as possible. 
 	}
 	//If the particle is "dead" aka lifetime is exactly 0
 	//OR
 	//If it's out of bounds
 	std::erase_if(ps, [this](const auto &p) {
-			//TODO:This is wrong - STATIONARY PARTICLES CAN DIE FROM LIFETIME UNLESS -1 LIFETIME 
-				return (p->get_lifetime() == 0 && p->get_stationary() == false) || !isInBounds(p);
+			//OOB or 0 lifetime = ded
+				return (p->get_lifetime() == 0) || !isInBounds(p);
 			});
 
-	updateMap(); // currently our limiting factor performance wise. 15-17 fps with, at least 60 without
+	return 1;
 }	 // physics() iterates all P.
 
 Amt World::size() const {

@@ -42,7 +42,7 @@ By the due date you need to have:
 ----Stationary Particles can still be destroyed or transformed by other Particles
 ----Stationary particles have a lifetime of -1 (see below)
 --A .lifetime variable which holds how many frames more it will exist for
-----Physics (see below) will decrement it each frame by 1 to a minimum of 0.
+----Physics (see below) will decrement it each frame by 1 to a minimum of 0. **raymond_0865098 (happens in World::physics())
 ----Fire and lightning should have relatively short lifetimes, stone should have a lifetime of -1.
 ----A lifetime of -1 means infinite lifetime (it will not go away over time)
 --Member variables must be in the private section, methods in the public section
@@ -54,22 +54,22 @@ By the due date you need to have:
 
 2. A World class that has a 2D grid of Particles (or are empty). World has:
 --A size (.rows .cols int) that is the boundary of the world.
-----Any point which leaves the boundary must be deleted
+----Any point which leaves the boundary must be deleted *******raymond_0865098
 --A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world ******* raymond_0865098
 --A list (must be std::list) of Particles which holds all particles in the world
 --An .at(row,col) method that returns a pointer to the Particle at the location row x col in the world (or nullptr if there is no particle there)
 --A .physics() method which runs through the list of Particles and runs .physics() on each one ******* raymond_865098
-----If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list
-----If a particle now has a lifetime of exactly 0, delete it from the list
+----If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list *******raymond_0865098
+----If a particle now has a lifetime of exactly 0, delete it from the list ******* raymond_0865098
 --A .size() method which returns how many particles are in the world ******* raymond_0865098
 --A .alive_count() method which returns how many particles with lifetime > 0 are in the world ******* raymond_0865098
 --A .save() method which saves the state of the world to disk ******* raymond_0865098
 --A .load() method which loads the state of the world to disk ******* raymond_0865098
 
 3. A Game class that is responsible for processing input
---It has the world (.world World) as a member variable
+--It has the world (.world World) as a member variable ******* raymond_0865098
 ----The world should be initialized with the screen_size as the row and col, but leave some lines open on the bottom of the screen to show the frame count and a helpful list of commands
---A .frame member variable that starts at 0 and counts up by 1 each time physics is run
+--A .frame member variable that starts at 0 and counts up by 1 each time physics is run ******* raymond_0865098
 --It has to handle all input from mouse and keyboard using non-blocking I/O
 --Implement a command to start simulating the world
 --Implement a command to pause simulating the world
@@ -79,18 +79,18 @@ By the due date you need to have:
 --Implement a command to increase frame rate
 --Implement a command to decrease frame rate
 --Implement a command to draw the world on BRIDGES (see below)
-----Simulation should also automatically pause when world.alive_count is 0
---A .render() method which draws all the particles in the list to the screen using their position and color
-----Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc)
-----It must be rendered across the full screen using the color library, using 32 bit colors
+----Simulation should also automatically pause when world.alive_count is 0 ******* raymond_0865098
+--A .render() method which draws all the particles in the list to the screen using their position and color *******raymond_0865098
+----Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc) 
+----It must be rendered across the full screen using the color library, using 32 bit colors ******** raymond_0865098
 --The user must be able to edit the game world by adding and deleting particles while the world is paused
 ----It must work with mouse input
---A .run() method that starts the game. Your main() function should just be this: Game game; game.run();
+--A .run() method that starts the game. Your main() function should just be this: Game game; game.run(); ******* raymond_0865098
 ----On launch draw a splash screen
-----Then go into an infinite loop of: handling user input, running physics, drawing the world, delaying
-----It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number)
-----Use clock (or std::chrono) to see how long it has been since the last frame began
-----Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
+----Then go into an infinite loop of: handling user input, running physics, drawing the world, delaying 
+----It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number) ******* raymond_0865098
+----Use clock (or std::chrono) to see how long it has been since the last frame began *******raymond_0865098
+----Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever *******raymond_0865098
 
 4. You need to make a BRIDGES output option. When the user hits the "D)raw the World on BRIDGES" command you should render the world on BRIDGES using the ColorGrid class:
 --Read the BRIDGES documentation: https://bridgesuncc.github.io/ and comprehend it
