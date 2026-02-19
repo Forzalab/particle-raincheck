@@ -46,7 +46,7 @@ void Game::run() {
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
 		count++;
-		world.physics();
+		frame += world.physics(); //Physics will always return 1, unless there are no particles.
 		unrender(prevPs);
 		render();
 		for(const auto &p : world.getParticles()) {

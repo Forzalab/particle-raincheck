@@ -85,9 +85,10 @@ bool World::isInBounds(const auto &p) {
 
 //Since this function is essentially the update loop of World
 //Map map will be updated here too
-void World::physics() { 
+//This returns an int used to increment Game.frame. 
+int World::physics() { 
 	
-	if(size() == 0) return;	
+	if(size() == 0) return 0;	
 	
 	for(auto &p : ps) {
 		//Do particle physics calls here
@@ -103,7 +104,8 @@ void World::physics() {
 				return (p->get_lifetime() == 0 && p->get_stationary() == false) || !isInBounds(p);
 			});
 
-	updateMap(); // currently our limiting factor performance wise. 15-17 fps with, at least 60 without
+	updateMap();
+	return 1;
 }	 // physics() iterates all P.
 
 Amt World::size() const {

@@ -49,7 +49,7 @@ public:
 	P_ptr& at(const Pc &row, const Pc &col); // .at()
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
-	void physics();			 // physics() iterates all P.
+	int physics();			 // physics() iterates all P.
 	Amt size() const;		 // get amt of P
 	Amt alive_count() const; // get amt of LIVING P.
 
