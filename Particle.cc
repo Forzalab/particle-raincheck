@@ -18,6 +18,8 @@ Color P::get_b() const { return b; }
 bool P::get_stationary() const { return stationary; }
 P_Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
+bool P::get_solid() const { return false; }
+bool P_solid::get_solid() const { return true; }
 // float P::rnd() { return Particle::bd(Particle::gen); }
 
 // setters
