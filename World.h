@@ -39,12 +39,14 @@ public:
 	void set_rows(const Wc &_rows);
 	void set_cols(const Wc &_cols);
 
+	P_Type atMap(Wc row, Wc col);
+
 	void updateVecs() {
 		map.resize(size_t(rows) * size_t(cols));
 	}
 	
 	void erase(const Wc &row, const Wc &col);
-	P_ptr& at(const Wc &row, const Wc &col); // .at()
+	P_ptr& at(const Pc &row, const Pc &col); // .at()
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
 	void physics();			 // physics() iterates all P.
