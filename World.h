@@ -41,9 +41,7 @@ public:
 
 	P_Type atMap(Wc row, Wc col);
 
-	void updateVecs() {
-		map.resize(size_t(rows) * size_t(cols));
-	}
+	void updateVecs();
 	
 	void erase(const Wc &row, const Wc &col);
 	P_ptr& at(const Pc &row, const Pc &col); // .at()

@@ -21,6 +21,10 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
+void World::updateVecs() {
+	map.resize(size_t(rows) * size_t(cols));
+}
+
 void World::updateMap() {
 	// If no particles, clear list and return early
 	if (ps.size() == 0) {
