@@ -43,7 +43,7 @@ void Game::run() {
 		system("figlet =======");
 		
 		//Add a time delay for users to see splash screen before game starts
-		sleep(5); //Pauses for five seconds
+		sleep(2); //Pauses for two seconds
 		clearscreen();
 		
 	}
