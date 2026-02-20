@@ -6,6 +6,10 @@
 #include "Game.h"
 #include "/public/colors.h"
 
+typedef uint32_t GameTick;
+
+GameTick Game::get_tickrate() const { return tickrate; }
+
 //Declaring here, definition is above render()
 void unrender(auto &prevPs);
 
@@ -90,5 +94,42 @@ void Game::render() {
 		setbgcolor(p->get_r(), p->get_g(), p->get_b());
 		std::cout << " ";
 		resetcolor();
+	}
+}
+
+void Game::incr_fps() {
+	GameTick input = 0;
+	cin >> input;
+	if (!cin || input < 3 || input > 60) { //If input is bad
+		cin.clear();
+		GameTick s = 0; //New variable
+		cin >> s; //Stores the new input into new variable
+		cout << "BAD INPUT!\n";
+		sleep(1); //Gives time to read message
+	}
+	else if (input + get_tickrate() < 3 || input + get_tickrate() > 60) { //If new tickrate is out of range
+		cout << "INPUT OUT OF RANGE!!! (Keep FPS in between 3-60)\n";
+		sleep(1); //Gives time to read message
+	}
+	else {
+		tickrate = get_tickrate() + input;
+	}
+}
+void Game::dcrs_fps() {
+	GameTick input = 0;
+	cin >> input;
+	if (!cin || input < 3 || input > 60) { //If input is bad
+		cin.clear();
+		GameTick s = 0; //New variable
+		cin >> s; //Stores the new input into new variable
+		cout << "BAD INPUT!\n";
+		sleep(1); //Gives time to read message
+	}
+	else if (input + get_tickrate() < 3 || input + get_tickrate() > 60) { //If new tickrate is out of range
+		cout << "INPUT OUT OF RANGE!!! (Keep FPS in between 3-60)\n";
+		sleep(1); //Gives time to read message
+	}
+	else {
+		tickrate = get_tickrate() - input;
 	}
 }

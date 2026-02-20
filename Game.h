@@ -76,6 +76,7 @@ private:
 	GameTick tickrate = 30;
 public:
 	Game() : world(50, 70) {}
+	GameTick get_tickrate() const;
 	void start();
 	void pause();
 	void quit();
