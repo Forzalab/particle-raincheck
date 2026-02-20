@@ -102,7 +102,7 @@ void Game::incr_fps() {
 	cin >> input;
 	if (!cin || input < 3 || input > 60) { //If input is bad
 		cin.clear();
-		GameTick s = 0;; //New variable
+		GameTick s = 0; //New variable
 		cin >> s; //Stores the new input into new variable
 		cout << "BAD INPUT!\n";
 		sleep(1); //Gives time to read message
@@ -120,7 +120,7 @@ void Game::dcrs_fps() {
 	cin >> input;
 	if (!cin || input < 3 || input > 60) { //If input is bad
 		cin.clear();
-		GameTick s = 0;; //New variable
+		GameTick s = 0; //New variable
 		cin >> s; //Stores the new input into new variable
 		cout << "BAD INPUT!\n";
 		sleep(1); //Gives time to read message
