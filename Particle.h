@@ -91,6 +91,8 @@ public:
 	Tick get_lifetime() const;
 	void set_lifetime(const Tick &_lifetime);
 
+	virtual bool get_solid() const;
+
 	virtual void physics(World &world) final;
 
 	// These functions below MUST BE IMPLEMENTED in derived classes.
@@ -110,6 +112,17 @@ public:
 using P = Particle; // for lazy fuckers like us
 typedef std::shared_ptr<P> P_ptr;
 
+// layer 0.5 inheritance
+// P_solid: set both constructor AND base class to P_solid
+// to mark it as solid
+class P_solid : public P {
+protected:
+	using P::Particle; // re-use stuff from P, which gets passed down
+public:
+	bool get_solid() const override;
+};
+
+// layer 1 inheritance
 class Air : public P {
 public:
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
@@ -127,10 +140,12 @@ public:
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
-class Dust : public P {
+// Philosophical question:
+// Is a pixel-sized dust a rock, a "tumbleweed", or air?
+class Dust : public P_solid {
 public:
 	Dust(const Pc &row, const Pc &col)
-		: Particle(120, 120, 120, false, 20000, dust) {
+		: P_solid(120, 120, 120, false, 20000, dust) {
 		Pc dx_scale = 2;
 		Pc dy_scale = 2;
 		set_x_vel(((P::bd(P::gen)) - 24) * dx_scale);
@@ -166,18 +181,18 @@ public:
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
-class Earth : public P {
+class Earth : public P_solid {
 public:
 	Earth(const Pc &row, const Pc &col)
-		: Particle(97, 29, 25, true, INT32_MAX, earth) {}
+		: P_solid(97, 29, 25, true, INT32_MAX, earth) {}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
-class Dirt : public P {
+class Dirt : public P_solid {
 public:
 	Dirt(const Pc &row, const Pc &col)
-		: Particle(138, 52, 26, false, INT32_MAX, dirt) {}
+		: P_solid(138, 52, 26, false, INT32_MAX, dirt) {}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -199,10 +214,10 @@ public:
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
-class TBD_1 : public P {
+class TBD_1 : public P_solid {
 public:
 	TBD_1(const Pc &row, const Pc &col)
-		: Particle(255, 255, 255, false, INT32_MAX, tbd_1) {}
+		: P_solid(255, 255, 255, false, INT32_MAX, tbd_1) {}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -215,10 +230,10 @@ public:
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
-class TBD_3 : public P {
+class TBD_3 : public P_solid {
 public:
 	TBD_3(const Pc &row, const Pc &col)
-		: Particle(255, 255, 255, false, INT32_MAX, tbd_3) {}
+		: P_solid(255, 255, 255, false, INT32_MAX, tbd_3) {}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };

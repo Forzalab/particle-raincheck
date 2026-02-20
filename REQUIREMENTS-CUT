@@ -1,0 +1,43 @@
+THIS FILE IS WHAT WE HAVE LEFT TO FINISH OR DO.
+
+By the due date you need to have:
+1. A Particle class. You must use 'proper' class design. Each particle has:
+----No two Particles can be on the same location
+----Each type has a different physics movement type:
+------Air moves in a straight line (ignoring gravity) bouncing off solid 
+------Dust has a small amount of gravity and randomly moves left and right every frame
+------Fire is stationary and shoots sparks of lightning in different directions over time
+------Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
+------Earth is always stationary and solid
+------Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt
+------Dirt travels downwards and forms piles when it hits something solid
+------You can add your own types as well for extra credit
+----So if you turn stationary true on water it will not move even if a spot opens up beneath it
+----Stationary Particles can still be destroyed or transformed by other Particles
+--A .physics() method that gets the world map passed in by reference, that runs physics for the particle and updates the world map if it moved. If it runs into another particle, it calls .touch() on the other particle.
+--A .touch() method that gets called when another particle touches it. 
+--Between .physics and .touch you can handle all interactions (fire x water, water x lightning, etc.)
+
+3. A Game class that is responsible for processing input
+--It has to handle all input from mouse and keyboard using non-blocking I/O
+--Implement a command to start simulating the world
+--Implement a command to pause simulating the world
+--Implement a command to quit
+--Implement a command to load the world from disk
+--Implement a command to save the world to disk
+--Implement a command to increase frame rate
+--Implement a command to decrease frame rate
+--Implement a command to draw the world on BRIDGES (see below)
+----Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc)
+----It must be rendered across the full screen using the color library, using 32 bit colors
+--The user must be able to edit the game world by adding and deleting particles while the world is paused
+----It must work with mouse input
+
+4. You need to make a BRIDGES output option. When the user hits the "D)raw the World on BRIDGES" command you should render the world on BRIDGES using the ColorGrid class:
+--Read the BRIDGES documentation: https://bridgesuncc.github.io/ and comprehend it
+--Add in your username and API key
+--Make a ColorGrid class and fill it with the colors of the world (or test data)
+--Add in a call to bridges.setDataStructure() to tell BRIDGES to render the ColorGrid
+--Add in a call to bridges.visualize() to send it off to the web site
+----This will give you a URL that you can use to visualize your world in a browser
+

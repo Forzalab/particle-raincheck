@@ -31,7 +31,7 @@ void World::updateMap() {
 	//Iter over list of Particles and update map at those indecies
 	//Also add a true to the mask to prevent from being set to none.
 	for(const auto &p : ps) {
-		Wc index = std::floor(p->get_row()) * cols + std::floor(p->get_col());
+		Wc index = std::round(p->get_row()) * cols + std::round(p->get_col());
 		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " " << rows << " " << cols;
 		// std::cin.get();
 		map.at(index) = p->get_type();
@@ -54,7 +54,20 @@ void World::set_cols(const Wc &_cols) { cols = _cols; }
 
 void World::set_rows(const Wc &_rows) { rows = _rows; }
 
-P_ptr& World::at(const Wc &row, const Wc &col) {
+// because cpp doesnt support range conditionals Sadge
+// Returns true if the particle's coordinates is within the range
+bool exclusiveInRange(Wc min, Wc max, Wc val) {
+	return min < val && val < max;
+}
+
+P_Type World::atMap(Wc row, Wc col) {
+	if(exclusiveInRange(0, rows, row) && exclusiveInRange(0, cols, col)) {
+		return map.at(rows * row + col);
+	}
+	else { return P_Type(-1); } // If you're checking out of bounds, -1 means that it is a "boundary", so treat it as such
+}
+
+P_ptr& World::at(const Pc &row, const Pc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
 		if (row == (*p)->get_row() && col == (*p)->get_col())
@@ -63,39 +76,36 @@ P_ptr& World::at(const Wc &row, const Wc &col) {
 	return (p != ps.end() ? *p : nullp);
 } // .at()
 
-// because cpp doesnt support range conditionals Sadge
-// Returns true if the particle's coordinates is within the range
-bool exclusiveInRange(Wc min, Wc max, Wc val) {
-	return min < val && val < max;
-}
-
 bool World::isInBounds(const auto &p) {
-	Wc col = std::floor(p->get_col());
-	Wc row = std::floor(p->get_row());
+	Wc col = std::round(p->get_col());
+	Wc row = std::round(p->get_row());
 
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
 
 //Since this function is essentially the update loop of World
 //Map map will be updated here too
-void World::physics() { 
+//This returns an int used to increment Game.frame. 
+int World::physics() { 
 	
-	if(size() == 0) return;	
+	if(size() == 0) return 0;	
 	
 	for(auto &p : ps) {
 		//Do particle physics calls here
 		p->physics(*this);
 		//Decrement p lifetime if it is not a permanent particle
 		if(p->get_lifetime() != -1) p->set_lifetime(p->get_lifetime()-1);		
+		updateMap(); // Moved this in here because I realized that each time a particle moves per frame, it needs this to be as up to date as possible. 
 	}
 	//If the particle is "dead" aka lifetime is exactly 0
 	//OR
 	//If it's out of bounds
 	std::erase_if(ps, [this](const auto &p) {
-				return (p->get_lifetime() == 0 && p->get_stationary() == false) || !isInBounds(p);
+			//OOB or 0 lifetime = ded
+				return (p->get_lifetime() == 0) || !isInBounds(p);
 			});
 
-	updateMap(); // currently our limiting factor performance wise. 15-17 fps with, at least 60 without
+	return 1;
 }	 // physics() iterates all P.
 
 Amt World::size() const {

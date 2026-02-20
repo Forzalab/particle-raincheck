@@ -15,15 +15,27 @@
 - Implement a command to decrease frame rate
 
 ### Raymond 
-- A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world ******* raymond_0865098
-- A .size() method which returns how many particles are in the world ******* raymond_0865098
-- A .alive_count() method which returns how many particles with lifetime > 0 are in the world ******* raymond_0865098
-- A .save() method which saves the state of the world to disk ******* raymond_0865098
-- A .load() method which loads the state of the world to disk ******* raymond_0865098
- to save the world to disk
-- A .physics() method which runs through the list of Particles and runs .physics() on each one ******* raymond_0865098
-- If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list ******* raymond_0865098
-- If a particle now has a lifetime of exactly 0, delete it from the list ******* raymond_0865098
+- A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world 
+- A .size() method which returns how many particles are in the world 
+- A .alive_count() method which returns how many particles with lifetime > 0 are in the world
+- A .save() method which saves the state of the world to disk 
+- A .load() method which loads the state of the world to disk to save the world to disk
+- A .physics() method which runs through the list of Particles and runs .physics() on each one
+- If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list 
+- If a particle now has a lifetime of exactly 0, delete it from the list
+- Any point which leaves the boundary must be deleted 
+- Physics (see below) will decrement it each frame by 1 to a minimum of 0.
+- If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list
+- It has the world (.world World) as a member variable
+- A .frame member variable that starts at 0 and counts up by 1 each time physics is run
+- Simulation should also automatically pause when world.alive_count is 0
+- A .render() method which draws all the particles in the list to the screen using their position and color 
+- It must be rendered across the full screen using the color library, using 32 bit
+- -A .run() method that starts the game. Your main() function should just be this: Game game; game.run();
+- Then go into an infinite loop of: handling user input, running physics, drawing the world, delaying 
+- It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number) 
+- Use clock (or std::chrono) to see how long it has been since the last frame began
+- Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
 
 ### Romero
 - On launch draw a splash screen ****** romero_1048121
