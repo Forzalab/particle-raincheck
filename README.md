@@ -38,7 +38,8 @@
 - Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
 
 ### Romero
-- On launch draw a splash screen ****** romero_1048121
+- On launch draw a splash screen
+- Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt
 
 ### Jackson
 Working on the actual physics simulation of the particles
