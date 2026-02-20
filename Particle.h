@@ -188,9 +188,10 @@ public:
 		: Particle(255, 255, 0, false, INT32_MAX, lightning) {
 		Pc dx_scale = 5;
 		Pc dy_scale = 5;
-		//set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
-		set_x_vel(0);
-		set_y_vel(-((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
+		//From what I understand x and y could be -10, -5, 0, 5, 10
+		// and y could be -10, -5, 5, 10
+		set_x_vel((P::bd(P::gen) % 2 == 1) ? -1 : 1 * ((P::bd(P::gen) * 100) % 3) * dx_scale);
+		set_y_vel((P::bd(P::gen) % 2 == 1) ? -1 : 1 * ((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
 		set_row(row);
 		set_col(col);
 		}
