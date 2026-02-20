@@ -125,7 +125,8 @@ Amt World::alive_count() const {
 	// particles.
 	return std::accumulate(
 		ps.begin(), ps.end(), 0,
-		[](int count, const auto &p) { return p->get_lifetime() > 0; });
+		[](const Amt& count, const auto &p) { const Amt pl = p->get_lifetime();
+		return pl > 0 ? count+pl : count ; });
 } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
