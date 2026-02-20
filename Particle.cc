@@ -99,11 +99,11 @@ void Air::touch(const P_ptr &nbr, World &world) {
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.2;
 
-	Pc dx_scale = 20 * ((P::bd(P::gen)) > 27) ? -1 : 1;
-	Pc dy_scale = 30 * ((P::bd(P::gen)) > 27) ? -1 : 1;
+	Pc dx_scale = 0.2 * (((P::bd(P::gen)) > 27) ? -1 : 1);
+	Pc dy_scale = 0.3 * (((P::bd(P::gen)) > 27) ? -1 : 1);
 
-	set_x_vel(((P::bd(P::gen)) > 27) ? -1 : 1 * dx_scale);
-	set_y_vel(((P::bd(P::gen)) > 27) ? -1 : 1 * dy_scale);
+	set_x_vel((((P::bd(P::gen)) > 27) ? -1 : 1) * dx_scale);
+	set_y_vel((((P::bd(P::gen)) > 27) ? -1 : 1) * dy_scale);
 
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());
@@ -158,6 +158,7 @@ void Lightning::physics_spec(World &world) {
 		set_col(get_col() + get_x_vel());
 	}
 }
+
 void Lightning::touch(const P_ptr &nbr, World &world) {
 	
 	if (nbr->get_type() == earth) {
