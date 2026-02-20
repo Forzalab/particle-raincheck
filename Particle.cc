@@ -18,8 +18,6 @@ Color P::get_b() const { return b; }
 bool P::get_stationary() const { return stationary; }
 P_Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
-bool P::get_solid() const { return false; }
-bool P_solid::get_solid() const { return true; }
 // float P::rnd() { return Particle::bd(Particle::gen); }
 
 // setters
@@ -62,7 +60,7 @@ void P::set_type(const P_Type &_type) {
 }
 
 void P::physics(World &world) {
-	Pc wrow = get_row(), wcol = get_col();
+	Wc wrow = (Wc)get_row(), wcol = (Wc)get_col();
 	const P_ptr _p = world.at(wrow, wcol);
 
 	if (_p != nullptr) {
@@ -85,8 +83,8 @@ void Air::physics_spec(World &world) {
 	// if not (not st.) = stay still
 	// ==> change nothing about pos
 	if (!get_stationary()) {
-		set_row(get_row() + get_y_vel());
-		set_col(get_col() + get_x_vel());
+		set_row(get_row() + (Wc)get_y_vel());
+		set_col(get_col() + (Wc)get_x_vel());
 	}
 
 	return;
@@ -159,7 +157,7 @@ void Lightning::physics_spec(World &world) {
 	}
 }
 void Lightning::touch(const P_ptr &nbr, World &world) {
-	/*
+	
 	if (nbr->get_type() == earth) {
 		Dirt a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Dirt>(a);
@@ -175,7 +173,7 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 		
 		//Delete Water 
 	}	
-	*/
+	
 }
 void TBD_1::physics_spec(World &world) {}
 void TBD_1::touch(const P_ptr &nbr, World &world) {}
