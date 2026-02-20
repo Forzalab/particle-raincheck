@@ -36,6 +36,22 @@ void Game::run() {
 	{
 	//Draw a splash screen here.
 	}
+
+	//start of non-blocking I/O
+	set_raw_mode(true);
+	while (true) {
+		int c = toupper(quick_read());
+		if (c == 'L') load();
+		if (c == 'S') save();
+		if (c == '=') incr_fps();
+		if (c == '-') dcrs_fps();
+		if (c == 'D') draw();
+		if (c == 'P') {
+			pause();
+			// WHOLE OTHER OPTIONS
+		}
+	}
+
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	int count = 0;
