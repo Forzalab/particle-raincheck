@@ -1,5 +1,6 @@
 #include "Particle.h"
 #include "World.h"
+#include <algorithm>
 
 using P = Particle;
 
@@ -133,18 +134,14 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 
 void Water::physics_spec(World &world) {
 	// (Physics are the same as dirt for 
-	Pc gravity = 0.1;
-	set_x_vel(0); // no lateral movement in air
-	// initial velocity + acceleration due to gravity 
-	if (get_y_vel() < 1) {
-		set_y_vel(get_y_vel() + gravity);
-	}
-	else {
-		set_y_vel(1);
-	}
 	if (get_stationary()) {
 		return;
 	}
+	Pc gravity = 0.1;
+	set_x_vel(0); // no lateral movement in air
+	// initial velocity + acceleration due to gravity 
+	set_y_vel(std::clamp(float(get_y_vel()+gravity), 0.0f, 1.0f));
+
 
 	if (world.at(get_row() + 1, get_col())->get_type() == none) {
 		set_row(get_row() + get_y_vel());
@@ -243,20 +240,17 @@ void Earth::touch(const P_ptr &nbr, World &world) {}
 
 
 void Dirt::physics_spec(World &world) {	
-	Pc gravity = 0.1;
-	set_x_vel(0); // no lateral movement in air
-	// initial velocity + acceleration due to gravity 
-//	set_y_vel(get_y_vel() + gravity);
-	if (get_y_vel() < 1) {
-		set_y_vel(get_y_vel() + gravity);
-	}
-	else {
-		set_y_vel(1);
-	}
 
 	if (get_stationary()) {
 		return;
 	}
+
+	Pc gravity = 0.1;
+	set_x_vel(0); // no lateral movement in air
+	// initial velocity + acceleration due to gravity 
+//	set_y_vel(get_y_vel() + gravity);
+	set_y_vel(std::clamp(float(get_y_vel()+gravity), 0.0f, 1.0f));
+
 	if (world.at(get_row() + 1, get_col())->get_type() == none) {
 		set_row(get_row() + get_y_vel());
 	}
