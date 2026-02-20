@@ -200,13 +200,15 @@ public:
 class Lightning : public P {
 public:
 	Lightning(const Pc &row, const Pc &col)
-		: Particle(255, 255, 0, false, INT32_MAX, lightning) {
-		Pc dx_scale = 5;
-		Pc dy_scale = 5;
-		//From what I understand x and y could be -10, -5, 0, 5, 10
-		// and y could be -10, -5, 5, 10
-		set_x_vel((P::bd(P::gen) % 2 == 1) ? -1 : 1 * ((P::bd(P::gen) * 100) % 3) * dx_scale);
-		set_y_vel((P::bd(P::gen) % 2 == 1) ? -1 : 1 * ((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
+		: Particle(255, 255, 0, false, 10, lightning) {
+		Pc x_val[] = {0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+		Pc y_val[] = {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+		int x_index = P::bd(P::gen) % 11;
+		int y_index = P::bd(P::gen) % 10;
+		//From what I understand x could be between -1 and 1
+		// and y could be -1 and 1 but not zero
+		set_x_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * x_val[x_index]);
+		set_y_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * y_val[y_index]);
 		set_row(row);
 		set_col(col);
 		}
