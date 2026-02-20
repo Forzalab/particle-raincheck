@@ -38,14 +38,16 @@
 - Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
 
 ### Romero
-- On launch draw a splash screen
-- Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt
+- On launch draw a splash screen (Implementing)
+- Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt (Implementing)
 
 ### Jackson
 Working on the actual physics simulation of the particles
 ------Dirt travels downwards and forms piles when it hits something solid
 ------Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
 
+### Romero
+- On launch draw a splash screen ****** romero_1048121
 ### Unassigned Work
 
 > ...all the rest of the bullet points...
