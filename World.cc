@@ -64,7 +64,7 @@ P_Type World::atMap(Wc row, Wc col) {
 	if(exclusiveInRange(0, rows, row) && exclusiveInRange(0, cols, col)) {
 		return map.at(rows * row + col);
 	}
-	else { return P_Type(-1); } // If you're checking out of bounds, -1 means that it is a "boundary", so treat it as such
+	else { return OOB; } // If you're checking out of bounds
 }
 
 P_ptr& World::at(const Pc &row, const Pc &col) {
