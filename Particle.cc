@@ -147,11 +147,11 @@ void Earth::touch(const P_ptr &nbr, World &world) {}
 void Dirt::physics_spec(World &world) {}
 void Dirt::touch(const P_ptr &nbr, World &world) {}
 void Lightning::physics_spec(World &world) {
-	Pc x_grav = (P::bd(P::gen) % 2 == 1) ? 9.8 : -9.8; //Results in 9.8 or -9.8
-	Pc y_grav = (P::bd(P::gen) % 2 == 1) ? 9.8 : -9.8; //Results in 9.8 or -9.8
+	Pc x_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; //Results in 1 or -1
+	Pc y_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; //Results in 1 or -1
 	
 	set_x_vel(get_x_vel() + x_grav); 
-	set_x_vel(get_y_vel() + y_grav); 
+	set_y_vel(get_y_vel() + y_grav); 
 	
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());
