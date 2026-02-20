@@ -63,7 +63,7 @@ void P::set_type(const P_Type &_type) {
 }
 
 void P::physics(World &world) {
-	Wc wrow = (Wc)get_row(), wcol = (Wc)get_col();
+	Pc wrow = get_row(), wcol = get_col();
 	const P_ptr _p = world.at(wrow, wcol);
 
 	if (_p != nullptr) {
@@ -86,14 +86,16 @@ void Air::physics_spec(World &world) {
 	// if not (not st.) = stay still
 	// ==> change nothing about pos
 	if (!get_stationary()) {
-		set_row(get_row() + (Wc)get_y_vel());
-		set_col(get_col() + (Wc)get_x_vel());
+		set_row(get_row() + get_y_vel());
+		set_col(get_col() + get_x_vel());
 	}
 
 	return;
 }
 
-void Air::touch(const P_ptr &nbr, World &world) {}
+void Air::touch(const P_ptr &nbr, World &world) {
+
+}
 
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.2;
@@ -113,7 +115,9 @@ void Dust::physics_spec(World &world) {
 }
 
 void Dust::touch(const P_ptr &nbr, World &world) {}
-void Fire::physics_spec(World &world) {}
+void Fire::physics_spec(World &world) {
+	//Fire is stationary
+}
 
 void Fire::touch(const P_ptr &nbr, World &world) {
 	if (nbr->get_type() == water) {

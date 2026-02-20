@@ -1,9 +1,14 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <thread>
 #include "Game.h"
 #include "/public/colors.h"
+
+typedef uint32_t GameTick;
+
+GameTick Game::get_tickrate() const { return tickrate; }
 
 //Declaring here, definition is above render()
 void unrender(auto &prevPs);
@@ -35,6 +40,16 @@ void Game::run() {
 	world.load();
 	{
 	//Draw a splash screen here.
+		
+		clearscreen();
+		system("figlet =======");
+		system("figlet Particles");
+		system("figlet =======");
+		
+		//Add a time delay for users to see splash screen before game starts
+		sleep(2); //Pauses for two seconds
+		clearscreen();
+		
 	}
 
 	//start of non-blocking I/O
@@ -54,21 +69,19 @@ void Game::run() {
 
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
-	int count = 0;
 	std::vector<pair<Wc, Wc>> prevPs;
-	while(count < 120) {
+	while(frame < 3600) {
 		printFPS(prev_frame, world.get_rows());
 		prev_frame = clock::now();
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
-		count++;
-		world.physics();
+		frame += world.physics(); //Physics will always return 1, unless there are no particles.
 		unrender(prevPs);
 		render();
 		for(const auto &p : world.getParticles()) {
 			movecursor(0,0);
 			std::cout << world.size();
-			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()), std::floor(p->get_col())));
+			prevPs.push_back(pair<Wc, Wc>(std::round(p->get_row()), std::round(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
 	}
@@ -90,12 +103,49 @@ void unrender(auto &prevPs) {
 void Game::render() {
 	Ps particles = world.getParticles();
 	for(const auto& p : particles) {
-		Wc row = std::floor(p->get_row());
-		Wc col = std::floor(p->get_col());
+		Wc row = std::round(p->get_row());
+		Wc col = std::round(p->get_col());
 		if(col < 0 || col > world.get_cols() || row > world.get_rows() || row < 0) continue; // Do not print particles that are OOB and not yet culled by world::physics()
-		movecursor(std::floor(row), std::floor(col));
+		movecursor(std::round(row), std::round(col));
 		setbgcolor(p->get_r(), p->get_g(), p->get_b());
 		std::cout << " ";
 		resetcolor();
+	}
+}
+
+void Game::incr_fps() {
+	GameTick input = 0;
+	cin >> input;
+	if (!cin || input < 3 || input > 60) { //If input is bad
+		cin.clear();
+		GameTick s = 0; //New variable
+		cin >> s; //Stores the new input into new variable
+		cout << "BAD INPUT!\n";
+		sleep(1); //Gives time to read message
+	}
+	else if (input + get_tickrate() < 3 || input + get_tickrate() > 60) { //If new tickrate is out of range
+		cout << "INPUT OUT OF RANGE!!! (Keep FPS in between 3-60)\n";
+		sleep(1); //Gives time to read message
+	}
+	else {
+		tickrate = get_tickrate() + input;
+	}
+}
+void Game::dcrs_fps() {
+	GameTick input = 0;
+	cin >> input;
+	if (!cin || input < 3 || input > 60) { //If input is bad
+		cin.clear();
+		GameTick s = 0; //New variable
+		cin >> s; //Stores the new input into new variable
+		cout << "BAD INPUT!\n";
+		sleep(1); //Gives time to read message
+	}
+	else if (input + get_tickrate() < 3 || input + get_tickrate() > 60) { //If new tickrate is out of range
+		cout << "INPUT OUT OF RANGE!!! (Keep FPS in between 3-60)\n";
+		sleep(1); //Gives time to read message
+	}
+	else {
+		tickrate = get_tickrate() - input;
 	}
 }
