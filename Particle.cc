@@ -159,7 +159,7 @@ void Lightning::physics_spec(World &world) {
 	}
 }
 void Lightning::touch(const P_ptr &nbr, World &world) {
-	/*
+	
 	if (nbr->get_type() == earth) {
 		Dirt a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Dirt>(a);
@@ -175,7 +175,7 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 		
 		//Delete Water 
 	}	
-	*/
+	
 }
 void TBD_1::physics_spec(World &world) {}
 void TBD_1::touch(const P_ptr &nbr, World &world) {}

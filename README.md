@@ -37,6 +37,10 @@
 - Use clock (or std::chrono) to see how long it has been since the last frame began
 - Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
 
+### Romero
+- On launch draw a splash screen (Implementing)
+- Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt (Implementing)
+
 ### Jackson
 Working on the actual physics simulation of the particles
 ------Dirt travels downwards and forms piles when it hits something solid
