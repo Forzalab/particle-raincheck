@@ -133,23 +133,81 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 
 void Water::physics_spec(World &world) {
 	// (Physics are the same as dirt for 
-	Pc gravity = 9.8;
+	Pc gravity = 0.1;
 	set_x_vel(0); // no lateral movement in air
 	// initial velocity + acceleration due to gravity 
-	set_y_vel(get_y_vel() + 20);
-
-
-	if (!get_stationary()) {
-		set_row(get_row() + get_y_vel());
-		set_col(get_col() + get_x_vel());
+	if (get_y_vel() < 1) {
+		set_y_vel(get_y_vel() + gravity);
 	}
+	else {
+		set_y_vel(1);
+	}
+	if (get_stationary()) {
+		return;
+	}
+
+	if (world.at(get_row() + 1, get_col())->get_type() == none) {
+		set_row(get_row() + get_y_vel());
+		return;
+	}
+	// only if something is below it do we now trst where it can slide
+	else {
+		if (world.at(get_row() + 1, get_col() - 1)->get_type() == none) {
+			set_row(get_row() + 1);
+			set_col(get_col() - 1);
+			return;
+		}
+		else if (world.at(get_row() + 1, get_col() + 1)->get_type() == none) {
+			set_row(get_row() + 1);
+			set_col(get_col() + 1);
+			return;
+		}
+/*	else if (world.at(get_row(), get_col() - 1)->get_type() == none) {
+		set_col(get_col() - 1);
+		return;
+	}
+	else if (world.at(get_row(), get_col() + 1)->get_type() == none) {
+		set_col(get_col() + 1);
+		return;
+	}
+*/		else {
+			set_stationary(true);
+			return;
+		}
+	}
+	/*
+	if (world.at(row, col - 1)->get_type() == none) {
+		set_col(get_col() - 1);
+		return;
+	}
+	// same thing, if can move right, move right
+	if (world.at(row, col + 1) == nullptr) {
+		set_col(get_col() + 1);
+		return;
+	}
+//	set_stationary(true);
+	// we did if empty space next to it, now if dirt:
+	if (nbr->get_type() == dirt) {
+		set_stationary(true);
+	}
+	// same thing, if can move right, move right
+	if (world.at(row, col + 1) == nullptr) {
+*/
+
 
 	return;
 }
 
 void Water::touch(const P_ptr &nbr, World &world) {
+	// Fire::touch actually already hand;es this, dont want 2 functions handling the same task
+/*	if (nbr->get_type() == fire) {
+		Air a(nbr->get_row(), nbr->get_col());
+		P_ptr p_a = std::make_shared<Air>(a);
+		world.at(nbr->get_row(), nbr->get_col()) = p_a;
+		set_y_vel(-1);
+	}*/
 	// if stationary, stop
-	if (get_stationary()) return;
+/*	if (get_stationary()) return;
 	// trying to fix random crap to make it easier
 	Wc row = (Wc)get_row();
 	Wc col = (Wc)get_col();
@@ -172,7 +230,7 @@ void Water::touch(const P_ptr &nbr, World &world) {
 	// same thing, if can move right, move right
 	if (world.at(row, col + 1) == nullptr) {
 	}
-
+*/
 }
 
 
@@ -185,22 +243,45 @@ void Earth::touch(const P_ptr &nbr, World &world) {}
 
 
 void Dirt::physics_spec(World &world) {	
-	Pc gravity = 4.9;
+	Pc gravity = 0.1;
 	set_x_vel(0); // no lateral movement in air
 	// initial velocity + acceleration due to gravity 
-	set_y_vel(get_y_vel() + 10);
-
-	if (!get_stationary()) {
-		set_row(get_row() + get_y_vel());
-		set_col(get_col() + get_x_vel());
+//	set_y_vel(get_y_vel() + gravity);
+	if (get_y_vel() < 1) {
+		set_y_vel(get_y_vel() + gravity);
 	}
-	return;
+	else {
+		set_y_vel(1);
+	}
+
+	if (get_stationary()) {
+		return;
+	}
+	if (world.at(get_row() + 1, get_col())->get_type() == none) {
+		set_row(get_row() + get_y_vel());
+	}
+	else {
+		if (world.at(get_row() + 1, get_col() - 1)->get_type() == none) {
+			set_row(get_row() + 1);
+			set_col(get_col() - 1);
+		}
+		else if (world.at(get_row() + 1, get_col() + 1)->get_type() == none) {
+			set_row(get_row() + 1);
+			set_col(get_col() + 1);
+		}
+		else {
+			set_stationary(true);
+			return;
+		}
+	}
+
+//	return;
 }
 
 // primitive touch for the time being, can revisit if causes problems
 void Dirt::touch(const P_ptr &nbr, World &world) {
 	// If neighbors are stationary, it also becomes stationary
-	if ((nbr->get_stationary()) && (nbr->get_row() == get_row() + 1) && (nbr->get_col() == get_col())) {
+/*	if ((nbr->get_stationary()) && (nbr->get_row() == get_row() + 1) && (nbr->get_col() == get_col())) {
 		bool canSlideLeft = (world.at(get_row() + 1.0, get_col() - 1.0))->get_type() == P_Type::none;	
 		bool canSlideRight = (world.at(get_row() + 1.0, get_col() + 1.0))->get_type() == P_Type::none;	
 		if (canSlideLeft) {
@@ -212,7 +293,7 @@ void Dirt::touch(const P_ptr &nbr, World &world) {
 		} else {
 			set_stationary(true);
 		}
-	}
+	}*/
 }
 
 
