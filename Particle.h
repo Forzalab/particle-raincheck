@@ -200,7 +200,17 @@ public:
 class Lightning : public P {
 public:
 	Lightning(const Pc &row, const Pc &col)
-		: Particle(255, 255, 0, false, INT32_MAX, lightning) {}
+		: Particle(255, 255, 0, false, 10, lightning) {
+		Pc x_val = (P::bd(P::gen) % 11) / 10.0f;
+		Pc y_val = (P::bd(P::gen) % 10 + 1) / 10.0f;
+		
+		//From what I understand x could be between -1 and 1
+		// and y could be -1 and 1 but not zero
+		set_x_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * x_val);
+		set_y_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * y_val);
+		set_row(row);
+		set_col(col);
+		}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };

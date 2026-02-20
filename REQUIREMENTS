@@ -85,12 +85,12 @@ By the due date you need to have:
 ----It must be rendered across the full screen using the color library, using 32 bit colors ******** raymond_0865098
 --The user must be able to edit the game world by adding and deleting particles while the world is paused
 ----It must work with mouse input
---A .run() method that starts the game. Your main() function should just be this: Game game; game.run(); ******* raymond_0865098
-----On launch draw a splash screen
-----Then go into an infinite loop of: handling user input, running physics, drawing the world, delaying 
-----It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number) ******* raymond_0865098
-----Use clock (or std::chrono) to see how long it has been since the last frame began *******raymond_0865098
-----Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever *******raymond_0865098
+--A .run() method that starts the game. Your main() function should just be this: Game game; game.run();
+----On launch draw a splash screen ****** romero_1048121
+----Then go into an infinite loop of: handling user input, running physics, drawing the world, delaying
+----It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number)
+----Use clock (or std::chrono) to see how long it has been since the last frame began
+----Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
 
 4. You need to make a BRIDGES output option. When the user hits the "D)raw the World on BRIDGES" command you should render the world on BRIDGES using the ColorGrid class:
 --Read the BRIDGES documentation: https://bridgesuncc.github.io/ and comprehend it

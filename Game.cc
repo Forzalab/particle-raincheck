@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <thread>
 #include "Game.h"
 #include "/public/colors.h"
@@ -35,6 +36,16 @@ void Game::run() {
 	world.load();
 	{
 	//Draw a splash screen here.
+		
+		clearscreen();
+		system("figlet =======");
+		system("figlet Particles");
+		system("figlet =======");
+		
+		//Add a time delay for users to see splash screen before game starts
+		sleep(2); //Pauses for two seconds
+		clearscreen();
+		
 	}
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
