@@ -20,7 +20,9 @@ P_Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
 bool P::get_solid() const { return false; }
 bool P_solid::get_solid() const { return true; }
-// float P::rnd() { return Particle::bd(Particle::gen); }
+bool P::is_equal(const Pc& lhs, const Pc& rhs) {
+	return std::abs(lhs - rhs) < 1E-6;
+}
 
 // setters
 void P::set_row(const Pc &_row) {

@@ -53,6 +53,7 @@ void World::erase(const Wc &row, const Wc &col) {
 	auto it_rmv = map.begin() + [&]() { return col + row * cols; }();
 	ps.remove(at(row, col));
 	map.erase(it_rmv);
+// set to none instead
 }
 
 void World::set_cols(const Wc &_cols) { cols = _cols; }
@@ -75,7 +76,7 @@ P_Type World::atMap(Wc row, Wc col) {
 P_ptr& World::at(const Pc &row, const Pc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
-		if (row == (*p)->get_row() && col == (*p)->get_col())
+		if (P::is_equal(row, (*p)->get_row()) && P::is_equal(col, (*p)->get_col()))
 			break;
 	}
 	return (p != ps.end() ? *p : nullp);
