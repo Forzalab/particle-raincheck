@@ -52,6 +52,19 @@ void Game::run() {
 		//Draw on bridges
 		//Quit
 
+
+		system("figlet =======");
+		system("figlet Start");
+		system("figlet =======");
+
+		system("figlet =======");
+		system("figlet Load");
+		system("figlet =======");
+
+		system("figlet =======");
+		system("figlet Quit");
+		system("figlet =======");
+		
 		//Add a time delay for users to see splash screen before game starts
 		sleep(2); //Pauses for two seconds
 		clearscreen();
@@ -59,7 +72,7 @@ void Game::run() {
 	}
 
 	//start of non-blocking I/O
-	set_raw_mode(true);
+/*	set_raw_mode(true);
 	while (true) {
 		int c = toupper(quick_read());
 		if (c == 'L') load();
@@ -72,7 +85,7 @@ void Game::run() {
 			// WHOLE OTHER OPTIONS
 		}
 	}
-
+*/
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	std::vector<pair<Wc, Wc>> prevPs;
