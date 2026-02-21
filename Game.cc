@@ -53,6 +53,19 @@ void Game::run() {
 		//Draw on bridges
 		//Quit
 
+
+		system("figlet =======");
+		system("figlet Start");
+		system("figlet =======");
+
+		system("figlet =======");
+		system("figlet Load");
+		system("figlet =======");
+
+		system("figlet =======");
+		system("figlet Quit");
+		system("figlet =======");
+		
 		//Add a time delay for users to see splash screen before game starts
 		sleep(2); //Pauses for two seconds
 		clearscreen();
@@ -62,6 +75,22 @@ void Game::run() {
 	//save(); //Test
 	//incr_fps(); //Test
 	//dcrs_fps(); //Test
+
+	//start of non-blocking I/O
+/*	set_raw_mode(true);
+	while (true) {
+		int c = toupper(quick_read());
+		if (c == 'L') load();
+		if (c == 'S') save();
+		if (c == '=') incr_fps();
+		if (c == '-') dcrs_fps();
+		if (c == 'D') draw();
+		if (c == 'P') {
+			pause();
+			// WHOLE OTHER OPTIONS
+		}
+	}
+*/
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	std::vector<pair<Wc, Wc>> prevPs;
