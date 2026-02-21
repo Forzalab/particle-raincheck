@@ -171,8 +171,9 @@ void insertOFS(std::ofstream &ofs, const std::string &val) { ofs << val; }
 
 // This will be interesting to write as it's been like 6 years since I've
 // written a JSON parser, but we ball
-void World::save() {
-	std::ofstream ofs("save2.JSON");
+void World::save(const std::string &str) {
+	std::ofstream ofs(str);
+	//std::ofstream ofs("save2.JSON");
 	// std::ofstream ofs(SAVEFILE);
 	// Basic mem vars
 	insertOFS(ofs, "{\n\t\"rows\": " + std::to_string(rows) +
@@ -283,8 +284,9 @@ void World::parseParticlesFromJSON(std::string &s) {
 	}
 }
 
-void World::load() {
-	std::ifstream ifs(SAVEFILE);
+void World::load(const std::string &str) {
+	std::ifstream ifs(str);
+	//std::ifstream ifs(SAVEFILE);
 	if (!ifs) {
 		std::cerr << "Save file failed to open.\n";
 	}

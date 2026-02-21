@@ -5,6 +5,7 @@
 #include <thread>
 #include "Game.h"
 #include "/public/colors.h"
+#include <string>
 
 typedef uint32_t GameTick;
 
@@ -37,7 +38,7 @@ void Game::run() {
 	world.set_rows(rows);
 	world.set_cols(cols);
 	world.updateVecs();
-	world.load();
+	world.load("save.JSON");
 	{
 	//Draw a splash screen here.
 		
@@ -70,6 +71,10 @@ void Game::run() {
 		clearscreen();
 		
 	}
+	//load(); //Test
+	//save(); //Test
+	//incr_fps(); //Test
+	//dcrs_fps(); //Test
 
 	//start of non-blocking I/O
 /*	set_raw_mode(true);
@@ -134,6 +139,7 @@ void Game::render() {
 void Game::incr_fps() {
 	GameTick input = 0;
 	cin >> input;
+	clearscreen();
 	if (!cin || input < 3 || input > 60) { //If input is bad
 		cin.clear();
 		GameTick s = 0; //New variable
@@ -152,6 +158,7 @@ void Game::incr_fps() {
 void Game::dcrs_fps() {
 	GameTick input = 0;
 	cin >> input;
+	clearscreen();
 	if (!cin || input < 3 || input > 60) { //If input is bad
 		cin.clear();
 		GameTick s = 0; //New variable
@@ -166,4 +173,22 @@ void Game::dcrs_fps() {
 	else {
 		tickrate = get_tickrate() - input;
 	}
+}
+
+void Game::load() {
+	cout << "Please enter name of file without the file extension: ";
+	std::string filename;
+	cin >> filename;
+	filename += ".JSON";
+	cout << filename << endl; //Test
+	world.load(filename);
+}
+
+void Game::save() {
+	cout << "Please enter name of file without the file extension: ";
+	std::string filename;
+	cin >> filename;
+	filename += ".JSON";
+	cout << filename << endl; //Test
+	world.save(filename);
 }

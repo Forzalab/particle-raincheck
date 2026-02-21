@@ -9,7 +9,6 @@ By the due date you need to have:
 ------Fire is stationary and shoots sparks of lightning in different directions over time
 ------Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
 ------Earth is always stationary and solid
-------Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt
 ------Dirt travels downwards and forms piles when it hits something solid
 ------You can add your own types as well for extra credit
 ----So if you turn stationary true on water it will not move even if a spot opens up beneath it
@@ -25,8 +24,6 @@ By the due date you need to have:
 --Implement a command to quit
 --Implement a command to load the world from disk
 --Implement a command to save the world to disk
---Implement a command to increase frame rate
---Implement a command to decrease frame rate
 --Implement a command to draw the world on BRIDGES (see below)
 ----Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc)
 ----It must be rendered across the full screen using the color library, using 32 bit colors

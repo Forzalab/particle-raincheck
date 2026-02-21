@@ -246,6 +246,7 @@ void Dirt::touch(const P_ptr &nbr, World &world) {
 		nbr->set_row(get_row());
   }
 }
+
 void Lightning::touch(const P_ptr &nbr, World &world) {
 
 	if (nbr->get_type() == earth) {

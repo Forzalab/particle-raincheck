@@ -55,8 +55,8 @@ public:
 
 	const Ps& getParticles() { return ps; }
 	// One preset save-file is enough?
-	void save();
-	void load();
+	void save(const std::string &str);
+	void load(const std::string &str);
 };
 
 #endif

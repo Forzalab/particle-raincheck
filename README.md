@@ -37,6 +37,10 @@
 - On launch draw a splash screen (Implementing)
 ### Particle class
 - Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt (Implementing)
+- Implement a command to increase frame rate (Implemented)
+- Implement a command to decrease frame rate (Implemented)
+- Implement a command to load the world from disk (Implemented)
+- Implement a command to save the world to disk (Implemented)
 
 ## Jackson
 ### Particle class
