@@ -214,7 +214,7 @@ std::string extractVal(std::string &s) {
 	std::vector<std::string> retvec;
 	// returns a substring of s from : + 2 until the comma
 	// eg "key": val, woruld return only val.
-	return s.substr(s.find_first_of(':') + 2, s.find_first_of(','));
+	return s.substr(s.find_first_of(':') + 2, s.find_first_of(',')-s.find_first_of(':')-1);
 }
 
 std::vector<std::string> explodeStr(std::string &s) {
