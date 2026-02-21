@@ -92,6 +92,8 @@ public:
 	Tick get_lifetime() const;
 	void set_lifetime(const Tick &_lifetime);
 
+	static bool is_equal(const Pc& lhs, const Pc& rhs);
+
 	virtual bool get_solid() const;
 
 	virtual void physics(World &world) final;
@@ -161,7 +163,7 @@ public:
 
 class Fire : public P {
 public:
-	Fire(const Pc &row, const Pc &col) : Particle(227, 68, 32, true, -1, fire) {
+	Fire(const Pc &row, const Pc &col) : Particle(227, 68, 32, true, 15, fire) {
 		set_row(row);
 		set_col(col);
 	}
@@ -185,7 +187,10 @@ public:
 class Earth : public P_solid {
 public:
 	Earth(const Pc &row, const Pc &col)
-		: P_solid(97, 29, 25, true, INT32_MAX, earth) {}
+		: P_solid(97, 29, 25, true, INT32_MAX, earth) {
+		set_row(row);
+		set_col(col);
+	}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -193,7 +198,10 @@ public:
 class Dirt : public P_solid {
 public:
 	Dirt(const Pc &row, const Pc &col)
-		: P_solid(138, 52, 26, false, INT32_MAX, dirt) {}
+		: P_solid(138, 52, 26, false, INT32_MAX, dirt) {
+		set_row(row);
+		set_col(col);
+	}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -204,14 +212,14 @@ public:
 		: Particle(255, 255, 0, false, 10, lightning) {
 		Pc x_val = (P::bd(P::gen) % 11) / 10.0f;
 		Pc y_val = (P::bd(P::gen) % 10 + 1) / 10.0f;
-		
-		//From what I understand x could be between -1 and 1
-		// and y could be -1 and 1 but not zero
+
+		// From what I understand x could be between -1 and 1
+		//  and y could be -1 and 1 but not zero
 		set_x_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * x_val);
 		set_y_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * y_val);
 		set_row(row);
 		set_col(col);
-		}
+	}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -219,7 +227,10 @@ public:
 class TBD_1 : public P_solid {
 public:
 	TBD_1(const Pc &row, const Pc &col)
-		: P_solid(255, 255, 255, false, INT32_MAX, tbd_1) {}
+		: P_solid(255, 255, 255, false, INT32_MAX, tbd_1) {
+		set_row(row);
+		set_col(col);
+	}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -227,7 +238,10 @@ public:
 class TBD_2 : public P {
 public:
 	TBD_2(const Pc &row, const Pc &col)
-		: Particle(255, 255, 255, false, INT32_MAX, tbd_2) {}
+		: Particle(255, 255, 255, false, INT32_MAX, tbd_2) {
+		set_row(row);
+		set_col(col);
+	}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -235,7 +249,10 @@ public:
 class TBD_3 : public P_solid {
 public:
 	TBD_3(const Pc &row, const Pc &col)
-		: P_solid(255, 255, 255, false, INT32_MAX, tbd_3) {}
+		: P_solid(255, 255, 255, false, INT32_MAX, tbd_3) {
+		set_row(row);
+		set_col(col);
+	}
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
