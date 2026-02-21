@@ -40,6 +40,8 @@
 ### Romero
 - On launch draw a splash screen (Implementing)
 - Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt (Implementing)
+- Implement a command to increase frame rate (Created)
+- Implement a command to decrease frame rate (Created)
 
 ### Jackson
 Working on the actual physics simulation of the particles

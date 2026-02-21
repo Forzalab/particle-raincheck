@@ -51,6 +51,8 @@ void Game::run() {
 		clearscreen();
 		
 	}
+	//incr_fps(); //Test
+	//dcrs_fps(); //Test
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	std::vector<pair<Wc, Wc>> prevPs;
@@ -100,6 +102,7 @@ void Game::render() {
 void Game::incr_fps() {
 	GameTick input = 0;
 	cin >> input;
+	clearscreen();
 	if (!cin || input < 3 || input > 60) { //If input is bad
 		cin.clear();
 		GameTick s = 0; //New variable
@@ -118,6 +121,7 @@ void Game::incr_fps() {
 void Game::dcrs_fps() {
 	GameTick input = 0;
 	cin >> input;
+	clearscreen();
 	if (!cin || input < 3 || input > 60) { //If input is bad
 		cin.clear();
 		GameTick s = 0; //New variable
