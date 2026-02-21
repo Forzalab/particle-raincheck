@@ -21,6 +21,10 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
+void World::updateVecs() {
+	map.resize(size_t(rows) * size_t(cols));
+}
+
 void World::updateMap() {
 	// If no particles, clear list and return early
 	if (ps.size() == 0) {
@@ -48,6 +52,7 @@ Wc World::get_cols() const { return cols; }
 void World::erase(const Wc &row, const Wc &col) {
 	auto it_rmv = map.begin() + [&]() { return col + row * cols; }();
 	ps.remove(at(row, col));
+//	*it_rmv = none;
 	map.erase(it_rmv);
 }
 
@@ -71,7 +76,7 @@ P_Type World::atMap(Wc row, Wc col) {
 P_ptr& World::at(const Pc &row, const Pc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
-		if (row == (*p)->get_row() && col == (*p)->get_col())
+		if (P::is_equal(row, (*p)->get_row()) && P::is_equal(col, (*p)->get_col()))
 			break;
 	}
 	return (p != ps.end() ? *p : nullp);
@@ -125,7 +130,8 @@ Amt World::alive_count() const {
 	// particles.
 	return std::accumulate(
 		ps.begin(), ps.end(), 0,
-		[](int count, const auto &p) { return p->get_lifetime() > 0; });
+		[](const Amt& count, const auto &p) { const Amt pl = p->get_lifetime();
+		return pl > 0 ? count+pl : count ; });
 } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
@@ -208,7 +214,7 @@ std::string extractVal(std::string &s) {
 	std::vector<std::string> retvec;
 	// returns a substring of s from : + 2 until the comma
 	// eg "key": val, woruld return only val.
-	return s.substr(s.find_first_of(':') + 2, s.find_first_of(','));
+	return s.substr(s.find_first_of(':') + 2, s.find_first_of(',')-s.find_first_of(':')-1);
 }
 
 std::vector<std::string> explodeStr(std::string &s) {

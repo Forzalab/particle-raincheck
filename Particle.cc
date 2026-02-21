@@ -20,7 +20,9 @@ P_Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
 bool P::get_solid() const { return false; }
 bool P_solid::get_solid() const { return true; }
-// float P::rnd() { return Particle::bd(Particle::gen); }
+bool P::is_equal(const Pc& lhs, const Pc& rhs) {
+	return std::abs(lhs - rhs) < 1E-6;
+}
 
 // setters
 void P::set_row(const Pc &_row) {
@@ -71,7 +73,6 @@ void P::physics(World &world) {
 
 		// type-specific physics
 		physics_spec(world);
-
 	}
 
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
@@ -92,18 +93,16 @@ void Air::physics_spec(World &world) {
 	return;
 }
 
-void Air::touch(const P_ptr &nbr, World &world) {
-
-}
+void Air::touch(const P_ptr &nbr, World &world) {}
 
 void Dust::physics_spec(World &world) {
-	Pc gravity = 0.2;
+	Pc gravity = 0.1;
 
-	Pc dx_scale = 20 * ((P::bd(P::gen)) > 27) ? -1 : 1;
-	Pc dy_scale = 30 * ((P::bd(P::gen)) > 27) ? -1 : 1;
+	Pc dx_scale = 0.2 * (((P::bd(P::gen)) > 27) ? -1 : 1);
+	Pc dy_scale = gravity * (((P::bd(P::gen)) > 27) ? -1 : 1);
 
-	set_x_vel(((P::bd(P::gen)) > 27) ? -1 : 1 * dx_scale);
-	set_y_vel(((P::bd(P::gen)) > 27) ? -1 : 1 * dy_scale);
+	set_x_vel((((P::bd(P::gen)) > 27) ? -1 : 1) * dx_scale);
+	set_y_vel((((P::bd(P::gen)) > 27) ? -1 : 1) * dy_scale);
 
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());
@@ -115,7 +114,7 @@ void Dust::physics_spec(World &world) {
 
 void Dust::touch(const P_ptr &nbr, World &world) {}
 void Fire::physics_spec(World &world) {
-	//Fire is stationary
+	// Fire is stationary
 }
 
 void Fire::touch(const P_ptr &nbr, World &world) {
@@ -123,7 +122,11 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		// create new upwards Air
 		Air a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Air>(a);
-		world.at(nbr->get_row(), nbr->get_col()) = p_a;
+		P_ptr p_world = world.at(nbr->get_row(), nbr->get_col());
+		if (p_world)
+			p_world = p_a;
+		else
+			world.add_particle(p_a);
 
 		// make it go upwards
 		// y starts at 0 and ends with world.height
@@ -147,35 +150,42 @@ void Earth::touch(const P_ptr &nbr, World &world) {}
 void Dirt::physics_spec(World &world) {}
 void Dirt::touch(const P_ptr &nbr, World &world) {}
 void Lightning::physics_spec(World &world) {
-	Pc x_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; //Results in 1 or -1
-	Pc y_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; //Results in 1 or -1
-	
-	set_x_vel(get_x_vel() + x_grav); 
-	set_y_vel(get_y_vel() + y_grav); 
-	
+	Pc x_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; // Results in 1 or -1
+	Pc y_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; // Results in 1 or -1
+
+	set_x_vel(get_x_vel() + x_grav);
+	set_y_vel(get_y_vel() + y_grav);
+
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());
 		set_col(get_col() + get_x_vel());
 	}
 }
-void Lightning::touch(const P_ptr &nbr, World &world) {
-	
-	if (nbr->get_type() == earth) {
-		Dirt a(nbr->get_row(), nbr->get_col());
-		P_ptr p_a = std::make_shared<Dirt>(a);
-		world.at(nbr->get_row(), nbr->get_col()) = p_a;
 
-		//Delete Lightning
-					
+void Lightning::touch(const P_ptr &nbr, World &world) {
+
+	if (nbr->get_type() == earth) {
+		Dirt d(nbr->get_row(), nbr->get_col());
+		P_ptr p_d = std::make_shared<Dirt>(d);
+		P_ptr p_world = world.at(nbr->get_row(), nbr->get_col());
+		if (p_world)
+			p_world = p_d;
+		else
+			world.add_particle(p_d);
+
+		// Delete Lightning
+
+	} else if (nbr->get_type() == water) {
+		Lightning l(nbr->get_row(), nbr->get_col());
+		P_ptr p_l = std::make_shared<Lightning>(l);
+		P_ptr p_world = world.at(nbr->get_row(), nbr->get_col());
+		if (p_world)
+			p_world = p_l;
+		else
+			world.add_particle(p_l);
+
+		// Delete Water
 	}
-	else if (nbr->get_type() == water) {
-		Lightning b(nbr->get_row(), nbr->get_col());
-		P_ptr p_b = std::make_shared<Lightning>(b);
-		world.at(nbr->get_row(), nbr->get_col()) = p_b;	
-		
-		//Delete Water 
-	}	
-	
 }
 void TBD_1::physics_spec(World &world) {}
 void TBD_1::touch(const P_ptr &nbr, World &world) {}
