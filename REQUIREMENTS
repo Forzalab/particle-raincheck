@@ -69,8 +69,8 @@ By the due date you need to have:
 3. A Game class that is responsible for processing input
 --It has the world (.world World) as a member variable ******* raymond_0865098
 ----The world should be initialized with the screen_size as the row and col, but leave some lines open on the bottom of the screen to show the frame count and a helpful list of commands
---A .frame member variable that starts at 0 and counts up by 1 each time physics is run ******* raymond_0865098
---It has to handle all input from mouse and keyboard using non-blocking I/O
+--A .frame member variable that starts at 0 and counts up by 1 each time physics is run
+--It has to handle all input from mouse and keyboard using non-blocking I/O ******* cook_1055355
 --Implement a command to start simulating the world
 --Implement a command to pause simulating the world
 --Implement a command to quit
