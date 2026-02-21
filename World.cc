@@ -15,6 +15,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 static_assert(sizeof(World) > 0);
 
@@ -31,10 +32,10 @@ void World::updateMap() {
 	//Iter over list of Particles and update map at those indecies
 	//Also add a true to the mask to prevent from being set to none.
 	for(const auto &p : ps) {
-		Wc index = std::round(p->get_row()) * cols + std::round(p->get_col());
+		if(atMap(p->get_row(),p->get_col()) == OOB) continue;
+		Wc rawInd = std::floor(p->get_row()) * cols  + std::floor(p->get_col());
 		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " " << rows << " " << cols;
-		// std::cin.get();
-		map.at(index) = p->get_type();
+		map.at(rawInd) = p->get_type();
 	}
 }
 
@@ -61,10 +62,10 @@ bool exclusiveInRange(Wc min, Wc max, Wc val) {
 }
 
 P_Type World::atMap(Wc row, Wc col) {
-	if(exclusiveInRange(0, rows, row) && exclusiveInRange(0, cols, col)) {
+	if(exclusiveInRange(1, rows - 1, row) && exclusiveInRange(1, cols - 1, col)) {
 		return map.at(rows * row + col);
 	}
-	else { return P_Type(-1); } // If you're checking out of bounds, -1 means that it is a "boundary", so treat it as such
+	else { return OOB; } // If you're checking out of bounds
 }
 
 P_ptr& World::at(const Pc &row, const Pc &col) {
@@ -77,8 +78,8 @@ P_ptr& World::at(const Pc &row, const Pc &col) {
 } // .at()
 
 bool World::isInBounds(const auto &p) {
-	Wc col = std::round(p->get_col());
-	Wc row = std::round(p->get_row());
+	Wc col = std::floor(p->get_col());
+	Wc row = std::floor(p->get_row());
 
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
