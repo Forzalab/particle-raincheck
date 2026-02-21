@@ -92,6 +92,8 @@ public:
 	Tick get_lifetime() const;
 	void set_lifetime(const Tick &_lifetime);
 
+	static bool is_equal(const Pc& lhs, const Pc& rhs);
+
 	virtual bool get_solid() const;
 
 	virtual void physics(World &world) final;
