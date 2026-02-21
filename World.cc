@@ -52,8 +52,8 @@ Wc World::get_cols() const { return cols; }
 void World::erase(const Wc &row, const Wc &col) {
 	auto it_rmv = map.begin() + [&]() { return col + row * cols; }();
 	ps.remove(at(row, col));
-	*it_rmv = none;
-// set to none instead
+//	*it_rmv = none;
+	map.erase(it_rmv);
 }
 
 void World::set_cols(const Wc &_cols) { cols = _cols; }
