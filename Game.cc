@@ -16,8 +16,8 @@ void unrender(auto &prevPs);
 void printFPS(const auto &lastFrameStart, Wc rows) {
 	auto diff = std::chrono::duration<double>(std::chrono::steady_clock::now() - lastFrameStart);
 	movecursor(rows + 5, 0);
-	std::cout << 1.0 / diff.count() <<" FPS"; 
-	for(int i = 0; i < 5; i++) { std::cout << " "; } //Clean up trailing chars from prev frame
+	std::cout << 1.0 / diff.count() <<" FPS" << ""; 
+	for(int i = 0; i < 80; i++) { std::cout << " "; } //Clean up trailing chars from prev frame
 }
 
 void resetTerminal() {
@@ -45,7 +45,13 @@ void Game::run() {
 		system("figlet =======");
 		system("figlet Particles");
 		system("figlet =======");
-		
+	
+
+		//Options on splash screen- "Start, 
+		//Load
+		//Draw on bridges
+		//Quit
+
 		//Add a time delay for users to see splash screen before game starts
 		sleep(2); //Pauses for two seconds
 		clearscreen();
@@ -80,7 +86,6 @@ void Game::run() {
 		render();
 		for(const auto &p : world.getParticles()) {
 			movecursor(0,0);
-			std::cout << world.size();
 			prevPs.push_back(pair<Wc, Wc>(std::round(p->get_row()), std::round(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);

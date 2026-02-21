@@ -15,7 +15,7 @@ typedef int32_t Tick;
 
 // type enum. 3 TBDs if feasible, 1 unknown, and as requirement stated.
 // init enum defaults to `none` (0).
-enum P_Type : uint8_t {
+enum P_Type : int8_t {
 	none,
 	air,
 	dust,
@@ -27,8 +27,9 @@ enum P_Type : uint8_t {
 	tbd_1, // confetti?
 	tbd_2,
 	tbd_3,
+	OOB, //Checking an out of bounds loc in atMap()
 	E_MIN = none, // change as enum list changed
-	E_MAX = tbd_3 // change as enum list changed
+	E_MAX = OOB // change as enum list changed
 };
 
 class World; // stub for forward-dependency
