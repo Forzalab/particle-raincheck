@@ -21,9 +21,7 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
-void World::updateVecs() {
-	map.resize(size_t(rows) * size_t(cols));
-}
+void World::updateVecs() { map.resize(size_t(rows) * size_t(cols)); }
 
 void World::updateMap() {
 	// If no particles, clear list and return early
@@ -32,13 +30,15 @@ void World::updateMap() {
 		return;
 	}
 	map.assign(map.size(), none);
-	//Vector mask. saves positions that contain a particle.
-	//Iter over list of Particles and update map at those indecies
-	//Also add a true to the mask to prevent from being set to none.
-	for(const auto &p : ps) {
-		if(atMap(p->get_row(),p->get_col()) == OOB) continue;
-		Wc rawInd = std::floor(p->get_row()) * cols  + std::floor(p->get_col());
-		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " " << rows << " " << cols;
+	// Vector mask. saves positions that contain a particle.
+	// Iter over list of Particles and update map at those indecies
+	// Also add a true to the mask to prevent from being set to none.
+	for (const auto &p : ps) {
+		if (atMap(p->get_row(), p->get_col()) == OOB)
+			continue;
+		Wc rawInd = std::floor(p->get_row()) * cols + std::floor(p->get_col());
+		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " "
+		// << rows << " " << cols;
 		map.at(rawInd) = p->get_type();
 	}
 }
@@ -52,7 +52,7 @@ Wc World::get_cols() const { return cols; }
 void World::erase(const Wc &row, const Wc &col) {
 	auto it_rmv = map.begin() + [&]() { return col + row * cols; }();
 	ps.remove(at(row, col));
-//	*it_rmv = none;
+	//	*it_rmv = none;
 	map.erase(it_rmv);
 }
 
@@ -62,21 +62,22 @@ void World::set_rows(const Wc &_rows) { rows = _rows; }
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool exclusiveInRange(Wc min, Wc max, Wc val) {
-	return min < val && val < max;
-}
+bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
 
 P_Type World::atMap(Wc row, Wc col) {
-	if(exclusiveInRange(1, rows - 1, row) && exclusiveInRange(1, cols - 1, col)) {
+	if (exclusiveInRange(1, rows - 1, row) &&
+		exclusiveInRange(1, cols - 1, col)) {
 		return map.at(rows * row + col);
-	}
-	else { return OOB; } // If you're checking out of bounds
+	} else {
+		return OOB;
+	} // If you're checking out of bounds
 }
 
-P_ptr& World::at(const Pc &row, const Pc &col) {
+P_ptr &World::at(const Pc &row, const Pc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
-		if (P::is_equal(row, (*p)->get_row()) && P::is_equal(col, (*p)->get_col()))
+		if (P::is_equal(row, (*p)->get_row()) &&
+			P::is_equal(col, (*p)->get_col()))
 			break;
 	}
 	return (p != ps.end() ? *p : nullp);
@@ -89,30 +90,34 @@ bool World::isInBounds(const auto &p) {
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
 
-//Since this function is essentially the update loop of World
-//Map map will be updated here too
-//This returns an int used to increment Game.frame. 
-int World::physics() { 
-	
-	if(size() == 0) return 0;	
-	
-	for(auto &p : ps) {
-		//Do particle physics calls here
+// Since this function is essentially the update loop of World
+// Map map will be updated here too
+// This returns an int used to increment Game.frame.
+int World::physics() {
+
+	if (size() == 0)
+		return 0;
+
+	for (auto &p : ps) {
+		// Do particle physics calls here
 		p->physics(*this);
-		//Decrement p lifetime if it is not a permanent particle
-		if(p->get_lifetime() != -1) p->set_lifetime(p->get_lifetime()-1);		
-		updateMap(); // Moved this in here because I realized that each time a particle moves per frame, it needs this to be as up to date as possible. 
+		// Decrement p lifetime if it is not a permanent particle
+		if (p->get_lifetime() != -1)
+			p->set_lifetime(p->get_lifetime() - 1);
+		updateMap(); // Moved this in here because I realized that each time a
+					 // particle moves per frame, it needs this to be as up to
+					 // date as possible.
 	}
-	//If the particle is "dead" aka lifetime is exactly 0
-	//OR
-	//If it's out of bounds
+	// If the particle is "dead" aka lifetime is exactly 0
+	// OR
+	// If it's out of bounds
 	std::erase_if(ps, [this](const auto &p) {
-			//OOB or 0 lifetime = ded
-				return (p->get_lifetime() == 0) || !isInBounds(p);
-			});
+		// OOB or 0 lifetime = ded
+		return (p->get_lifetime() == 0) || !isInBounds(p);
+	});
 
 	return 1;
-}	 // physics() iterates all P.
+} // physics() iterates all P.
 
 Amt World::size() const {
 	// casting just to get rid of annoying warning.
@@ -128,10 +133,11 @@ Amt World::alive_count() const {
 	// is still a valid count, -1 as error prevents exception via error as
 	// return, Allowing us to detect empty list vs none above 0 lfetime
 	// particles.
-	return std::accumulate(
-		ps.begin(), ps.end(), 0,
-		[](const Amt& count, const auto &p) { const Amt pl = p->get_lifetime();
-		return pl > 0 ? count+pl : count ; });
+	return std::accumulate(ps.begin(), ps.end(), 0,
+						   [](const Amt &count, const auto &p) {
+							   const Amt pl = p->get_lifetime();
+							   return pl > 0 ? count + pl : count;
+						   });
 } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
@@ -173,9 +179,9 @@ void insertOFS(std::ofstream &ofs, const std::string &val) { ofs << val; }
 // written a JSON parser, but we ball
 void World::save(const std::string &str) {
 	std::ofstream ofs(str);
-	//std::ofstream ofs("save2.JSON");
-	// std::ofstream ofs(SAVEFILE);
-	// Basic mem vars
+	// std::ofstream ofs("save2.JSON");
+	//  std::ofstream ofs(SAVEFILE);
+	//  Basic mem vars
 	insertOFS(ofs, "{\n\t\"rows\": " + std::to_string(rows) +
 					   ",\n\t\"cols\": " + std::to_string(cols) +
 					   ",\n\t\"Ps\": [\n");
@@ -215,7 +221,8 @@ std::string extractVal(std::string &s) {
 	std::vector<std::string> retvec;
 	// returns a substring of s from : + 2 until the comma
 	// eg "key": val, woruld return only val.
-	return s.substr(s.find_first_of(':') + 2, s.find_first_of(',')-s.find_first_of(':')-1);
+	return s.substr(s.find_first_of(':') + 2,
+					s.find_first_of(',') - s.find_first_of(':') - 1);
 }
 
 std::vector<std::string> explodeStr(std::string &s) {
@@ -249,21 +256,30 @@ P_ptr extractParticle(std::string &s) {
 	Pc row(stof(Pvals.at(0)));
 	Pc col(stof(Pvals.at(1)));
 	P_ptr p;
-	//If type == 0 this BREAKS, so we need to be very sure no type = 0 exists in a save
-	if(type == 1) p = std::make_shared<Air>(row, col);
-	if(type == 2) p = std::make_shared<Dust>(row, col);
-	if(type == 3) p = std::make_shared<Fire>(row, col);
-	if(type == 4) p = std::make_shared<Water>(row, col);
-	if(type == 5) p = std::make_shared<Earth>(row, col);
-	if(type == 6) p = std::make_shared<Dirt>(row, col);
-	if(type == 7) p = std::make_shared<Lightning>(row, col);
+	// If type == 0 this BREAKS, so we need to be very sure no type = 0 exists
+	// in a save
+	if (type == 1)
+		p = std::make_shared<Air>(row, col);
+	if (type == 2)
+		p = std::make_shared<Dust>(row, col);
+	if (type == 3)
+		p = std::make_shared<Fire>(row, col);
+	if (type == 4)
+		p = std::make_shared<Water>(row, col);
+	if (type == 5)
+		p = std::make_shared<Earth>(row, col);
+	if (type == 6)
+		p = std::make_shared<Dirt>(row, col);
+	if (type == 7)
+		p = std::make_shared<Lightning>(row, col);
 
 	p->set_x_vel(stof(Pvals.at(2)));
 	p->set_y_vel(stof(Pvals.at(3)));
-	//TODO: stretch goal -> custom particles use these V but default particles use default cstor vals.
-	// p->set_r(stoi(Pvals.at(4)));
-	// p->set_g(stoi(Pvals.at(5)));
-	// p->set_b(stoi(Pvals.at(6)));
+	// TODO: stretch goal -> custom particles use these V but default particles
+	// use default cstor vals.
+	//  p->set_r(stoi(Pvals.at(4)));
+	//  p->set_g(stoi(Pvals.at(5)));
+	//  p->set_b(stoi(Pvals.at(6)));
 	p->set_stationary((Pvals.at(7)) == "true");
 	p->set_lifetime(stoi(Pvals.at(8)));
 
@@ -286,7 +302,7 @@ void World::parseParticlesFromJSON(std::string &s) {
 
 void World::load(const std::string &str) {
 	std::ifstream ifs(str);
-	//std::ifstream ifs(SAVEFILE);
+	// std::ifstream ifs(SAVEFILE);
 	if (!ifs) {
 		std::cerr << "Save file failed to open.\n";
 	}

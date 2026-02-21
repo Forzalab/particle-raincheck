@@ -21,7 +21,7 @@ P_Type P::get_type() const { return type; }
 Tick P::get_lifetime() const { return lifetime; }
 bool P::get_solid() const { return false; }
 bool P_solid::get_solid() const { return true; }
-bool P::is_equal(const Pc& lhs, const Pc& rhs) {
+bool P::is_equal(const Pc &lhs, const Pc &rhs) {
 	return std::abs(lhs - rhs) < 1E-6;
 }
 
@@ -140,41 +140,44 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 }
 
 void Water::physics_spec(World &world) {
-	// (Physics are the same as dirt for 
+	// (Physics are the same as dirt for
 	if (get_stationary()) {
 		return;
 	}
 	Pc gravity = 0.1;
 	set_x_vel(0); // no lateral movement in air
-	// initial velocity + acceleration due to gravity 
-	set_y_vel(std::clamp(float(get_y_vel()+gravity), 0.0f, 1.0f));
+	// initial velocity + acceleration due to gravity
+	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-
-	if ((world.at(get_row() + 1, get_col())->get_type() == none) && world.at(get_row() + 1, get_col()) == nullptr) {
+	if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
+		world.at(get_row() + 1, get_col()) == nullptr) {
 		set_row(get_row() + get_y_vel());
 		return;
 	}
 	// only if something is below it do we now trst where it can slide
 	else {
-		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) && world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
+			world.at(get_row() + 1, get_col() - 1) == nullptr) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
 			return;
-		}
-		else if ((world.at(get_row() + 1, get_col() + 1)->get_type() == none) && world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		} else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+					none) &&
+				   world.at(get_row() + 1, get_col() + 1) == nullptr) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 			return;
 		}
-/*	else if (world.at(get_row(), get_col() - 1)->get_type() == none) {
-		set_col(get_col() - 1);
-		return;
-	}
-	else if (world.at(get_row(), get_col() + 1)->get_type() == none) {
-		set_col(get_col() + 1);
-		return;
-	}
-*/		else {
+		/*	else if (world.at(get_row(), get_col() - 1)->get_type() == none) {
+				set_col(get_col() - 1);
+				return;
+			}
+			else if (world.at(get_row(), get_col() + 1)->get_type() == none) {
+				set_col(get_col() + 1);
+				return;
+			}
+		*/
+		else {
 			set_stationary(true);
 			return;
 		}
@@ -183,10 +186,9 @@ void Water::physics_spec(World &world) {
 }
 
 void Water::touch(const P_ptr &nbr, World &world) {
-	// Every interaction between a certain particle type and water has already been taken care of 
-	// in the other particle's touch function to my knowledge
+	// Every interaction between a certain particle type and water has already
+	// been taken care of in the other particle's touch function to my knowledge
 }
-
 
 void Earth::physics_spec(World &world) {
 	// nothing 2 impl.
@@ -195,8 +197,7 @@ void Earth::physics_spec(World &world) {
 
 void Earth::touch(const P_ptr &nbr, World &world) {}
 
-
-void Dirt::physics_spec(World &world) {	
+void Dirt::physics_spec(World &world) {
 
 	if (get_stationary()) {
 		return;
@@ -204,12 +205,31 @@ void Dirt::physics_spec(World &world) {
 
 	Pc gravity = 0.1;
 	set_x_vel(0); // no lateral movement in air
-	// initial velocity + acceleration due to gravity 
-//	set_y_vel(get_y_vel() + gravity);
-	set_y_vel(std::clamp(float(get_y_vel()+gravity), 0.0f, 1.0f));
+	// initial velocity + acceleration due to gravity
+	//	set_y_vel(get_y_vel() + gravity);
+	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-	if ((world.at(get_row() + 1, get_col())->get_type() == none) && world.at(get_row() + 1, get_col()) == nullptr) {
-  }
+	if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
+		world.at(get_row() + 1, get_col()) == nullptr) {
+		set_row(get_row() + get_y_vel());
+		set_col(get_col() + get_x_vel());
+	} else {
+		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
+			world.at(get_row() + 1, get_col() - 1) == nullptr) {
+			set_row(get_row() + 1);
+			set_col(get_col() - 1);
+		} else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+					none) &&
+				   world.at(get_row() + 1, get_col() + 1) == nullptr) {
+			set_row(get_row() + 1);
+			set_col(get_col() + 1);
+		} else {
+			set_stationary(true);
+			return;
+		}
+	}
+}
+
 void Lightning::physics_spec(World &world) {
 	Pc x_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; // Results in 1 or -1
 	Pc y_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; // Results in 1 or -1
@@ -219,32 +239,33 @@ void Lightning::physics_spec(World &world) {
 
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());
-	}
-	else {
-		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) && world.at(get_row() + 1, get_col() - 1) == nullptr) {
+	} else {
+		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
+			world.at(get_row() + 1, get_col() - 1) == nullptr) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
-		}
-		else if ((world.at(get_row() + 1, get_col() + 1)->get_type() == none) && world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		} else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+					none) &&
+				   world.at(get_row() + 1, get_col() + 1) == nullptr) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
-		}
-		else {
+		} else {
 			set_stationary(true);
 			return;
 		}
 	}
 
-//	return;
+	//	return;
 }
 
 // primitive touch for the time being, can revisit if causes problems
 void Dirt::touch(const P_ptr &nbr, World &world) {
-	if (nbr->get_type() == water && (nbr->get_row() == get_row() + 1 && nbr->get_col() == get_col())) {
+	if (nbr->get_type() == water &&
+		(nbr->get_row() == get_row() + 1 && nbr->get_col() == get_col())) {
 		// if dirt on top of water, switch places
 		set_row(get_row() + 1);
 		nbr->set_row(get_row());
-  }
+	}
 }
 
 void Lightning::touch(const P_ptr &nbr, World &world) {
