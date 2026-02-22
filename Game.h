@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
+#include <memory>
 #include <thread>
 #include "Bifrost.h"
 #include "/public/colors.h"
@@ -14,6 +15,22 @@
 #include "libs/include/ColorGrid.h"
 #include "World.h"
 typedef uint32_t GameTick;
+
+class CallbackHandler { //Used for mouse click events.
+	private:
+		P_Type type{};
+		Wc row{}, col{};
+		World world;
+	public:
+		CallbackHandler(World &inworld) : world(inworld) {}
+		void setRowCol(int inrow, int incol) { 
+			row = inrow; 
+			col = incol; 
+			if(world.atMap(row, col) == none) world.add_particle(generateParticle()); //any value other than none will not allow particle generation. Prevents OOB and overlapping Particles
+		} //inrow and incol are previously verified in bounds. This is the function called on mousedown
+		void setPType(P_Type inType) { type = inType; }
+		P_ptr generateParticle();
+};
 
 class Game {
 private:
