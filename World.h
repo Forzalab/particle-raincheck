@@ -6,7 +6,6 @@
 #include <limits>
 #include <memory>
 #include <numeric>
-#pragma message("")
 #include "Particle.h"
 #include <cstdlib>
 #include <exception>
