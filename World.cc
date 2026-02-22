@@ -1,21 +1,4 @@
-// I do not understand why, but without this World.h
-// only partially compiles and throws an error.
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include <memory>
-#include <numeric>
-#pragma message("")
-
 #include "World.h"
-#include "Particle.h"
-#include <cstdlib>
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <algorithm>
 
 static_assert(sizeof(World) > 0);
 

@@ -1,22 +1,17 @@
-#include "/public/read.h" // IWYU pragma: keep
-#include "Game.h"
-#include "World.h"
-#include "Bifrost.h"
-#include <iostream>
+#include "main.h"
 
 /*int main() {
 	Game game;
 	game.run();
 }*/
 
-
+// Testing code for Bifrost
 int main() {
 	World w(10, 20);
 	w.load("save.JSON");
 	VisualizerURL url;
 	url <<= w;
 	std::cout << url;
-	
 }
 
 /*

@@ -1,6 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <cstdlib>
+#include <thread>
+#include "Bifrost.h"
+#include "/public/colors.h"
+#include <string>
+
 #include "libs/include/Bridges.h"
 #include "libs/include/ColorGrid.h"
 #include "World.h"

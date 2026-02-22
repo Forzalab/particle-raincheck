@@ -1,6 +1,5 @@
 #include "Particle.h"
 #include "World.h"
-#include <algorithm>
 
 using P = Particle;
 

@@ -1,11 +1,4 @@
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <cstdlib>
-#include <thread>
 #include "Game.h"
-#include "/public/colors.h"
-#include <string>
 
 typedef uint32_t GameTick;
 

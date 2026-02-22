@@ -1,6 +1,7 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include <algorithm>
 #include <random>
 #include <memory>
 #include <cstdint>
