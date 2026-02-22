@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <chrono>
 #include "Particle.h"
 #include "World.h"
 #include <Bridges.h>

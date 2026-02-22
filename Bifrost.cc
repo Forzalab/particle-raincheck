@@ -4,6 +4,11 @@ Bifrost::Bifrost(const Param &api_key, const Param &username)
 	: api_key(api_key), username(username) {
 	bridge.setApiKey(api_key);
 	bridge.setUserName(username);
+	bridge.setAssignment([]()->int{
+		const auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
+		const int id = now.count() % 6942067;
+		return id;
+	}());
 }
 
 // Getters OUTSIDE Bifrost
