@@ -1,7 +1,10 @@
 #include "Bifrost.h"
 
 Bifrost::Bifrost(const Param &api_key, const Param &username)
-	: api_key(api_key), username(username), bridge(username, api_key) {}
+	: api_key(api_key), username(username) {
+	bridge.setApiKey(api_key);
+	bridge.setUserName(username);
+}
 
 // Getters OUTSIDE Bifrost
 wXY Bifrost::getWorldBound(const WorldSnapshot &ws) {
@@ -57,7 +60,7 @@ void operator<=(BColor &bc, const pRGB &rgb) {
 // two stages:
 // (1) resolve color -> color and xy -> x y.
 // (2) feed into BCG
-void operator<<(BColorGrid &bcg, const pState &particle) {
+BColorGrid& operator<<(BColorGrid &bcg, const pState &particle) {
 	BColor bc;
 	const pXY pxy = particle.xy;
 
@@ -65,25 +68,43 @@ void operator<<(BColorGrid &bcg, const pState &particle) {
 
 	// For duplicate particles: last dupl par. is counted
 	bcg.set(pxy.row, pxy.col, bc);
+	
+	return bcg;
 }
 
 // BCG <<= ws
 // Map color of a world snapshot.
-void operator<<=(BColorGrid &bcg, WorldSnapshot &ws) {
+BColorGrid& operator<<=(BColorGrid &bcg, WorldSnapshot &ws) {
 	Ps ps = ws.getParticles();
-	wXY bounds = Bifrost::getWorldBound(ws);
 	pState p{};
 
 	for (P_ptr p_ptr : ps)
 		bcg << (p <<= p_ptr);
+	
+	return bcg;
 }
 
-// url <= BCG
-void operator<=(VisualizerURL &url, const BColorGrid &bcg) {
+// bridges << BCG
+Bridge &operator<<(Bridge &b, BColorGrid &bcg) {
+	b.setDataStructure(&bcg);
+	return b;
+}
 
+// url <<= bridges
+void operator<<=(VisualizerURL &url, Bridge &b) {
+	b.postVisualizationLink(false);
+	b.setJSONFlag(false);
+	b.visualize();
+	url = b.getVisualizeURL();
 }
 
 // Out-of-the-box BRIDGES visualizer
-void operator<<=(VisualizerURL &url, WorldSnapshot &ws) {
+// Snapshot a world via "copying" it (pass-by-value)
+void operator<<=(VisualizerURL &url, WorldSnapshot ws) {
+	Bifrost bif("1528650419935", "Knelt3801");
+	wXY bounds = Bifrost::getWorldBound(ws);
+	bif.bcg.setDimensions(bounds.row, bounds.col);
+
+	url <<= (bif.bridge << (bif.bcg <<= ws));
 }
 

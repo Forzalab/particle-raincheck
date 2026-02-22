@@ -109,7 +109,7 @@ void Game::run() {
 										  std::round(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
-	}
+	}	
 	resetTerminal();
 }
 

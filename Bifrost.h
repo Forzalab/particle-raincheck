@@ -2,6 +2,7 @@
 #define BIFROST_H
 
 #include <cstdint>
+#include <string>
 #include "Particle.h"
 #include "World.h"
 #include <Bridges.h>
@@ -67,19 +68,26 @@ using VisualizerURL = std::string;
 // The class itself
 //==============================
 
+// Forward decl.
+// Out-of-the-box BRIDGES visualizer
+void operator<<=(VisualizerURL &url, WorldSnapshot ws);
+
 class Bifrost {
 private:
 	// Bridge-related member vars
 	Param api_key, username;
-	Bridge bridge; // instantiate in .cc Todo
+	Bridge bridge;
 
-	// Internal constructor
-	Bifrost(Param &api_key, Param &username);
+	// Color-related member var
+	BColorGrid bcg;
 
 	// Getters OUTSIDE Bifrost
 	static wXY getWorldBound(const WorldSnapshot &ws);
 
-public:
+	// Internal constructor
+        Bifrost(Param &api_key, Param &username);
+
+public:	
 	// Convention for op func:
 	// - operator<< means insert
 	// - operator<<= means "assign partially/narrowing",
@@ -87,7 +95,7 @@ public:
 	// - operator<= means total conversion (it looks like
 	//  an arrow)
 
-	// Chainable ops would return NOT void type!
+	// Chainable ops would return!
 
 	// of stage (1), particle.rgb into BColor
 	friend void operator<=(BColor &bc, const pRGB &rgb);
@@ -95,20 +103,23 @@ public:
 	// two stages:
 	// (1) resolve color -> color and xy -> x y.
 	// (2) feed into BCG
-	friend void operator<<(BColorGrid &bcg, const pState &particle);
+	friend BColorGrid& operator<<(BColorGrid &bcg, const pState &particle);
 
 	// (particle <<= p_ptr) syntax
 	friend pState &operator<<=(pState &particle, const P_ptr &p);
 
 	// BCG <<= ws
 	// Map color of a world snapshot.
-	friend void operator<<=(BColorGrid &bcg, WorldSnapshot &ws);
+	friend BColorGrid& operator<<=(BColorGrid &bcg, WorldSnapshot &ws);
 
-	// url <= BCG
-	friend void operator<=(VisualizerURL &url, const BColorGrid &bcg);
+	// bridges << BCG
+        friend Bridge& operator<<(Bridge &b, BColorGrid &bcg);
+
+	// url <<= bridges
+	friend void operator<<=(VisualizerURL &url, Bridge &b);
 
 	// Out-of-the-box BRIDGES visualizer
-	friend void operator<<=(VisualizerURL &url, WorldSnapshot &ws);
+	friend void operator<<=(VisualizerURL &url, WorldSnapshot ws);
 };
 
 #endif
