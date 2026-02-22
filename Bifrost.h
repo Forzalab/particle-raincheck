@@ -21,13 +21,13 @@ using BColorGrid = bridges::datastructure::ColorGrid;
 
 // typedef carried over from Particle.h World.h
 // for clarity purpose
-using ColorValue = Color;
+using ParticleColorValue = Color;
 using ParticleCoordsValue = Pc;
 using WorldCoordsValue = Wc;
 
 // typedef for color and particles and size from World
 using ParticleColor = struct {
-	ColorValue red{}, green{}, blue{};
+	ParticleColorValue red{}, green{}, blue{};
 };
 
 using ParticleCoords = struct {
@@ -37,6 +37,12 @@ using ParticleCoords = struct {
 using ParticleState = struct {
 	ParticleCoords xy{};
 	ParticleColor rgb{};
+
+	// x y to .xy
+	void setXY(const ParticleCoordsValue &x, const ParticleCoordsValue &y);
+	// r g b to .rgb
+	void setRGB(const ParticleColorValue &r, const ParticleColorValue &g,
+				const ParticleColorValue &b);
 };
 
 using WorldCoords = struct {
@@ -67,7 +73,7 @@ private:
 	Param api_key, username;
 	Bridge bridge; // instantiate in .cc Todo
 
-	// Internal constructor. Singular.
+	// Internal constructor
 	Bifrost(Param &api_key, Param &username);
 
 	// Getters OUTSIDE Bifrost
@@ -81,28 +87,28 @@ public:
 	// - operator<= means total conversion (it looks like
 	//  an arrow)
 
-	// Chainable ops would return NOT bool type!
-
-	// BCG <<= ws
-	// Map color of a world snapshot.
-	friend bool operator<<=(BColorGrid &bcg, WorldSnapshot &ws);
+	// Chainable ops would return NOT void type!
 
 	// of stage (1), particle.rgb into BColor
-	friend bool operator<=(BColor &bc, const pRGB &rgb);
-
-	// bcg << (particle <<= p_ptr) syntax
-	friend pState &operator<<=(pState &particle, const P_ptr &p);
+	friend void operator<=(BColor &bc, const pRGB &rgb);
 
 	// two stages:
 	// (1) resolve color -> color and xy -> x y.
 	// (2) feed into BCG
-	friend bool operator<<(BColorGrid &bcg, const pState &particle);
+	friend void operator<<(BColorGrid &bcg, const pState &particle);
+
+	// (particle <<= p_ptr) syntax
+	friend pState &operator<<=(pState &particle, const P_ptr &p);
+
+	// BCG <<= ws
+	// Map color of a world snapshot.
+	friend void operator<<=(BColorGrid &bcg, WorldSnapshot &ws);
 
 	// url <= BCG
-	friend bool operator<=(VisualizerURL &url, const BColorGrid bcg);
+	friend void operator<=(VisualizerURL &url, const BColorGrid &bcg);
 
 	// Out-of-the-box BRIDGES visualizer
-	friend bool operator<<=(VisualizerURL &url, WorldSnapshot &ws);
+	friend void operator<<=(VisualizerURL &url, WorldSnapshot &ws);
 };
 
 #endif
