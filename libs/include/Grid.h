@@ -144,7 +144,12 @@ namespace bridges {
 				 * @param rows height of grid
 				 * @param cols width of grid
 				 */
+
 				void setDimensions(int rows, int cols) {
+					// Spauly note:
+					// if wasnt added, MEMLEAK!!!
+					deallocateGrid();
+
 					gridSize[0] = rows;
 					gridSize[1] = cols;
 					if (rows > maxGridSize[0] || cols > maxGridSize[1]) {

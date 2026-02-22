@@ -72,3 +72,15 @@
     - Physics also decrements .lifetime by one each frame
 - A .touch() method that gets called when another particle tou
 ches it.
+### BRIDGES (through Bifrost.h)
+- Read the BRIDGES documentation: https://bridgesuncc.github.i
+o/ and comprehend it
+- Add in your username and API key
+- Make a ColorGrid class and fill it with the colors of the wo
+rld (or test data)
+- Add in a call to bridges.setDataStructure() to tell BRIDGES
+to render the ColorGrid
+- Add in a call to bridges.visualize() to send it off to the w
+eb site
+    - This will give you a URL that you can use to visualize you
+r world in a browser

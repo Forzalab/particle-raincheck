@@ -1,11 +1,4 @@
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <cstdlib>
-#include <thread>
 #include "Game.h"
-#include "/public/colors.h"
-#include <string>
 
 typedef uint32_t GameTick;
 
@@ -109,7 +102,7 @@ void Game::run() {
 										  std::round(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
-	}
+	}	
 	resetTerminal();
 }
 
