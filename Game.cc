@@ -1,32 +1,45 @@
 #include "Game.h"
+#include <cctype>
+#include <cstdlib>
+#include <functional>
+#include <string>
 
 typedef uint32_t GameTick;
 
 GameTick Game::get_tickrate() const { return tickrate; }
 
 // Declaring here, definition is above render()
-void unrender(auto &prevPs);
+std::string unrender(auto &prevPs);
 
-void printFPS(const auto &lastFrameStart, Wc rows) {
+std::string printFPS(const auto &lastFrameStart, Wc rows) {
+	std::string s;
 	auto diff = std::chrono::duration<double>(std::chrono::steady_clock::now() -
 											  lastFrameStart);
-	movecursor(rows + 5, 0);
-	std::cout << 1.0 / diff.count() << " FPS" << "";
+	s += movecursor(rows + 5, 0);
+	s += 1.0 / diff.count();
+	s += " FPS";
+	s += "";
 	for (int i = 0; i < 80; i++) {
-		std::cout << " ";
+		s += " ";
 	} // Clean up trailing chars from prev frame
+	return s;
 }
 
 void resetTerminal() {
-	resetcolor();
-	clearscreen();
-	show_cursor(true);
-	movecursor(0, 0);
+	std::string s;
+	s += resetcolor();
+	s += clearscreen();
+	s += show_cursor(true);
+	s += movecursor(0, 0);
+	std::cerr << s;
 }
 
 void Game::run() {
-	show_cursor(false);
-	clearscreen();
+	std::string fs;
+	fs += show_cursor(false);
+	fs += clearscreen();
+	std::cerr << fs;
+	fs.clear();
 	using clock = std::chrono::steady_clock;
 
 	// Placeholder vals. We can change these later.
@@ -62,7 +75,7 @@ void Game::run() {
 
 		// Add a time delay for users to see splash screen before game starts
 		sleep(2); // Pauses for two seconds
-		clearscreen();
+		std::cerr << clearscreen();
 	}
 	// load(); //Test
 	// save(); //Test
@@ -70,8 +83,8 @@ void Game::run() {
 	// dcrs_fps(); //Test
 
 	// start of non-blocking I/O
-	/*	set_raw_mode(true);
-		while (true) {
+	set_raw_mode(true);
+	/*	while (true) {
 			int c = toupper(quick_read());
 			if (c == 'L') load();
 			if (c == 'S') save();
@@ -87,19 +100,56 @@ void Game::run() {
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	std::vector<pair<Wc, Wc>> prevPs;
+	bool paused = false;
+	//Stores which P_Type user selects, is none by default. Also contains a member function which will be set as the callback for on mouse down, adding that particle type at the mouse loc
+	CallbackHandler ch{world};
+	//Creates a callable function wrapper of type function<void(int, int)> with two placeholder params that will be supplied by mousedown events
+	auto boundFunc = bind(&CallbackHandler::setRowCol, &ch, placeholders::_1, placeholders::_2);	
+	//Sets the function that happens on mouse click down to the created function wrapper
+	on_mousedown(boundFunc);
+	
 	while (frame < 3600) {
-		printFPS(prev_frame, world.get_rows());
+		int c = toupper(quick_read());
+
+		if(c == 'P') {
+			paused = true;
+			std::cerr << set_mouse_mode(true);
+		}
+		else if (c == 'S') {
+			paused = false;
+			std::cerr << set_mouse_mode(false);
+		}
+		//- '0' gets 0-9 in integer form
+		// +1 to map to 1(air)-10(TBD3)
+		else if(c <= '9' && c >= '0') {
+			ch.setPType(static_cast<P_Type>(c - '0' + 1)); 
+		}
+		fs += printFPS(prev_frame, world.get_rows());
 		prev_frame = clock::now();
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
-		frame += world.physics(); // Physics will always return 1, unless there
-								  // are no particles.
-		unrender(prevPs);
-		render();
+		if(!paused) frame += world.physics(); // Physics will always return 1, unless there
+											  // are no particles.
+		else {
+			switch(c) {
+				case 'Q':
+					resetTerminal();
+					return;
+				case 'A': //save
+					save();
+					break;
+				case 'L':
+					load();
+					break;
+			}
+		}
+		fs += unrender(prevPs);
+		fs += render();
+		std::cerr << fs;
+		fs.clear();
 		for (const auto &p : world.getParticles()) {
-			movecursor(0, 0);
-			prevPs.push_back(pair<Wc, Wc>(std::round(p->get_row()),
-										  std::round(p->get_col())));
+			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()),
+										  std::floor(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
 	}	
@@ -108,19 +158,23 @@ void Game::run() {
 
 // Janky way to clear screen without iterating over every pixel or flickering
 // the screen with clearscreen();
-void unrender(auto &prevPs) {
-	movecursor(0, 0);
-	setbgcolor(0, 0, 0);
+std::string unrender(auto &prevPs) {
+	std::string s;
+	s += movecursor(0, 0);
+	s += setbgcolor(0, 0, 0); // std::cerr << s;
 	for (const auto &p : prevPs) {
-		movecursor(p.first, p.second);
-		std::cout << " ";
+		s += movecursor(p.first, p.second) + " ";
 	}
 	prevPs.clear();
-	resetcolor();
+	s += resetcolor();
+	return s;
 }
 
-void Game::render() {
+std::string Game::render() {
+	std::string s;
 	Ps particles = world.getParticles();
+	s += movecursor(0,0);
+	s += resetcolor();
 	for (const auto &p : particles) {
 		Wc row = std::round(p->get_row());
 		Wc col = std::round(p->get_col());
@@ -128,17 +182,18 @@ void Game::render() {
 			row < 0)
 			continue; // Do not print particles that are OOB and not yet culled
 					  // by world::physics()
-		movecursor(std::round(row), std::round(col));
-		setbgcolor(p->get_r(), p->get_g(), p->get_b());
-		std::cout << " ";
-		resetcolor();
+		s += movecursor(std::round(row), std::round(col));
+		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
+		s += " ";
+		s += resetcolor();
 	}
+	return s;
 }
 
 void Game::incr_fps() {
 	GameTick input = 0;
 	cin >> input;
-	clearscreen();
+	std::cerr << clearscreen();
 	if (!cin || input < 3 || input > 60) { // If input is bad
 		cin.clear();
 		GameTick s = 0; // New variable
@@ -156,7 +211,7 @@ void Game::incr_fps() {
 void Game::dcrs_fps() {
 	GameTick input = 0;
 	cin >> input;
-	clearscreen();
+	std::cerr << clearscreen();
 	if (!cin || input < 3 || input > 60) { // If input is bad
 		cin.clear();
 		GameTick s = 0; // New variable
@@ -188,4 +243,31 @@ void Game::save() {
 	filename += ".JSON";
 	cout << filename << endl; // Test
 	world.save(filename);
+}
+
+P_ptr CallbackHandler::generateParticle() {
+	P_ptr pt;			
+	switch(type) {
+		case air:
+			pt = make_shared<Air>(row, col);
+			break;
+		case dust:
+			pt = make_shared<Dust>(row, col);
+			break;
+		case dirt:
+			pt = make_shared<Dirt>(row, col);
+			break;
+		case fire:
+			pt = make_shared<Fire>(row, col);
+			break;
+		case water:
+			pt = make_shared<Water>(row, col);
+			break;
+		case lightning:
+			pt = make_shared<Lightning>(row, col);
+			break;
+		case earth:
+			pt = make_shared<Earth>(row, col);
+	}
+	return pt;
 }

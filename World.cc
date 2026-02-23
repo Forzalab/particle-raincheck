@@ -17,11 +17,8 @@ void World::updateMap() {
 	// Iter over list of Particles and update map at those indecies
 	// Also add a true to the mask to prevent from being set to none.
 	for (const auto &p : ps) {
-		if (atMap(p->get_row(), p->get_col()) == OOB)
-			continue;
-		Wc rawInd = std::floor(p->get_row()) * cols + std::floor(p->get_col());
-		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " "
-		// << rows << " " << cols;
+		Wc rawInd = int(p->get_row()) * cols + int(p->get_col());
+		if(rawInd >= map.size()) continue;
 		map.at(rawInd) = p->get_type();
 	}
 }
@@ -49,7 +46,7 @@ bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
 P_Type World::atMap(Wc row, Wc col) {
 	if (exclusiveInRange(1, rows - 1, row) &&
 		exclusiveInRange(1, cols - 1, col)) {
-		return map.at(rows * row + col);
+		return map.at(cols * row + col);
 	} else {
 		return OOB;
 	} // If you're checking out of bounds

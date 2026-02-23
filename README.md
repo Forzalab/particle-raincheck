@@ -31,6 +31,10 @@
 - It should delay long enough to guarantee a fixed frame rate of 5 fps (you can adjust this number) 
 - Use clock (or std::chrono) to see how long it has been since the last frame began
 - Use usleep() to delay execution so you get a guaranteed frame rate of 5 fps or whatever
+- Implement a command to pause simulating the world
+- Implement a command to quit
+- The user must be able to edit the game world by adding and deleting particles while the world is paused
+- It must work with mouse input
 
 ## Romero
 ### Game class
