@@ -13,8 +13,15 @@ void World::updateMap() {
 		return;
 	}
 	map.assign(map.size(), none);
+	// Vector mask. saves positions that contain a particle.
+	// Iter over list of Particles and update map at those indecies
+	// Also add a true to the mask to prevent from being set to none.
 	for (const auto &p : ps) {
-		Wc rawInd = int(p->get_row()) * cols + int(p->get_col());
+		if (atMap(p->get_row(), p->get_col()) == OOB)
+			continue;
+		Wc rawInd = std::floor(p->get_row()) * cols + std::floor(p->get_col());
+		// std::cout << std::endl << p->get_row() << " " << p->get_col() << " "
+		// << rows << " " << cols;
 		map.at(rawInd) = p->get_type();
 	}
 }
@@ -59,8 +66,8 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 } // .at()
 
 bool World::isInBounds(const auto &p) {
-	Wc col = int(p->get_col());
-	Wc row = int(p->get_row());
+	Wc col = std::floor(p->get_col());
+	Wc row = std::floor(p->get_row());
 
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
