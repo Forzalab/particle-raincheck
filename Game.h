@@ -18,14 +18,14 @@ typedef uint32_t GameTick;
 
 class CallbackHandler { //Used for mouse click events.
 	private:
-		P_Type type{};
+		P_Type type{air};
 		Wc row{}, col{};
 		World &world;
 		P_ptr generateParticle();
 	public:
 		CallbackHandler(World &inworld) : world(inworld) {}
 		void setRowCol(int inrow, int incol) { 
-			std::cout << world.size();
+			if(type == none) return;
 			row = inrow; 
 			col = incol; 
 			if(world.atMap(row, col) == none) { //any value other than none will not allow particle generation. Prevents OOB and overlapping Particles

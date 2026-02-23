@@ -161,7 +161,6 @@ void Game::render() {
 	Ps particles = world.getParticles();
 	movecursor(0,0);
 	resetcolor();
-	cout << particles.size();
 	for (const auto &p : particles) {
 		Wc row = std::round(p->get_row());
 		Wc col = std::round(p->get_col());
