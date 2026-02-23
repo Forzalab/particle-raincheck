@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <functional>
+#include <string>
 
 typedef uint32_t GameTick;
 
@@ -90,22 +91,54 @@ void Game::run() {
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	std::vector<pair<Wc, Wc>> prevPs;
+	bool paused = false;
+	//Stores which P_Type user selects, is none by default. Also contains a member function which will be set as the callback for on mouse down, adding that particle type at the mouse loc
+	CallbackHandler ch{world};
+	//Creates a callable function wrapper of type function<void(int, int)> with two placeholder params that will be supplied by mousedown events
+	auto boundFunc = bind(&CallbackHandler::setRowCol, &ch, placeholders::_1, placeholders::_2);	
+	//Sets the function that happens on mouse click down to the created function wrapper
+	on_mousedown(boundFunc);
 	while (frame < 3600) {
 		int c = toupper(quick_read());
+
+		if(c == 'P') {
+			paused = true;
+			set_mouse_mode(true);
+		}
+		else if (c == 'S') {
+			paused = false;
+			set_mouse_mode(false);
+		}
+		//- '0' gets 0-9 in integer form
+		// +1 to map to 1(air)-10(TBD3)
+		else if(c <= '9' && c >= '0') {
+			ch.setPType(static_cast<P_Type>(c - '0' + 1)); 
+		}
 		printFPS(prev_frame, world.get_rows());
 		prev_frame = clock::now();
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
-		frame += world.physics(); // Physics will always return 1, unless there
-								  // are no particles.
+		if(!paused) frame += world.physics(); // Physics will always return 1, unless there
+											  // are no particles.
+		else {
+			switch(c) {
+				case 'Q':
+					resetTerminal();
+					return;
+				case 'A': //save
+					save();
+					break;
+				case 'L':
+					load();
+					break;
+			}
+		}
 		unrender(prevPs);
 		render();
 		for (const auto &p : world.getParticles()) {
-			movecursor(0, 0);
-			prevPs.push_back(pair<Wc, Wc>(std::round(p->get_row()),
-										  std::round(p->get_col())));
+			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()),
+										  std::floor(p->get_col())));
 		}
-		if(c == 'P') pause();
 		std::this_thread::sleep_until(next_frame);
 	}	
 	resetTerminal();
@@ -126,6 +159,9 @@ void unrender(auto &prevPs) {
 
 void Game::render() {
 	Ps particles = world.getParticles();
+	movecursor(0,0);
+	resetcolor();
+	cout << particles.size();
 	for (const auto &p : particles) {
 		Wc row = std::round(p->get_row());
 		Wc col = std::round(p->get_col());
@@ -195,67 +231,29 @@ void Game::save() {
 	world.save(filename);
 }
 
-
-void Game::start() {
-	set_mouse_mode(true);
-	//Stores which P_Type user selects, is none by default. Also contains a member function which will be set as the callback for on mouse down, adding that particle type at the mouse loc
-	CallbackHandler ch{world};
-	//Creates a callable function wrapper of type function<void(int, int)> with two placeholder params that will be supplied by mousedown events
-	auto boundFunc = bind(&CallbackHandler::setRowCol, &ch, placeholders::_1, placeholders::_2);	
-	//Sets the function that happens on mouse click down to the created function wrapper
-	on_mousedown(boundFunc);
-	while(true) {
-		int c = toupper(quick_read());
-		if(c >= 0 && c <= '9') ch.setPType(P_Type(c - 1));//If we subtract one, 0-9 will map between air and tbd3. Otherwise, it maps to none - tbd2.
-		switch(c) {
-			case 'S': //unpause
-				set_mouse_mode(false); //Only allow clicking for particles during this loop while paused.
-				return; //Returns from function back into run()
-			case 'L':
-				load();
-				break;
-			case 'A': //S already used by start, so we use A for sAve, clearly. 
-				save();
-				break;
-			case 'Q': //Quit. 
-				resetTerminal();
-				exit(EXIT_SUCCESS);
-			case 'D': // draw.
-				break;
-				//No default case
-		}
-		
-	}
-}
-
-void Game::pause() {
-	start(); //Defers user into while loop inside start until the start key is pressed.	
-}
-
-
-
 P_ptr CallbackHandler::generateParticle() {
-			P_ptr pt;			
-			switch(type) {
-				case air:
-					pt = make_shared<Air>(row, col);
-					break;
-				case dust:
-					pt = make_shared<Dust>(row, col);
-					break;
-				case dirt:
-					pt = make_shared<Dirt>(row, col);
-					break;
-				case fire:
-					pt = make_shared<Fire>(row, col);
-					break;
-				case water:
-					pt = make_shared<Water>(row, col);
-					break;
-				case lightning:
-					pt = make_shared<Lightning>(row, col);
-					break;
-				case earth:
-					pt = make_shared<Earth>(row, col);
-			}
-		}
+	P_ptr pt;			
+	switch(type) {
+		case air:
+			pt = make_shared<Air>(row, col);
+			break;
+		case dust:
+			pt = make_shared<Dust>(row, col);
+			break;
+		case dirt:
+			pt = make_shared<Dirt>(row, col);
+			break;
+		case fire:
+			pt = make_shared<Fire>(row, col);
+			break;
+		case water:
+			pt = make_shared<Water>(row, col);
+			break;
+		case lightning:
+			pt = make_shared<Lightning>(row, col);
+			break;
+		case earth:
+			pt = make_shared<Earth>(row, col);
+	}
+	return pt;
+}

@@ -20,16 +20,21 @@ class CallbackHandler { //Used for mouse click events.
 	private:
 		P_Type type{};
 		Wc row{}, col{};
-		World world;
+		World &world;
+		P_ptr generateParticle();
 	public:
 		CallbackHandler(World &inworld) : world(inworld) {}
 		void setRowCol(int inrow, int incol) { 
+			std::cout << world.size();
 			row = inrow; 
 			col = incol; 
-			if(world.atMap(row, col) == none) world.add_particle(generateParticle()); //any value other than none will not allow particle generation. Prevents OOB and overlapping Particles
+			if(world.atMap(row, col) == none) { //any value other than none will not allow particle generation. Prevents OOB and overlapping Particles
+				P_ptr pt = generateParticle();
+				pt->set_lifetime(1000); //arbitrary for testing
+				if(pt != nullptr)  world.add_particle(pt); //Ensure it doesnt generate a nullptr 		
+			}
 		} //inrow and incol are previously verified in bounds. This is the function called on mousedown
 		void setPType(P_Type inType) { type = inType; }
-		P_ptr generateParticle();
 };
 
 class Game {
@@ -42,8 +47,6 @@ private:
 public:
 	Game() : world(50, 70) {}
 	GameTick get_tickrate() const;
-	void start();
-	void pause();
 	void quit();
 	void load();
 	void save();

@@ -148,21 +148,27 @@ void Water::physics_spec(World &world) {
 	// initial velocity + acceleration due to gravity
 	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-	if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
-		world.at(get_row() + 1, get_col()) == nullptr) {
+	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
+	// 	world.at(get_row() + 1, get_col()) == nullptr) {
+	//Above code errors. This handles OOB for you. The list that .at() searches is for actual particle types. None is a placeholder type
+	//for in bounds but no particle at location.
+	if(world.atMap(get_row() + 1, get_col()) == none) { 
 		set_row(get_row() + get_y_vel());
 		return;
 	}
 	// only if something is below it do we now trst where it can slide
 	else {
-		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-			world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
+		// 	world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		if(world.atMap(get_row() + 1, get_col() - 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
 			return;
-		} else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-					none) &&
-				   world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+		// 			none) &&
+		// 		   world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		} 
+		else if(world.atMap(get_row() + 1, get_col() + 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 			return;
@@ -208,18 +214,22 @@ void Dirt::physics_spec(World &world) {
 	//	set_y_vel(get_y_vel() + gravity);
 	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-	if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
-		world.at(get_row() + 1, get_col()) == nullptr) {
+	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
+		// world.at(get_row() + 1, get_col()) == nullptr) {
+	if(world.atMap(get_row() + 1, get_col()) == none) { 
 		set_row(get_row() + get_y_vel());
 		set_col(get_col() + get_x_vel());
 	} else {
-		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-			world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
+			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		if(world.atMap(get_row() + 1, get_col() - 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
-		} else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-					none) &&
-				   world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+					// none) &&
+				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		}
+		else if(world.atMap(get_row() + 1, get_col() + 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 		} else {
@@ -239,13 +249,16 @@ void Lightning::physics_spec(World &world) {
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());
 	} else {
-		if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-			world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
+			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		if(world.atMap(get_row() + 1, get_col() - 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
-		} else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-					none) &&
-				   world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+					// none) &&
+				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		}
+		else if(world.atMap(get_row() + 1, get_col() + 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 		} else {
