@@ -16,7 +16,7 @@ typedef int32_t Tick;
 
 // type enum. 3 TBDs if feasible, 1 unknown, and as requirement stated.
 // init enum defaults to `none` (0).
-enum P_Type : int8_t {
+enum P_Type : uint8_t {
 	none,
 	air,
 	dust,
@@ -94,7 +94,7 @@ public:
 	void set_lifetime(const Tick &_lifetime);
 
 	static bool is_equal(const Pc& lhs, const Pc& rhs);
-
+	static bool is_solid(const P_Type &pt);
 	virtual bool get_solid() const;
 
 	virtual void physics(World &world) final;

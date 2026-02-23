@@ -23,6 +23,9 @@ bool P_solid::get_solid() const { return true; }
 bool P::is_equal(const Pc &lhs, const Pc &rhs) {
 	return std::abs(lhs - rhs) < 1E-6;
 }
+bool P::is_solid(const P_Type &pt) {
+	return (pt == earth || pt == dirt);
+}
 
 // setters
 void P::set_row(const Pc &_row) {
@@ -64,16 +67,11 @@ void P::set_type(const P_Type &_type) {
 }
 
 void P::physics(World &world) {
-	Pc wrow = get_row(), wcol = get_col();
-	const P_ptr _p = world.at(wrow, wcol);
-
-	if (_p != nullptr) {
 		// general guard for all particles
 		/* here */
 
 		// type-specific physics
 		physics_spec(world);
-	}
 
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
 	return;
@@ -152,7 +150,7 @@ void Water::physics_spec(World &world) {
 	// 	world.at(get_row() + 1, get_col()) == nullptr) {
 	//Above code errors. This handles OOB for you. The list that .at() searches is for actual particle types. None is a placeholder type
 	//for in bounds but no particle at location.
-	if(world.atMap(get_row() + 1, get_col()) == none) { 
+	if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) { 
 		set_row(get_row() + get_y_vel());
 		return;
 	}
