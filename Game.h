@@ -54,7 +54,7 @@ public:
 	void dcrs_fps();
 	void draw();
 	void draw_BRIDGES(); // URL will be printed by BRIDGE
-	void render();
+	std::string render();
 	void run();
 };
 
