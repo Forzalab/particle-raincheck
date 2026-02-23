@@ -121,7 +121,7 @@ void Fire::physics_spec(World &world) {
         Wc y = int(this->get_row());
 
 	// Lighting spawn
-	bool light = (P::bd(P::gen)) > 40;
+	bool light = (P::bd(P::gen)) > 31;
 	Wc x_spawn = (P::bd(P::gen)) % 3 - 1 + x;
 	Wc y_spawn = (P::bd(P::gen)) % 3 - 1 + y;
 	
@@ -135,7 +135,7 @@ void Fire::physics_spec(World &world) {
 	bool in_bound_y = (y_spawn) < world.get_rows() && (y_spawn) >= 0;
 	
 	// assigned the lighting particle
-	if (in_bound_x && in_bound_y && !overlap_itself && !overlap_border) {
+	if (light && in_bound_x && in_bound_y && !overlap_itself && !overlap_border) {
 		Lightning l(x_spawn, y_spawn);
                 P_ptr p_l = std::make_shared<Lightning>(l);
                 P_ptr &p_world = world.at(x_spawn, y_spawn);
