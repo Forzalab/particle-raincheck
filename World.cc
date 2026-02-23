@@ -115,10 +115,10 @@ Amt World::alive_count() const {
 	// is still a valid count, -1 as error prevents exception via error as
 	// return, Allowing us to detect empty list vs none above 0 lfetime
 	// particles.
-	return std::accumulate(ps.begin(), ps.end(), 0,
-						   [](const Amt &count, const auto &p) {
+	return std::count_if(ps.begin(), ps.end(),
+						   [](const auto &p) {
 							   const Amt pl = p->get_lifetime();
-							   return pl > 0 ? count + pl : count;
+							   return pl > 0;
 						   });
 } // get amt of LIVING P.
 
