@@ -63,8 +63,8 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 } // .at()
 
 bool World::isInBounds(const auto &p) {
-	Wc col = std::round(p->get_col());
-	Wc row = std::round(p->get_row());
+	Wc col = int(p->get_col());
+	Wc row = int(p->get_row());
 
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
