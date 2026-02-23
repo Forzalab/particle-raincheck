@@ -148,8 +148,8 @@ void Game::run() {
 		std::cerr << fs;
 		fs.clear();
 		for (const auto &p : world.getParticles()) {
-			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()),
-										  std::floor(p->get_col())));
+			prevPs.push_back(pair<Wc, Wc>(std::round(p->get_row()),
+										  std::round(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
 	}	

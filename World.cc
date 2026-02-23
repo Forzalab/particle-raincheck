@@ -63,8 +63,8 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 } // .at()
 
 bool World::isInBounds(const auto &p) {
-	Wc col = std::floor(p->get_col());
-	Wc row = std::floor(p->get_row());
+	Wc col = std::round(p->get_col());
+	Wc row = std::round(p->get_row());
 
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
@@ -112,10 +112,10 @@ Amt World::alive_count() const {
 	// is still a valid count, -1 as error prevents exception via error as
 	// return, Allowing us to detect empty list vs none above 0 lfetime
 	// particles.
-	return std::accumulate(ps.begin(), ps.end(), 0,
-						   [](const Amt &count, const auto &p) {
+	return std::count_if(ps.begin(), ps.end(),
+						   [](const P_ptr &p) {
 							   const Amt pl = p->get_lifetime();
-							   return pl > 0 ? count + pl : count;
+							   return pl > 0;
 						   });
 } // get amt of LIVING P.
 
