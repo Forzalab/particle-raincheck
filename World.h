@@ -32,6 +32,7 @@ private:
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
 
+	void updateMap();
 	void parseParticlesFromJSON(std::string &s);
 
 public:
@@ -49,7 +50,6 @@ public:
 	P_Type atMap(Wc row, Wc col);
 
 	void updateVecs();
-	void updateMap();
 	
 	void erase(const Wc &row, const Wc &col);
 	P_ptr& at(const Pc &row, const Pc &col); // .at()

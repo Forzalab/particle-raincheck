@@ -8,9 +8,8 @@
 #include <memory>
 #include <thread>
 #include "Bifrost.h"
-#include "/public/colors.h"
+#include "colors.h"
 #include <string>
-#include <unistd.h>
 
 #include "libs/include/Bridges.h"
 #include "libs/include/ColorGrid.h"
@@ -33,7 +32,6 @@ class CallbackHandler { //Used for mouse click events.
 				P_ptr pt = generateParticle();
 				pt->set_lifetime(1000); //arbitrary for testing
 				if(pt != nullptr)  world.add_particle(pt); //Ensure it doesnt generate a nullptr 		
-				world.updateMap();
 			}
 		} //inrow and incol are previously verified in bounds. This is the function called on mousedown
 		void setPType(P_Type inType) { type = inType; }
@@ -56,7 +54,7 @@ public:
 	void dcrs_fps();
 	void draw();
 	void draw_BRIDGES(); // URL will be printed by BRIDGE
-	void render();
+	std::string render();
 	void run();
 };
 
