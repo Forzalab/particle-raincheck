@@ -90,7 +90,7 @@ void Game::run() {
 	*/
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
-	std::vector<pair<Wc, Wc>> prevPs;
+	// std::vector<pair<Wc, Wc>> prevPs;
 	bool paused = false;
 	//Stores which P_Type user selects, is none by default. Also contains a member function which will be set as the callback for on mouse down, adding that particle type at the mouse loc
 	CallbackHandler ch{world};
@@ -99,6 +99,8 @@ void Game::run() {
 	//Sets the function that happens on mouse click down to the created function wrapper
 	on_mousedown(boundFunc);
 	while (frame < 3600) {
+		movecursor(0,0);
+		resetcolor();
 		int c = toupper(quick_read());
 
 		if(c == 'P') {
@@ -111,13 +113,9 @@ void Game::run() {
 		}
 		//- '0' gets 0-9 in integer form
 		// +1 to map to 1(air)-10(TBD3)
-		else if(c <= '9' && c >= '0') {
+		if(c <= '9' && c >= '0') {
 			ch.setPType(static_cast<P_Type>(c - '0' + 1)); 
 		}
-		printFPS(prev_frame, world.get_rows());
-		prev_frame = clock::now();
-		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
-		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
 		if(!paused) frame += world.physics(); // Physics will always return 1, unless there
 											  // are no particles.
 		else {
@@ -133,12 +131,17 @@ void Game::run() {
 					break;
 			}
 		}
-		unrender(prevPs);
+		// unrender(prevPs);
+		clearscreen();
+		printFPS(prev_frame, world.get_rows());
+		prev_frame = clock::now();
+		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
+		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
 		render();
-		for (const auto &p : world.getParticles()) {
-			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()),
-										  std::floor(p->get_col())));
-		}
+		// for (const auto &p : world.getParticles()) {
+			// prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()),
+										  // std::floor(p->get_col())));
+		// }
 		std::this_thread::sleep_until(next_frame);
 	}	
 	resetTerminal();
@@ -162,13 +165,13 @@ void Game::render() {
 	movecursor(0,0);
 	resetcolor();
 	for (const auto &p : particles) {
-		Wc row = std::round(p->get_row());
-		Wc col = std::round(p->get_col());
+		Wc row = int(p->get_row());
+		Wc col = int(p->get_col());
 		if (col < 0 || col > world.get_cols() || row > world.get_rows() ||
 			row < 0)
 			continue; // Do not print particles that are OOB and not yet culled
 					  // by world::physics()
-		movecursor(std::round(row), std::round(col));
+		movecursor(int(row), int(col));
 		setbgcolor(p->get_r(), p->get_g(), p->get_b());
 		std::cout << " ";
 		resetcolor();
