@@ -120,7 +120,7 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		// create new upwards Air
 		Air a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Air>(a);
-		P_ptr p_world = world.at(nbr->get_row(), nbr->get_col());
+		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
 		if (p_world)
 			p_world = p_a;
 		else
@@ -214,20 +214,20 @@ void Dirt::physics_spec(World &world) {
 
 	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
 		// world.at(get_row() + 1, get_col()) == nullptr) {
-	if(world.atMap(get_row() + 1, get_col()) == none) { 
+	if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) { 
 		set_row(get_row() + get_y_vel());
 		set_col(get_col() + get_x_vel());
 	} else {
 		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
 			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(world.atMap(get_row() + 1, get_col() - 1) == none) {
+		if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
 		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
 					// none) &&
 				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
 		}
-		else if(world.atMap(get_row() + 1, get_col() + 1) == none) {
+		else if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 		} else {
@@ -249,14 +249,14 @@ void Lightning::physics_spec(World &world) {
 	} else {
 		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
 			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(world.atMap(get_row() + 1, get_col() - 1) == none) {
+		if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
 		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
 					// none) &&
 				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
 		}
-		else if(world.atMap(get_row() + 1, get_col() + 1) == none) {
+		else if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 		} else {
@@ -283,7 +283,7 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 	if (nbr->get_type() == earth) {
 		Dirt d(nbr->get_row(), nbr->get_col());
 		P_ptr p_d = std::make_shared<Dirt>(d);
-		P_ptr p_world = world.at(nbr->get_row(), nbr->get_col());
+		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
 		if (p_world)
 			p_world = p_d;
 		else
@@ -294,7 +294,7 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 	} else if (nbr->get_type() == water) {
 		Lightning l(nbr->get_row(), nbr->get_col());
 		P_ptr p_l = std::make_shared<Lightning>(l);
-		P_ptr p_world = world.at(nbr->get_row(), nbr->get_col());
+		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
 		if (p_world)
 			p_world = p_l;
 		else
