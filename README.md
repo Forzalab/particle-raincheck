@@ -53,6 +53,8 @@
     - Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
 ### Game class
 - Implemented all input from mouse and keyboard using non-blocking I/O
+--A .save() method which saves the state of the world to disk
+--A .load() method which loads the state of the world to disk
 
 ## Ho
 ### Particle class
