@@ -9,7 +9,7 @@ a.out: $(OBJS)
 	@echo -e '\t$(OBJS)'
 	@echo to 'a.out'!
 
-%.o: %.cc /public/colors.h 
+%.o: %.cc colors.h 
 	@g++ $(CCFLAGS) -MMD -MP -c $< -o $@
 	@echo Done compiling '$<'!
 

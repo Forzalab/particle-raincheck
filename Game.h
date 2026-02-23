@@ -8,7 +8,7 @@
 #include <memory>
 #include <thread>
 #include "Bifrost.h"
-#include "/public/colors.h"
+#include "colors.h"
 #include <string>
 
 #include "libs/include/Bridges.h"
