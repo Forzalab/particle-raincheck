@@ -16,7 +16,7 @@ std::string printFPS(const auto &lastFrameStart, Wc rows) {
 	auto diff = std::chrono::duration<double>(std::chrono::steady_clock::now() -
 											  lastFrameStart);
 	s += movecursor(rows + 5, 0);
-	s += 1.0 / diff.count();
+	s += std::to_string( std::round(1000.0 / diff.count()) / 1000.0 );
 	s += " FPS";
 	s += "";
 	for (int i = 0; i < 80; i++) {
