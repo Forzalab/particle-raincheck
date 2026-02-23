@@ -15,6 +15,7 @@ void World::updateMap() {
 	map.assign(map.size(), none);
 	for (const auto &p : ps) {
 		Wc rawInd = int(p->get_row()) * cols + int(p->get_col());
+		if(rawInd >= map.size()) continue;
 		map.at(rawInd) = p->get_type();
 	}
 }
@@ -42,7 +43,7 @@ bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
 P_Type World::atMap(Wc row, Wc col) {
 	if (exclusiveInRange(1, rows - 1, row) &&
 		exclusiveInRange(1, cols - 1, col)) {
-		return map.at(rows * row + col);
+		return map.at(cols * row + col);
 	} else {
 		return OOB;
 	} // If you're checking out of bounds
