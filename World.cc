@@ -285,12 +285,16 @@ void World::parseParticlesFromJSON(std::string &s) {
 	}
 }
 
-void World::load(const std::string &str) {
+int World::load(const std::string &str) {
 	std::ifstream ifs(str);
 	// std::ifstream ifs(SAVEFILE);
 	if (!ifs) {
-		std::cerr << "Save file failed to open.\n";
+		return -1; //reported error file not found
 	}
+	//if file successfully opens, clear out the old data.
+	ps.clear();
+	map.clear();
+	updateVecs();
 	std::string s;
 	// Throw out the first linw, as ut is always just a open curly brace.
 	// This JSON parser will not be portable in the slightest, it will just work
@@ -319,4 +323,6 @@ void World::load(const std::string &str) {
 	if (s.length() > 1) {		// == 1 means it is empty
 		parseParticlesFromJSON(s);
 	}
+	ifs.close();
+	return 0;//no error
 }
