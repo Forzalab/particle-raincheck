@@ -46,8 +46,7 @@ void P::set_r(const Color &_r) { r = _r; }
 void P::set_g(const Color &_g) { g = _g; }
 void P::set_b(const Color &_b) { b = _b; }
 void P::set_stationary(const bool &_stationary) {
-	stationary = _stationary;
-	if (stationary == true) {
+	if (_stationary == true) {
 		set_x_vel(0);
 		set_y_vel(0);
 		set_lifetime(-1);
@@ -96,8 +95,8 @@ void Air::touch(const P_ptr &nbr, World &world) {}
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.00025;
 
-	Pc rand_sign = (((P::bd(P::gen)) > 25) ? -1 : 1);
-	Pc dx_scale = 0.125 * rand_sign * (((P::bd(P::gen)) > 25) ? -1 : 1);
+	Pc rand_sign = (((P::bd(P::gen)) >= 26) ? -1 : 1);
+	Pc dx_scale = 0.125 * rand_sign * (((P::bd(P::gen)) >= 25) ? -1 : 1);
 	Pc dy_scale = gravity * (((P::bd(P::gen)) > 27) ? -1 : 1);
 
 	set_x_vel([&]() {
@@ -117,17 +116,21 @@ void Dust::touch(const P_ptr &nbr, World &world) {}
 void Fire::physics_spec(World &world) {
 	// Fire is stationary by default
 
-	Wc x = int(this->get_col());
-        Wc y = int(this->get_row());
+	Pc y = int(this->get_col());
+        Pc x = int(this->get_row());
 
 	// Lighting spawn
-	bool light = (P::bd(P::gen)) > 31;
-	Wc x_spawn = (P::bd(P::gen)) % 3 - 1 + x;
-	Wc y_spawn = (P::bd(P::gen)) % 3 - 1 + y;
-	
+	bool light = (P::bd(P::gen)) > 1;
+	Pc sign_x = (P::bd(P::gen)) % 3 - 1;
+	Pc sign_y = (P::bd(P::gen)) % 3 - 1;
+	Pc x_spawn = ((P::bd(P::gen)) % 3) + x;
+	Pc y_spawn = ((P::bd(P::gen)) % 3) + y - 1;
+	Pc dx_spawn = 0.1 * sign_x * (((P::bd(P::gen)) % 3 - 1));
+        Pc dy_spawn = 0.1 * sign_y * (((P::bd(P::gen)) % 3 - 3));
+
 	// Chexks for currently gen x,y spawn
 	// no overlap spawn
-	bool overlap_itself = (x_spawn == x && y_spawn == y);
+	bool overlap_itself = (Wc(x_spawn) == Wc(x) && Wc(y_spawn) == Wc(y));
 	bool overlap_border = is_solid(world.atMap(x_spawn, y_spawn));
 
 	// inbound check
@@ -137,14 +140,14 @@ void Fire::physics_spec(World &world) {
 	// assigned the lighting particle
 	if (light && in_bound_x && in_bound_y && !overlap_itself && !overlap_border) {
 		Lightning l(x_spawn, y_spawn);
-                P_ptr p_l = std::make_shared<Lightning>(l);
+            	l.set_x_vel(dx_spawn); l.set_y_vel(dy_spawn);
+	        P_ptr p_l = std::make_shared<Lightning>(l);
                 P_ptr &p_world = world.at(x_spawn, y_spawn);
                 if (p_world)
                         p_world = p_l;
                 else
                         world.add_particle(p_l);
 	}
-	
 }
 
 void Fire::touch(const P_ptr &nbr, World &world) {
@@ -270,34 +273,24 @@ void Dirt::physics_spec(World &world) {
 }
 
 void Lightning::physics_spec(World &world) {
-	Pc x_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; // Results in 1 or -1
-	Pc y_grav = (P::bd(P::gen) % 2 == 1) ? 1 : -1; // Results in 1 or -1
+        Pc x = this->get_col();
+        Pc y = this->get_row();
+	Pc dx = this->get_x_vel();
+        Pc dy = this->get_y_vel();
 
-	set_x_vel(get_x_vel() + x_grav);
-	set_y_vel(get_y_vel() + y_grav);
-
-	if (!get_stationary()) {
-		set_row(get_row() + get_y_vel());
-	} else {
-		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
-			set_row(get_row() + 1);
-			set_col(get_col() - 1);
-		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-					// none) &&
-				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
-		}
-		else if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
-			set_row(get_row() + 1);
-			set_col(get_col() + 1);
-		} else {
-			set_stationary(true);
-			return;
-		}
+	Pc x_dx = int(x + dx);
+	Pc y_dy = int(y + dy);
+	P_Type pt = world.atMap(x_dx, y_dy);
+	
+	if (pt == fire) {
+		set_lifetime(0);
+		return;
 	}
-
-	//	return;
+	
+	if (!get_stationary()) {
+		set_col(get_col() + dx);
+		set_row(get_row() + dy);
+	}
 }
 
 // primitive touch for the time being, can revisit if causes problems
