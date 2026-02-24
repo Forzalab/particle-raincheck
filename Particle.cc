@@ -94,13 +94,16 @@ void Air::physics_spec(World &world) {
 void Air::touch(const P_ptr &nbr, World &world) {}
 
 void Dust::physics_spec(World &world) {
-	Pc gravity = 0.1;
+	Pc gravity = 0.00025;
 
-	Pc dx_scale = 0.2 * (((P::bd(P::gen)) > 27) ? -1 : 1);
+	Pc rand_sign = (((P::bd(P::gen)) > 25) ? -1 : 1);
+	Pc dx_scale = 0.125 * rand_sign * (((P::bd(P::gen)) > 25) ? -1 : 1);
 	Pc dy_scale = gravity * (((P::bd(P::gen)) > 27) ? -1 : 1);
 
-	set_x_vel((((P::bd(P::gen)) > 27) ? -1 : 1) * dx_scale);
-	set_y_vel((((P::bd(P::gen)) > 27) ? -1 : 1) * dy_scale);
+	set_x_vel([&]() {
+		return dx_scale;
+	}());
+	set_y_vel(get_y_vel() + dy_scale);
 
 	if (!get_stationary()) {
 		set_row(get_row() + get_y_vel());

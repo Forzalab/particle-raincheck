@@ -16,7 +16,7 @@ std::string printFPS(const auto &lastFrameStart, Wc rows) {
 	auto diff = std::chrono::duration<double>(std::chrono::steady_clock::now() -
 											  lastFrameStart);
 	s += movecursor(rows + 5, 0);
-	s += std::to_string( std::round(1000.0 / diff.count()) / 1000.0 );
+	s += std::to_string( int(1000.0 / diff.count()) / 1000.0 );
 	s += " FPS";
 	s += "";
 	for (int i = 0; i < 80; i++) {
@@ -148,8 +148,8 @@ void Game::run() {
 		std::cerr << fs;
 		fs.clear();
 		for (const auto &p : world.getParticles()) {
-			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()),
-										  std::floor(p->get_col())));
+			prevPs.push_back(pair<Wc, Wc>(int(p->get_row()),
+										  int(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
 	}	
@@ -176,13 +176,13 @@ std::string Game::render() {
 	s += movecursor(0,0);
 	s += resetcolor();
 	for (const auto &p : particles) {
-		Wc row = std::round(p->get_row());
-		Wc col = std::round(p->get_col());
+		Wc row = int(p->get_row());
+		Wc col = int(p->get_col());
 		if (col < 0 || col > world.get_cols() || row > world.get_rows() ||
 			row < 0)
 			continue; // Do not print particles that are OOB and not yet culled
 					  // by world::physics()
-		s += movecursor(std::round(row), std::round(col));
+		s += movecursor(int(row), int(col));
 		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
 		s += " ";
 		s += resetcolor();
