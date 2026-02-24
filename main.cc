@@ -40,7 +40,7 @@ int main() {
 			std::cout << p4->get_row() << " " << p4->get_col();
 			std::cin.get();
 		}
-	
+
 
 	p4->touch(std::make_shared<Air>(p2), w);
 	p4->touch(p5, w);
@@ -50,7 +50,7 @@ int main() {
 	w.add_particle(std::make_shared<Water>(p7));
 	P_ptr pf = w.at(200, 300);
 
- 
+
        // insidiouds pattern: ptr cpy (not to be
         // confused with shallow cpy or deep cpy!)
 	// TRY IT: remove the apostrophe to see
@@ -64,7 +64,7 @@ int main() {
 
 	std::cout << "pf type is " << pf->get_type() << std::endl;
 	std::cout << "pw type is " << pw->get_type() << std::endl;
-	
+
 	// Why? shared_ptr is many ptrs to a same obj.
 	// Ptr of p4, although a ptr cpy, points to
 	// SAME obj of p4. All its copies will, actually.

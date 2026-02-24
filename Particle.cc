@@ -141,34 +141,50 @@ void Water::physics_spec(World &world) {
 	if (get_stationary()) {
 		return;
 	}
-	Pc gravity = 0.1;
+	// gravity accumulation (new system)
+	float new_vel = get_y_vel() + 0.1f;
+	int steps = static_cast<int>(new_vel);
+	set_y_vel(new_vel - steps);
 	set_x_vel(0); // no lateral movement in air
-	// initial velocity + acceleration due to gravity
-	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
+	if (steps == 0) return;
+	int r = get_row();
+	int c = get_col();
+	// initial velocity + acceleration due to gravity
+//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
+	
 	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
 	// 	world.at(get_row() + 1, get_col()) == nullptr) {
 	//Above code errors. This handles OOB for you. The list that .at() searches is for actual particle types. None is a placeholder type
 	//for in bounds but no particle at location.
-	if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) { 
-		set_row(get_row() + get_y_vel());
+	if(!P::is_solid(world.atMap(r + 1, c))) { 
+		set_row(r + 1);
 		return;
 	}
 	// only if something is below it do we now trst where it can slide
 	else {
 		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
 		// 	world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(world.atMap(get_row() + 1, get_col() - 1) == none) {
-			set_row(get_row() + 1);
-			set_col(get_col() - 1);
+		if(world.atMap(r + 1, c - 1) == none) {
+			set_row(r + 1);
+			set_col(c - 1);
 			return;
 		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
 		// 			none) &&
 		// 		   world.at(get_row() + 1, get_col() + 1) == nullptr) {
 		} 
-		else if(world.atMap(get_row() + 1, get_col() + 1) == none) {
-			set_row(get_row() + 1);
-			set_col(get_col() + 1);
+		else if(world.atMap(r + 1, c + 1) == none) {
+			set_row(r + 1);
+			set_col(c + 1);
+			return;
+		}
+		// if it can move left and there is something under the new potential position
+		else if (world.atMap(r, c - 1) == none && P::is_solid(world.atMap(r + 1, c - 1))) {
+			set_col(c - 1);
+			return;
+		}
+		else if (world.atMap(r, c + 1) == none && P::is_solid(world.atMap(r + 1, c + 1))) {
+			set_col(c + 1);
 			return;
 		}
 		/*	else if (world.at(get_row(), get_col() - 1)->get_type() == none) {
@@ -206,35 +222,44 @@ void Dirt::physics_spec(World &world) {
 		return;
 	}
 
-	Pc gravity = 0.1;
+	// gravity accumulation (new system)
+	float new_vel = get_y_vel() + 0.1f;
+	int steps = static_cast<int>(new_vel);
+	set_y_vel(new_vel - steps);
 	set_x_vel(0); // no lateral movement in air
-	// initial velocity + acceleration due to gravity
+
+	if (steps == 0) return;
+	int r = get_row();
+	int c = get_col();
 	//	set_y_vel(get_y_vel() + gravity);
-	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
+//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
 	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
 		// world.at(get_row() + 1, get_col()) == nullptr) {
-	if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) { 
-		set_row(get_row() + get_y_vel());
-		set_col(get_col() + get_x_vel());
-	} else {
+	// checks below
+	if(!P::is_solid(world.atMap(r + 1, c))) { 
+		set_row(r + 1);
+		return;
+	}
 		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
 			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
-			set_row(get_row() + 1);
-			set_col(get_col() - 1);
+		// checks below and to the left
+	if(!P::is_solid(world.atMap(r + 1, c - 1))) {
+			set_row(r + 1);
+			set_col(c - 1);
+			return;
 		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
 					// none) &&
 				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
 		}
-		else if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
-			set_row(get_row() + 1);
-			set_col(get_col() + 1);
-		} else {
-			set_stationary(true);
+		// checks below and to the right
+		if(!P::is_solid(world.atMap(r + 1, c + 1))) {
+			set_row(r + 1);
+			set_col(c + 1);
 			return;
 		}
-	}
+			// else it cant move
+			set_stationary(true);
 }
 
 void Lightning::physics_spec(World &world) {
