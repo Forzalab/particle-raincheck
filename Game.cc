@@ -178,7 +178,6 @@ void Game::run() {
 		fs += render();
 		std::cerr << fs;
 		fs.clear();
-		save();
 		for (const auto &p : world.getParticles()) {
 			prevPs.push_back(pair<Wc, Wc>(int(p->get_row()),
 										  int(p->get_col())));
@@ -259,24 +258,24 @@ void Game::load() {
 	cin >> filename;
 	set_raw_mode(true);
 	filename += ".JSON";
-	cout << filename << endl; // Test
 	int err = world.load(filename);
 	if(err == -1) {
 		std::cerr << "File: " << filename << " does not exist."; 
+	}
+	else {
+		std::cerr << clearscreen();
 	}
 	//set_raw_mode(true);
 }
 
 void Game::save() {
 	std::cerr << movecursor(0,0);	
-	std::cerr << clearscreen();
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
 	set_raw_mode(false);
 	cin >> filename;
 	set_raw_mode(true);
 	filename += ".JSON";
-	cout << filename << endl; // Test
 	world.save(filename);
 	std::cerr << clearscreen();
 }
