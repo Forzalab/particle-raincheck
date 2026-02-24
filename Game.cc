@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "colors.h"
 #include <cctype>
 #include <cstdlib>
 #include <functional>
@@ -74,7 +75,22 @@ void Game::run() {
 		system("figlet =======");
 
 		// Add a time delay for users to see splash screen before game starts
-		sleep(2); // Pauses for two seconds
+	//	sleep(2); // Pauses for two seconds
+		bool paused = true;
+		while (paused == true) {
+			set_raw_mode(true);
+			int c = toupper(quick_read());
+			if (c == 'S') {
+				paused = false;
+				break;
+			} else if (c == 'L') {
+				load();
+				break;
+			} else if (c == 'Q') {
+				resetTerminal();
+				return;
+			}
+		}
 		std::cerr << clearscreen();
 	}
 	// load(); //Test
@@ -83,7 +99,7 @@ void Game::run() {
 	// dcrs_fps(); //Test
 
 	// start of non-blocking I/O
-	set_raw_mode(true);
+//	set_raw_mode(true);
 	/*	while (true) {
 			int c = toupper(quick_read());
 			if (c == 'L') load();
