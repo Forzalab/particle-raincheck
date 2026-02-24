@@ -39,12 +39,13 @@
 ## Romero
 ### Game class
 - On launch draw a splash screen (Implementing)
-### Particle class
-- Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt (Implementing)
+- Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc) (Implemented
 - Implement a command to increase frame rate (Implemented)
 - Implement a command to decrease frame rate (Implemented)
 - Implement a command to load the world from disk (Implemented)
 - Implement a command to save the world to disk (Implemented)
+### Particle class
+- Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt (Implementing)
 
 ## Jackson
 ### Particle class
