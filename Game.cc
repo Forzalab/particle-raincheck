@@ -126,7 +126,7 @@ void Game::run() {
 	//Sets the function that happens on mouse click down to the created function wrapper
 	on_mousedown(boundFunc);
 	
-	while (frame < 3600) {
+	while (true) {
 		int c = toupper(quick_read());
 
 		if(c == 'P') {
@@ -243,25 +243,33 @@ void Game::dcrs_fps() {
 }
 
 void Game::load() {
-	set_raw_mode(false);
+	resetcolor();
+	movecursor(0,0);	
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
+	set_raw_mode(false);
 	cin >> filename;
+	set_raw_mode(true);
 	filename += ".JSON";
 	cout << filename << endl; // Test
-	world.load(filename);
+	int err = world.load(filename);
+	if(err == -1) {
+		cerr << "File: " << filename << " does not exist."; 
+	}
 	set_raw_mode(true);
 }
 
 void Game::save() {
-	set_raw_mode(false);
+	movecursor(0,0);	
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
+	set_raw_mode(false);
 	cin >> filename;
+	set_raw_mode(true);
 	filename += ".JSON";
 	cout << filename << endl; // Test
 	world.save(filename);
-	set_raw_mode(true);
+	clearscreen();
 }
 
 P_ptr CallbackHandler::generateParticle() {
