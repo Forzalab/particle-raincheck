@@ -33,11 +33,16 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 	if (paused == false) {
 		s += "(P):Pause (+):Increase_FPS (-):Decrease_FPS";
 		for (int i = 0; i < 70; i++) {
-			s += " ";
+//			s += " ";
 		} // Clean up trailing chars from prev frame
 	}
 	else {
-		s += "(S):Unpause (Q):Quit (A):Save (L):Load (0):Air (1):Dust (2):Fire (3):Water (4):Earth (5):Dirt (6):Lightning";
+		size = s.size();
+		s += movecursor(rows + 5, size);
+		s += "(S):Unpause (Q):Quit (A):Save (L):Load";
+
+		s += movecursor(rows+6, size);
+                s += "(0):Air (1):Dust (2):Fire (3):Water (4):Earth (5):Dirt (6):Lightning";
 	}
 	
 	return s;
@@ -69,7 +74,9 @@ void Game::run() {
 	{
 		// Draw a splash screen here.
 
-		clearscreen();
+		fs += clearscreen();
+		std::cerr << fs;
+		fs.clear();
 		system("figlet =======");
 		system("figlet Particles");
 		system("figlet =======");
@@ -148,7 +155,7 @@ void Game::run() {
 		else if (c == '+') {
 			incr_fps();
 		}
-		fs += printFPS(prev_frame, world.get_rows(), paused);
+		fs += printFPS(prev_frame, world.get_rows(), paused);;
 		prev_frame = clock::now();
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
@@ -171,6 +178,7 @@ void Game::run() {
 		fs += render();
 		std::cerr << fs;
 		fs.clear();
+		save();
 		for (const auto &p : world.getParticles()) {
 			prevPs.push_back(pair<Wc, Wc>(int(p->get_row()),
 										  int(p->get_col())));
@@ -243,8 +251,8 @@ void Game::dcrs_fps() {
 }
 
 void Game::load() {
-	resetcolor();
-	movecursor(0,0);	
+	std::cerr << resetcolor();
+	std::cerr << movecursor(0,0);	
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
 	set_raw_mode(false);
@@ -254,13 +262,14 @@ void Game::load() {
 	cout << filename << endl; // Test
 	int err = world.load(filename);
 	if(err == -1) {
-		cerr << "File: " << filename << " does not exist."; 
+		std::cerr << "File: " << filename << " does not exist."; 
 	}
-	set_raw_mode(true);
+	//set_raw_mode(true);
 }
 
 void Game::save() {
-	movecursor(0,0);	
+	std::cerr << movecursor(0,0);	
+	std::cerr << clearscreen();
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
 	set_raw_mode(false);
@@ -269,7 +278,7 @@ void Game::save() {
 	filename += ".JSON";
 	cout << filename << endl; // Test
 	world.save(filename);
-	clearscreen();
+	std::cerr << clearscreen();
 }
 
 P_ptr CallbackHandler::generateParticle() {
