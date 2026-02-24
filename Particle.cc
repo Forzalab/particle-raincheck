@@ -282,7 +282,7 @@ void Lightning::physics_spec(World &world) {
 	Pc y_dy = int(y + dy);
 	P_Type pt = world.atMap(x_dx, y_dy);
 	
-	if (pt == fire) {
+	if (pt == fire || is_solid(pt)) {
 		set_lifetime(0);
 		return;
 	}
