@@ -244,25 +244,21 @@ void Game::dcrs_fps() {
 }
 
 void Game::load() {
-	set_raw_mode(false);
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
 	cin >> filename;
 	filename += ".JSON";
 	cout << filename << endl; // Test
 	world.load(filename);
-	set_raw_mode(true);
 }
 
 void Game::save() {
-	set_raw_mode(false);
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
 	cin >> filename;
 	filename += ".JSON";
 	cout << filename << endl; // Test
 	world.save(filename);
-	set_raw_mode(true);
 }
 
 P_ptr CallbackHandler::generateParticle() {

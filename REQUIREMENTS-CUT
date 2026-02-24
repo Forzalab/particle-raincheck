@@ -11,17 +11,12 @@ By the due date you need to have:
 ------Earth is always stationary and solid
 ------Dirt travels downwards and forms piles when it hits something solid
 ------You can add your own types as well for extra credit
-----So if you turn stationary true on water it will not move even if a spot opens up beneath it
 ----Stationary Particles can still be destroyed or transformed by other Particles
 --A .physics() method that gets the world map passed in by reference, that runs physics for the particle and updates the world map if it moved. If it runs into another particle, it calls .touch() on the other particle.
 --A .touch() method that gets called when another particle touches it. 
 --Between .physics and .touch you can handle all interactions (fire x water, water x lightning, etc.)
 
 3. A Game class that is responsible for processing input
---It has to handle all input from mouse and keyboard using non-blocking I/O
---Implement a command to start simulating the world
---Implement a command to load the world from disk
---Implement a command to save the world to disk
 --Implement a command to draw the world on BRIDGES (see below)
 ----Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc)
 ----It must be rendered across the full screen using the color library, using 32 bit colors
