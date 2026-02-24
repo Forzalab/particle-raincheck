@@ -77,12 +77,18 @@ int World::physics() {
 	if (size() == 0)
 		return 0;
 
-	for (auto &p : ps) {
+	for (auto p = ps.begin(); p != ps.end(); p++) {
+		Wc x = (*p)->get_col();
+		Wc y = (*p)->get_row();
 		// Do particle physics calls here
-		p->physics(*this);
+		(*p)->physics(*this);
 		// Decrement p lifetime if it is not a permanent particle
-		if (p->get_lifetime() != -1)
-			p->set_lifetime(p->get_lifetime() - 1);
+		// !!!!!!!!!! del par
+		if (this->atMap(x, y) == none) goto updatemap;
+
+		if ((*p)->get_lifetime() != -1)
+			(*p)->set_lifetime((*p)->get_lifetime() - 1);
+updatemap:
 		updateMap(); // Moved this in here because I realized that each time a
 					 // particle moves per frame, it needs this to be as up to
 					 // date as possible.

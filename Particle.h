@@ -28,9 +28,9 @@ enum P_Type : uint8_t {
 	tbd_1, // confetti?
 	tbd_2,
 	tbd_3,
-	OOB, //Checking an out of bounds loc in atMap()
+	OOB,		  // Checking an out of bounds loc in atMap()
 	E_MIN = none, // change as enum list changed
-	E_MAX = OOB // change as enum list changed
+	E_MAX = OOB	  // change as enum list changed
 };
 
 class World; // stub for forward-dependency
@@ -55,7 +55,7 @@ protected:
 	Particle(const Color &r, const Color &g, const Color &b,
 			 const bool &stationary, const Tick &lifetime, const P_Type &type)
 		: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime),
-		  type(type) {}
+		  type(type) { set_stationary(stationary); set_lifetime(lifetime);}
 
 public:
 	void set_type(const P_Type &_type);
@@ -93,7 +93,7 @@ public:
 	Tick get_lifetime() const;
 	void set_lifetime(const Tick &_lifetime);
 
-	static bool is_equal(const Pc& lhs, const Pc& rhs);
+	static bool is_equal(const Pc &lhs, const Pc &rhs);
 	static bool is_solid(const P_Type &pt);
 	virtual bool get_solid() const;
 
@@ -164,7 +164,7 @@ public:
 
 class Fire : public P {
 public:
-	Fire(const Pc &row, const Pc &col) : Particle(227, 68, 32, true, 15, fire) {
+	Fire(const Pc &row, const Pc &col) : Particle(227, 68, 32, true, 1500, fire) {
 		set_row(row);
 		set_col(col);
 	}
@@ -210,14 +210,16 @@ public:
 class Lightning : public P {
 public:
 	Lightning(const Pc &row, const Pc &col)
-		: Particle(255, 255, 0, false, 10, lightning) {
-		Pc x_val = (P::bd(P::gen) % 11) / 10.0f;
-		Pc y_val = (P::bd(P::gen) % 10 + 1) / 10.0f;
+		: Particle(255, 255, 0, false, 1, lightning) {
+		int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
+		int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
 
-		// From what I understand x could be between -1 and 1
-		//  and y could be -1 and 1 but not zero
-		set_x_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * x_val);
-		set_y_vel(((P::bd(P::gen) % 2 == 1) ? -1 : 1) * y_val);
+		Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
+		Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
+
+		set_x_vel(x_grav);
+		set_y_vel(y_grav);
+
 		set_row(row);
 		set_col(col);
 	}
