@@ -133,10 +133,8 @@ int World::physics() {
 		if (!st)
 			updateMap(y, x, none);  // Old particle pos
 		// !!!!!!!!!! del par
-		if (type_new != none) {
-			if ((*p)->get_lifetime() != -1)
-				(*p)->set_lifetime((*p)->get_lifetime() - 1);
-		}
+		if (type_new != none && (*p)->get_lifetime() > 0)
+			(*p)->set_lifetime((*p)->get_lifetime() - 1);
 	}
 	// If the particle is "dead" aka lifetime is exactly 0
 	// OR
