@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "colors.h"
+#include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <functional>
@@ -9,20 +10,41 @@ typedef uint32_t GameTick;
 
 GameTick Game::get_tickrate() const { return tickrate; }
 
+//Used for boundary checking fps when increasing and decreasing
+GameTick const fps_min = 3, fps_max = 60;
+
 // Declaring here, definition is above render()
 std::string unrender(auto &prevPs);
 
-std::string printFPS(const auto &lastFrameStart, Wc rows) {
+std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 	std::string s;
+	int size = 0;
 	auto diff = std::chrono::duration<double>(std::chrono::steady_clock::now() -
 											  lastFrameStart);
 	s += movecursor(rows + 5, 0);
-	s += std::to_string( std::round(1000.0 / diff.count()) / 1000.0 );
+	s += std::to_string( int(1000.0 / diff.count()) / 1000.0 );
 	s += " FPS";
 	s += "";
-	for (int i = 0; i < 80; i++) {
+	size = s.size();
+	for (int i = 0; i < 20 - size; i++) {
 		s += " ";
 	} // Clean up trailing chars from prev frame
+	
+	if (paused == false) {
+		s += "(P):Pause (+):Increase_FPS (-):Decrease_FPS";
+		for (int i = 0; i < 70; i++) {
+//			s += " ";
+		} // Clean up trailing chars from prev frame
+	}
+	else {
+		size = s.size();
+		s += movecursor(rows + 5, size);
+		s += "(S):Unpause (Q):Quit (A):Save (L):Load";
+
+		s += movecursor(rows+6, size);
+                s += "(0):Air (1):Dust (2):Fire (3):Water (4):Earth (5):Dirt (6):Lightning";
+	}
+	
 	return s;
 }
 
@@ -52,7 +74,9 @@ void Game::run() {
 	{
 		// Draw a splash screen here.
 
-		clearscreen();
+		fs += clearscreen();
+		std::cerr << fs;
+		fs.clear();
 		system("figlet =======");
 		system("figlet Particles");
 		system("figlet =======");
@@ -124,7 +148,7 @@ void Game::run() {
 	//Sets the function that happens on mouse click down to the created function wrapper
 	on_mousedown(boundFunc);
 	
-	while (frame < 3600) {
+	while (true) {
 		int c = toupper(quick_read());
 
 		if(c == 'P') {
@@ -140,7 +164,13 @@ void Game::run() {
 		else if(c <= '9' && c >= '0') {
 			ch.setPType(static_cast<P_Type>(c - '0' + 1)); 
 		}
-		fs += printFPS(prev_frame, world.get_rows());
+		else if(c == '-') {
+			dcrs_fps();
+		}
+		else if (c == '+') {
+			incr_fps();
+		}
+		fs += printFPS(prev_frame, world.get_rows(), paused);;
 		prev_frame = clock::now();
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
@@ -164,8 +194,8 @@ void Game::run() {
 		std::cerr << fs;
 		fs.clear();
 		for (const auto &p : world.getParticles()) {
-			prevPs.push_back(pair<Wc, Wc>(std::floor(p->get_row()),
-										  std::floor(p->get_col())));
+			prevPs.push_back(pair<Wc, Wc>(int(p->get_row()),
+										  int(p->get_col())));
 		}
 		std::this_thread::sleep_until(next_frame);
 	}	
@@ -192,13 +222,13 @@ std::string Game::render() {
 	s += movecursor(0,0);
 	s += resetcolor();
 	for (const auto &p : particles) {
-		Wc row = std::round(p->get_row());
-		Wc col = std::round(p->get_col());
+		Wc row = int(p->get_row());
+		Wc col = int(p->get_col());
 		if (col < 0 || col > world.get_cols() || row > world.get_rows() ||
 			row < 0)
 			continue; // Do not print particles that are OOB and not yet culled
 					  // by world::physics()
-		s += movecursor(std::round(row), std::round(col));
+		s += movecursor(int(row), int(col));
 		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
 		s += " ";
 		s += resetcolor();
@@ -207,6 +237,10 @@ std::string Game::render() {
 }
 
 void Game::incr_fps() {
+	//New change that makes input increment/decrement tickrate
+	tickrate++;
+	tickrate = std::clamp(tickrate, fps_min, fps_max); //Makes sure tickrate doesnt leave its set boundary
+	/*
 	GameTick input = 0;
 	cin >> input;
 	std::cerr << clearscreen();
@@ -223,42 +257,42 @@ void Game::incr_fps() {
 	} else {
 		tickrate = get_tickrate() + input;
 	}
+	*/
 }
 void Game::dcrs_fps() {
-	GameTick input = 0;
-	cin >> input;
-	std::cerr << clearscreen();
-	if (!cin || input < 3 || input > 60) { // If input is bad
-		cin.clear();
-		GameTick s = 0; // New variable
-		cin >> s;		// Stores the new input into new variable
-		cout << "BAD INPUT!\n";
-		sleep(1); // Gives time to read message
-	} else if (input + get_tickrate() < 3 ||
-			   input + get_tickrate() > 60) { // If new tickrate is out of range
-		cout << "INPUT OUT OF RANGE!!! (Keep FPS in between 3-60)\n";
-		sleep(1); // Gives time to read message
-	} else {
-		tickrate = get_tickrate() - input;
-	}
+	tickrate--;
+	tickrate = std::clamp(tickrate, fps_min, fps_max);
 }
 
 void Game::load() {
+	std::cerr << resetcolor();
+	std::cerr << movecursor(0,0);	
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
+	set_raw_mode(false);
 	cin >> filename;
+	set_raw_mode(true);
 	filename += ".JSON";
-	cout << filename << endl; // Test
-	world.load(filename);
+	int err = world.load(filename);
+	if(err == -1) {
+		std::cerr << "File: " << filename << " does not exist."; 
+	}
+	else {
+		std::cerr << clearscreen();
+	}
+	//set_raw_mode(true);
 }
 
 void Game::save() {
+	std::cerr << movecursor(0,0);	
 	cout << "Please enter name of file without the file extension: ";
 	std::string filename;
+	set_raw_mode(false);
 	cin >> filename;
+	set_raw_mode(true);
 	filename += ".JSON";
-	cout << filename << endl; // Test
 	world.save(filename);
+	std::cerr << clearscreen();
 }
 
 P_ptr CallbackHandler::generateParticle() {

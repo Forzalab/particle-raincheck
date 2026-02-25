@@ -63,8 +63,8 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 } // .at()
 
 bool World::isInBounds(const auto &p) {
-	Wc col = std::floor(p->get_col());
-	Wc row = std::floor(p->get_row());
+	Wc col = int(p->get_col());
+	Wc row = int(p->get_row());
 
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
@@ -77,12 +77,18 @@ int World::physics() {
 	if (size() == 0)
 		return 0;
 
-	for (auto &p : ps) {
+	for (auto p = ps.begin(); p != ps.end(); p++) {
+		Wc x = (*p)->get_col();
+		Wc y = (*p)->get_row();
 		// Do particle physics calls here
-		p->physics(*this);
+		(*p)->physics(*this);
 		// Decrement p lifetime if it is not a permanent particle
-		if (p->get_lifetime() != -1)
-			p->set_lifetime(p->get_lifetime() - 1);
+		// !!!!!!!!!! del par
+		if (this->atMap(x, y) == none) goto updatemap;
+
+		if ((*p)->get_lifetime() != -1)
+			(*p)->set_lifetime((*p)->get_lifetime() - 1);
+updatemap:
 		updateMap(); // Moved this in here because I realized that each time a
 					 // particle moves per frame, it needs this to be as up to
 					 // date as possible.
@@ -112,10 +118,10 @@ Amt World::alive_count() const {
 	// is still a valid count, -1 as error prevents exception via error as
 	// return, Allowing us to detect empty list vs none above 0 lfetime
 	// particles.
-	return std::accumulate(ps.begin(), ps.end(), 0,
-						   [](const Amt &count, const auto &p) {
+	return std::count_if(ps.begin(), ps.end(),
+						   [](const P_ptr &p) {
 							   const Amt pl = p->get_lifetime();
-							   return pl > 0 ? count + pl : count;
+							   return pl > 0;
 						   });
 } // get amt of LIVING P.
 
@@ -279,12 +285,16 @@ void World::parseParticlesFromJSON(std::string &s) {
 	}
 }
 
-void World::load(const std::string &str) {
+int World::load(const std::string &str) {
 	std::ifstream ifs(str);
 	// std::ifstream ifs(SAVEFILE);
 	if (!ifs) {
-		std::cerr << "Save file failed to open.\n";
+		return -1; //reported error file not found
 	}
+	//if file successfully opens, clear out the old data.
+	ps.clear();
+	map.clear();
+	updateVecs();
 	std::string s;
 	// Throw out the first linw, as ut is always just a open curly brace.
 	// This JSON parser will not be portable in the slightest, it will just work
@@ -313,4 +323,6 @@ void World::load(const std::string &str) {
 	if (s.length() > 1) {		// == 1 means it is empty
 		parseParticlesFromJSON(s);
 	}
+	ifs.close();
+	return 0;//no error
 }
