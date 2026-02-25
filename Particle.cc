@@ -7,6 +7,91 @@ std::random_device P::rd;
 std::mt19937 P::gen(P::rd());
 std::binomial_distribution<> P::bd(50, 0.5);
 
+// cstor
+P::Particle(const Color &r, const Color &g, const Color &b,
+			const bool &stationary, const Tick &lifetime, const P_Type &type)
+	: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime), type(type) {
+	set_stationary(stationary);
+	set_lifetime(lifetime);
+}
+
+Air::Air(const Pc &row, const Pc &col)
+	: Particle(255, 255, 255, false, 1000, air) {
+	Pc dx_scale = 5, dy_scale = 5;
+	set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
+	set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
+	set_row(row);
+	set_col(col);
+	set_lifetime(1000);
+}
+
+Dust::Dust(const Pc &row, const Pc &col)
+	: P_solid(120, 120, 120, false, 600, dust) {
+	Pc dx_scale = 2;
+	Pc dy_scale = 2;
+	set_x_vel(((P::bd(P::gen)) - 24) * dx_scale);
+	set_y_vel(((P::bd(P::gen)) - 24) * dy_scale);
+	set_row(row);
+	set_col(col);
+}
+
+Fire::Fire(const Pc &row, const Pc &col)
+	: Particle(227, 68, 32, true, 1500, fire) {
+	set_row(row);
+	set_col(col);
+}
+
+Water::Water(const Pc &row, const Pc &col)
+	: Particle(70, 155, 235, false, -1, water) {
+	set_row(row);
+	set_col(col);
+}
+
+Earth::Earth(const Pc &row, const Pc &col)
+	: P_solid(97, 29, 25, true, INT32_MAX, earth) {
+	set_row(row);
+	set_col(col);
+}
+
+Dirt::Dirt(const Pc &row, const Pc &col)
+	: P_solid(138, 52, 26, false, INT32_MAX, dirt) {
+	set_row(row);
+	set_col(col);
+}
+
+Lightning::Lightning(const Pc &row, const Pc &col)
+	: Particle(255, 255, 0, false, 100, lightning) {
+	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
+	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
+
+	Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
+	Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
+
+	set_x_vel(x_grav);
+	set_y_vel(y_grav);
+
+	set_row(row);
+	set_col(col);
+}
+
+TBD_1::TBD_1(const Pc &row, const Pc &col)
+	: P_solid(255, 255, 255, false, INT32_MAX, tbd_1) {
+	set_row(row);
+	set_col(col);
+}
+
+TBD_2::TBD_2(const Pc &row, const Pc &col)
+	: P(255, 255, 255, false, INT32_MAX, tbd_2) {
+	set_row(row);
+	set_col(col);
+}
+
+TBD_3::TBD_3(const Pc &row, const Pc &col)
+	: P_solid(255, 255, 255, false, INT32_MAX, tbd_3) {
+	set_row(row);
+	set_col(col);
+}
+
 // getters
 Pc P::get_row() const { return row; }
 Pc P::get_col() const { return col; }
@@ -135,7 +220,8 @@ void Fire::physics_spec(World &world) {
 	bool in_bound_y = (y_spawn) < world.get_rows() && (y_spawn) >= 0;
 
 	// speed check
-	bool moving = (std::abs(dx_spawn/speed_scale) >= 1 || std::abs(dy_spawn/speed_scale) >= 1);
+	bool moving = (std::abs(dx_spawn / speed_scale) >= 1 ||
+				   std::abs(dy_spawn / speed_scale) >= 1);
 
 	// moving-to-fire check
 	bool mtf = world.atMap((y_spawn + dy_spawn), (x_spawn + dx_spawn)) == fire;
