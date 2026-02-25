@@ -5,7 +5,7 @@ static_assert(sizeof(World) > 0);
 const std::string SAVEFILE = "save.JSON";
 
 void World::updateVecs() { map.resize(size_t(rows) * size_t(cols)); }
-
+/*
 void World::updateMap() {
 	// If no particles, clear list and return early
 	if (ps.size() == 0) {
@@ -21,6 +21,23 @@ void World::updateMap() {
 		if(rawInd >= map.size()) continue;
 		map.at(rawInd) = p->get_type();
 	}
+}
+*/
+
+void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
+	// Vector mask. saves positions that contain a particle.
+	// Iter over list of Particles and update map at those indecies
+	// Also add a true to the mask to prevent from being set to none.
+	Wc rawInd = int(x) * cols + int(y);
+	if (rawInd < map.size())
+		map.at(rawInd) = type;
+}
+
+void World::updateMap(const P_ptr &p) {
+	// Vector mask. saves positions th[Bat contain a particle.
+	// Iter over list of Particles and update map at those indecies
+	// Also add a true to the mask to prevent from being set to none.
+	updateMap(p->get_row(), p->get_col(), p->get_type());
 }
 
 // World::World(const Wc& rows, const Wc& cols) : rows(rows), cols(cols) {}
@@ -76,22 +93,38 @@ int World::physics() {
 
 	if (size() == 0)
 		return 0;
+	
+	// If no particles, clear list and return early
+                if (ps.size() == 0) {
+                        map.clear();
+                        return 2;
+                }
+
 
 	for (auto p = ps.begin(); p != ps.end(); p++) {
 		Wc x = (*p)->get_col();
 		Wc y = (*p)->get_row();
+		P_Type type_old = (this->atMap(y, x));
+
 		// Do particle physics calls here
 		(*p)->physics(*this);
-		// Decrement p lifetime if it is not a permanent particle
-		// !!!!!!!!!! del par
-		if (this->atMap(x, y) == none) goto updatemap;
 
-		if ((*p)->get_lifetime() != -1)
-			(*p)->set_lifetime((*p)->get_lifetime() - 1);
-updatemap:
-		updateMap(); // Moved this in here because I realized that each time a
-					 // particle moves per frame, it needs this to be as up to
-					 // date as possible.
+		// After phsyics!
+		// Decrement p lifetime if it is not a permanent particle
+
+		P_Type type_new = (this->atMap(y, x));
+		// !!!!!!!!!! del par
+		if (type_new != none) {
+		//	Wc x_new = (*p)->get_col();
+		//	Wc y_new = (*p)->get_row();
+			if ((*p)->get_lifetime() != -1)
+				(*p)->set_lifetime((*p)->get_lifetime() - 1);
+			updateMap(*p);
+			
+		}
+		updateMap(y, x, none); // Moved this in here because I realized that each time a
+					   // particle moves per frame, it needs this to be as up to
+					   // date as possible.
 	}
 	// If the particle is "dead" aka lifetime is exactly 0
 	// OR
@@ -118,11 +151,10 @@ Amt World::alive_count() const {
 	// is still a valid count, -1 as error prevents exception via error as
 	// return, Allowing us to detect empty list vs none above 0 lfetime
 	// particles.
-	return std::count_if(ps.begin(), ps.end(),
-						   [](const P_ptr &p) {
-							   const Amt pl = p->get_lifetime();
-							   return pl > 0;
-						   });
+	return std::count_if(ps.begin(), ps.end(), [](const P_ptr &p) {
+		const Amt pl = p->get_lifetime();
+		return pl > 0;
+	});
 } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
@@ -289,9 +321,9 @@ int World::load(const std::string &str) {
 	std::ifstream ifs(str);
 	// std::ifstream ifs(SAVEFILE);
 	if (!ifs) {
-		return -1; //reported error file not found
+		return -1; // reported error file not found
 	}
-	//if file successfully opens, clear out the old data.
+	// if file successfully opens, clear out the old data.
 	ps.clear();
 	map.clear();
 	updateVecs();
@@ -324,5 +356,5 @@ int World::load(const std::string &str) {
 		parseParticlesFromJSON(s);
 	}
 	ifs.close();
-	return 0;//no error
+	return 0; // no error
 }

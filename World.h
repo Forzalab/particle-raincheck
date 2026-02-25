@@ -31,8 +31,8 @@ private:
 	Ps ps;			   // list of Particles' POINTERS
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
-
-	void updateMap();
+	void updateMap(const Wc& x, const Wc &y, const P_Type& type);
+	void updateMap(const P_ptr &p);
 	void parseParticlesFromJSON(std::string &s);
 
 public:
