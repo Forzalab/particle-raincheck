@@ -44,10 +44,11 @@ private:
 	//Cannot default init with current setup- must be init in ::run() I may change this later when we are done and have time to refactor
 	World world;
 	GameTick frame{};
+	Wc rows{}, cols{};
 	//Default of 5. Tickrate is directly proportional to framerate. 60 tickrate -> 1 / tickrate = 60fps.
 	GameTick tickrate = 30;
 public:
-	Game() : world(50, 70) {}
+	Game() : world(rows, cols) {}
 	GameTick get_tickrate() const;
 	void quit();
 	void load();

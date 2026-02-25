@@ -40,6 +40,7 @@ public:
 	// Reserve mem for map in construction.
 	World(const Wc &rows = 50, const Wc &cols = 70) : rows(rows), cols(cols) {
 		map.resize(size_t(rows) * size_t(cols));
+		map.assign(map.size(), none);
 	}
 
 	Wc get_rows() const;
