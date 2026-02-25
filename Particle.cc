@@ -116,11 +116,11 @@ void Fire::physics_spec(World &world) {
 	Pc y = int(this->get_row());
 
 	// Lighting spawn
-	bool light = (P::bd(P::gen)) > 1;
+	bool light = (P::bd(P::gen)) > 31; // P(X >= 33) = 1.6%
 	Pc sign_x = (P::bd(P::gen)) % 3 - 1;
 	Pc sign_y = (P::bd(P::gen)) % 3 - 1;
 	Pc x_spawn = ((P::bd(P::gen)) % 3) + x - 1;
-	Pc y_spawn = ((P::bd(P::gen)) % 3) + y;
+	Pc y_spawn = ((P::bd(P::gen)) % 3) + y - 1;
 	Pc dx_spawn = 0.1 * sign_x * (((P::bd(P::gen)) % 3 - 3));
 	Pc dy_spawn = 0.1 * sign_y * (((P::bd(P::gen)) % 3 - 1));
 
@@ -133,9 +133,12 @@ void Fire::physics_spec(World &world) {
 	bool in_bound_x = (x_spawn) < world.get_cols() && (x_spawn) >= 0;
 	bool in_bound_y = (y_spawn) < world.get_rows() && (y_spawn) >= 0;
 
+	// speed check
+	bool moving = (sign_x != 0 || sign_y != 0);
+
 	// assigned the lighting particle
 	if (light && in_bound_x && in_bound_y && !overlap_itself &&
-		!overlap_border) {
+		!overlap_border && moving) {
 		Lightning l(y_spawn, x_spawn);
 		l.set_x_vel(dx_spawn);
 		l.set_y_vel(dy_spawn);
@@ -159,6 +162,7 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 			p_world = p_a;
 		else
 			world.add_particle(p_a);
+
 		world.updateMap(p_a);
 		// make it go upwards
 		// y starts at 0 and ends with world.height
