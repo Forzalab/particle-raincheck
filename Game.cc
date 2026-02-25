@@ -8,11 +8,10 @@ const std::string SAVEFILE = "save.JSON";
 const uint16_t ROWS_DFT = 50;
 const uint16_t COLS_DFT = 70;
 
-Game::Game() : world(ROWS_DFT, COLS_DFT) {
-	world.load(SAVEFILE);
-}
+Game::Game() : world(ROWS_DFT, COLS_DFT) { world.load(SAVEFILE); }
 
-Game::Game(const uint16_t &rows, const uint16_t &colS) : rows(rows), cols(cols), world(rows, cols) {
+Game::Game(const uint16_t &rows, const uint16_t &colS)
+	: rows(rows), cols(cols), world(rows, cols) {
 	world.load(SAVEFILE);
 }
 
@@ -67,7 +66,7 @@ void resetTerminal() {
 
 void Game::run() {
 	// Default of 5. Tickrate is directly proportional to framerate. 60 tickrate
-        // -> 1 / tickrate = 60fps.
+	// -> 1 / tickrate = 60fps.
 	tickrate = 30;
 
 	std::string fs;

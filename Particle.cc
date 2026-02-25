@@ -10,11 +10,12 @@ std::mt19937 P::gen(P::rd());
 std::binomial_distribution<> P::bd(50, 0.5);
 
 // cstor
-P::Particle(const Pc &row, const Pc &col, const Color &r, const Color &g, const Color &b,
-			const bool &stationary, const Tick &lifetime, const P_Type &type)
+P::Particle(const Pc &row, const Pc &col, const Color &r, const Color &g,
+			const Color &b, const bool &stationary, const Tick &lifetime,
+			const P_Type &type)
 	: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime), type(type) {
 	set_row(row);
-        set_col(col);
+	set_col(col);
 	set_stationary(stationary);
 	set_lifetime(lifetime);
 }
@@ -118,7 +119,7 @@ void P::set_lifetime(const Tick &_lifetime) {
 	if (_lifetime < -1)
 		throw std::runtime_error("Lifetime OOB.");
 	lifetime = _lifetime;
-	
+
 	// Color fade
 	if (lifetime == 1) {
 		r = 0;
@@ -194,25 +195,22 @@ void Fire::physics_spec(World &world) {
 		this->set_r(190);
 		this->set_g(10);
 		this->set_b(0);
-	}
-	 else if (clr < 19) {
-                // red
-                this->set_r(200);
-                this->set_g(20);
-                this->set_b(0);
-        }
-	else if (clr < 25) {
-                // red
-                this->set_r(220);
-                this->set_g(30);
-                this->set_b(0);
-        }
-	else {
+	} else if (clr < 19) {
+		// red
+		this->set_r(200);
+		this->set_g(20);
+		this->set_b(0);
+	} else if (clr < 25) {
+		// red
+		this->set_r(220);
+		this->set_g(30);
+		this->set_b(0);
+	} else {
 		// orange
 		this->set_r(230);
-                this->set_g(40);
-                this->set_b(0);
-        }
+		this->set_g(40);
+		this->set_b(0);
+	}
 
 	// Lighting spawn
 	bool light = (P::bd(P::gen)) > 30; // P(X >= 33) = 1.6%

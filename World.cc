@@ -7,14 +7,18 @@ static_assert(sizeof(World) > 0);
 const std::string SAVEFILE = "save.JSON";
 
 // Reserve mem for map in construction.
-World::World(const uint16_t &rows = 50, const uint16_t &cols = 70) : rows(rows), cols(cols) {
+World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
+	: rows(rows), cols(cols) {
 	map.resize(size_t(rows) * size_t(cols));
 	map.assign(map.size(), none);
 }
 
-const Ps& World::getParticles() { return ps; }
+const Ps &World::getParticles() { return ps; }
 
-void World::updateVecs() { map.resize(size_t(rows) * size_t(cols)); map.assign(map.size(), none); }
+void World::updateVecs() {
+	map.resize(size_t(rows) * size_t(cols));
+	map.assign(map.size(), none);
+}
 
 /*
 void World::updateMap() {
@@ -61,13 +65,13 @@ void World::erase(const Wc &row, const Wc &col) {
 	*it_rmv = none;
 }
 
-void World::set_cols(const Wc &_cols) { 
-	cols = _cols; 
+void World::set_cols(const Wc &_cols) {
+	cols = _cols;
 	this->updateVecs();
 }
 
-void World::set_rows(const Wc &_rows) { 
-	rows = _rows; 
+void World::set_rows(const Wc &_rows) {
+	rows = _rows;
 	this->updateVecs();
 }
 
@@ -113,13 +117,12 @@ int World::physics() {
 
 	if (size() == 0)
 		return 0;
-	
-	// If no particles, clear list and return early
-                if (ps.size() == 0) {
-                        map.clear();
-                        return 2;
-                }
 
+	// If no particles, clear list and return early
+	if (ps.size() == 0) {
+		map.clear();
+		return 2;
+	}
 
 	for (auto p = ps.begin(); p != ps.end(); p++) {
 		Wc x = (*p)->get_col();
@@ -138,9 +141,9 @@ int World::physics() {
 		Wc y_new = (*p)->get_row();
 
 		P_Type type_new = (this->atMap(y_new, x_new));
-		
+
 		if (!st)
-			updateMap(y, x, none);  // Old particle pos
+			updateMap(y, x, none); // Old particle pos
 		// !!!!!!!!!! del par
 		if (type_new != none && (*p)->get_lifetime() > 0)
 			(*p)->set_lifetime((*p)->get_lifetime() - 1);
