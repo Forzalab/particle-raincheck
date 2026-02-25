@@ -16,10 +16,12 @@
 #include <sstream>
 #include <string>
 #include <list>
+#include <map>
 #include <cstdint>
 #include <vector>
 
 #include "Particle.h"
+#include "Bifrost.h"
 
 using P = Particle;
 
