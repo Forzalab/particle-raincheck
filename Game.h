@@ -1,3 +1,6 @@
+// for the love of god, PLEASE DONT WRITE FUNCTION AND CSTOR
+// IMPLEMENTATIONS IN *.h files!!!! declarations is a-ok :))
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -40,9 +43,7 @@ private:
 	World world;
 	GameTick frame{};
 	Wc rows{}, cols{};
-	// Default of 5. Tickrate is directly proportional to framerate. 60 tickrate
-	// -> 1 / tickrate = 60fps.
-	GameTick tickrate = 50;
+	GameTick tickrate{};
 
 public:
 	Game() : world(rows, cols) {}

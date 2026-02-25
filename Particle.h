@@ -1,3 +1,6 @@
+// for the love of god, PLEASE DONT WRITE FUNCTION AND CSTOR
+// IMPLEMENTATIONS IN *.h files!!!! declarations is a-ok :))
+
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
@@ -10,6 +13,7 @@
 #include <ctime>
 #include <random>
 #include <iostream>
+
 typedef float Pc; // P-coordinates
 typedef uint8_t Color;
 typedef int32_t Tick;

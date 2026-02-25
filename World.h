@@ -1,3 +1,6 @@
+// for the love of god, PLEASE DONT WRITE FUNCTION AND CSTOR
+// IMPLEMENTATIONS IN *.h files!!!! declarations is a-ok :))
+
 #ifndef WORLD_H
 #define WORLD_H
 
@@ -6,7 +9,6 @@
 #include <limits>
 #include <memory>
 #include <numeric>
-#include "Particle.h"
 #include <cstdlib>
 #include <exception>
 #include <fstream>
@@ -16,6 +18,8 @@
 #include <list>
 #include <cstdint>
 #include <vector>
+
+#include "Particle.h"
 
 using P = Particle;
 
@@ -64,7 +68,6 @@ public:
 	void add_particle(P_ptr p);
 
 	const Ps& getParticles();
-	// One preset save-file is enough?
 	void save(const std::string &str);
 	int load(const std::string &str);
 };
