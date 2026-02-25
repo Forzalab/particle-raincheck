@@ -23,9 +23,7 @@ bool P_solid::get_solid() const { return true; }
 bool P::is_equal(const Pc &lhs, const Pc &rhs) {
 	return std::abs(lhs - rhs) < 1E-6;
 }
-bool P::is_solid(const P_Type &pt) {
-	return (pt == earth || pt == dirt);
-}
+bool P::is_solid(const P_Type &pt) { return (pt == earth || pt == dirt); }
 
 // setters
 void P::set_row(const Pc &_row) {
@@ -66,11 +64,11 @@ void P::set_type(const P_Type &_type) {
 }
 
 void P::physics(World &world) {
-		// general guard for all particles
-		/* here */
+	// general guard for all particles
+	/* here */
 
-		// type-specific physics
-		physics_spec(world);
+	// type-specific physics
+	physics_spec(world);
 
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
 	return;
@@ -99,9 +97,7 @@ void Dust::physics_spec(World &world) {
 	Pc dx_scale = 0.125 * rand_sign * (((P::bd(P::gen)) >= 25) ? -1 : 1);
 	Pc dy_scale = gravity * (((P::bd(P::gen)) > 27) ? -1 : 1);
 
-	set_x_vel([&]() {
-		return dx_scale;
-	}());
+	set_x_vel([&]() { return dx_scale; }());
 	set_y_vel(get_y_vel() + dy_scale);
 
 	if (!get_stationary()) {
@@ -115,38 +111,39 @@ void Dust::physics_spec(World &world) {
 void Dust::touch(const P_ptr &nbr, World &world) {}
 void Fire::physics_spec(World &world) {
 	// Fire is stationary by default
-
-	Pc y = int(this->get_col());
-        Pc x = int(this->get_row());
+	Pc x = int(this->get_col());
+	Pc y = int(this->get_row());
 
 	// Lighting spawn
 	bool light = (P::bd(P::gen)) > 1;
 	Pc sign_x = (P::bd(P::gen)) % 3 - 1;
 	Pc sign_y = (P::bd(P::gen)) % 3 - 1;
-	Pc x_spawn = ((P::bd(P::gen)) % 3) + x;
-	Pc y_spawn = ((P::bd(P::gen)) % 3) + y - 1;
-	Pc dx_spawn = 0.1 * sign_x * (((P::bd(P::gen)) % 3 - 1));
-        Pc dy_spawn = 0.1 * sign_y * (((P::bd(P::gen)) % 3 - 3));
+	Pc x_spawn = ((P::bd(P::gen)) % 3) + x - 1;
+	Pc y_spawn = ((P::bd(P::gen)) % 3) + y;
+	Pc dx_spawn = 0.1 * sign_x * (((P::bd(P::gen)) % 3 - 3));
+	Pc dy_spawn = 0.1 * sign_y * (((P::bd(P::gen)) % 3 - 1));
 
 	// Chexks for currently gen x,y spawn
 	// no overlap spawn
 	bool overlap_itself = (Wc(x_spawn) == Wc(x) && Wc(y_spawn) == Wc(y));
-	bool overlap_border = is_solid(world.atMap(x_spawn, y_spawn));
+	bool overlap_border = is_solid(world.atMap(y_spawn, x_spawn));
 
 	// inbound check
 	bool in_bound_x = (x_spawn) < world.get_cols() && (x_spawn) >= 0;
 	bool in_bound_y = (y_spawn) < world.get_rows() && (y_spawn) >= 0;
-	
+
 	// assigned the lighting particle
-	if (light && in_bound_x && in_bound_y && !overlap_itself && !overlap_border) {
-		Lightning l(x_spawn, y_spawn);
-            	l.set_x_vel(dx_spawn); l.set_y_vel(dy_spawn);
-	        P_ptr p_l = std::make_shared<Lightning>(l);
-                P_ptr &p_world = world.at(x_spawn, y_spawn);
-                if (p_world)
-                        p_world = p_l;
-                else
-                        world.add_particle(p_l);
+	if (light && in_bound_x && in_bound_y && !overlap_itself &&
+		!overlap_border) {
+		Lightning l(y_spawn, x_spawn);
+		l.set_x_vel(dx_spawn);
+		l.set_y_vel(dy_spawn);
+		P_ptr p_l = std::make_shared<Lightning>(l);
+		P_ptr &p_world = world.at(y_spawn, x_spawn);
+		if (p_world)
+			p_world = p_l;
+		else
+			world.add_particle(p_l);
 	}
 }
 
@@ -183,9 +180,10 @@ void Water::physics_spec(World &world) {
 
 	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
 	// 	world.at(get_row() + 1, get_col()) == nullptr) {
-	//Above code errors. This handles OOB for you. The list that .at() searches is for actual particle types. None is a placeholder type
-	//for in bounds but no particle at location.
-	if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) { 
+	// Above code errors. This handles OOB for you. The list that .at() searches
+	// is for actual particle types. None is a placeholder type for in bounds
+	// but no particle at location.
+	if (!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 		set_row(get_row() + get_y_vel());
 		return;
 	}
@@ -193,15 +191,14 @@ void Water::physics_spec(World &world) {
 	else {
 		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
 		// 	world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(world.atMap(get_row() + 1, get_col() - 1) == none) {
+		if (world.atMap(get_row() + 1, get_col() - 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
 			return;
-		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-		// 			none) &&
-		// 		   world.at(get_row() + 1, get_col() + 1) == nullptr) {
-		} 
-		else if(world.atMap(get_row() + 1, get_col() + 1) == none) {
+			// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+			// 			none) &&
+			// 		   world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		} else if (world.atMap(get_row() + 1, get_col() + 1) == none) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 			return;
@@ -248,21 +245,20 @@ void Dirt::physics_spec(World &world) {
 	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
 	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
-		// world.at(get_row() + 1, get_col()) == nullptr) {
-	if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) { 
+	// world.at(get_row() + 1, get_col()) == nullptr) {
+	if (!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 		set_row(get_row() + get_y_vel());
 		set_col(get_col() + get_x_vel());
 	} else {
 		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
+		// world.at(get_row() + 1, get_col() - 1) == nullptr) {
+		if (!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 			set_row(get_row() + 1);
 			set_col(get_col() - 1);
-		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-					// none) &&
-				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
-		}
-		else if(!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
+			// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+			// none) &&
+			// world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		} else if (!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
 			set_row(get_row() + 1);
 			set_col(get_col() + 1);
 		} else {
@@ -273,20 +269,20 @@ void Dirt::physics_spec(World &world) {
 }
 
 void Lightning::physics_spec(World &world) {
-        Pc x = this->get_col();
-        Pc y = this->get_row();
+	Pc x = this->get_col();
+	Pc y = this->get_row();
 	Pc dx = this->get_x_vel();
-        Pc dy = this->get_y_vel();
+	Pc dy = this->get_y_vel();
 
 	Pc x_dx = int(x + dx);
 	Pc y_dy = int(y + dy);
-	P_Type pt = world.atMap(x_dx, y_dy);
-	
+	P_Type pt = world.atMap(y_dy, x_dx);
+
 	if (pt == fire || is_solid(pt)) {
 		set_lifetime(0);
 		return;
 	}
-	
+
 	if (!get_stationary()) {
 		set_col(get_col() + dx);
 		set_row(get_row() + dy);
@@ -304,28 +300,22 @@ void Dirt::touch(const P_ptr &nbr, World &world) {
 }
 
 void Lightning::touch(const P_ptr &nbr, World &world) {
+	if (nbr->get_type() == earth || nbr->get_type() == water) {
+		P_ptr p;
+		if (nbr->get_type() == earth) {
+			Dirt d(nbr->get_row(), nbr->get_col());
+			p = std::make_shared<Dirt>(d);
 
-	if (nbr->get_type() == earth) {
-		Dirt d(nbr->get_row(), nbr->get_col());
-		P_ptr p_d = std::make_shared<Dirt>(d);
+		} else if (nbr->get_type() == water) {
+			Lightning l(nbr->get_row(), nbr->get_col());
+			p = std::make_shared<Lightning>(l);
+		}
 		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
 		if (p_world)
-			p_world = p_d;
+			p_world = p;
 		else
-			world.add_particle(p_d);
-
-		// Delete Lightning
-
-	} else if (nbr->get_type() == water) {
-		Lightning l(nbr->get_row(), nbr->get_col());
-		P_ptr p_l = std::make_shared<Lightning>(l);
-		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
-		if (p_world)
-			p_world = p_l;
-		else
-			world.add_particle(p_l);
-
-		// Delete Water
+			world.add_particle(p);
+		this->set_lifetime(0);
 	}
 }
 
