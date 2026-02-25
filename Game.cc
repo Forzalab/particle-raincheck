@@ -1,6 +1,20 @@
+// put all #include in header file pls
+
 #include "Game.h"
 
 typedef uint32_t GameTick;
+
+const std::string SAVEFILE = "save.JSON";
+const uint16_t ROWS_DFT = 50;
+const uint16_t COLS_DFT = 70;
+
+Game::Game() : world(ROWS_DFT, COLS_DFT) {
+	world.load(SAVEFILE);
+}
+
+Game::Game(const uint16_t &rows, const uint16_t &colS) : rows(rows), cols(cols), world(rows, cols) {
+	world.load(SAVEFILE);
+}
 
 GameTick Game::get_tickrate() const { return tickrate; }
 
@@ -64,11 +78,6 @@ void Game::run() {
 	using clock = std::chrono::steady_clock;
 
 	// Placeholder vals. We can change these later.
-	Wc rows = 20, cols = 10;
-	world.set_rows(rows);
-	world.set_cols(cols);
-	world.load("save.JSON");
-
 	{
 		// Draw a splash screen here.
 		fs += clearscreen();

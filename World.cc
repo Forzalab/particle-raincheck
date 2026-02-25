@@ -1,14 +1,16 @@
+// put all #include in header file pls
+
 #include "World.h"
 
 static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
-    // Reserve mem for map in construction.
-       World::World(const Wc &rows = 50, const Wc &cols = 70) : rows(rows), cols(cols) {
-                map.resize(size_t(rows) * size_t(cols));
-                map.assign(map.size(), none);
-        }
+// Reserve mem for map in construction.
+World::World(const uint16_t &rows = 50, const uint16_t &cols = 70) : rows(rows), cols(cols) {
+	map.resize(size_t(rows) * size_t(cols));
+	map.assign(map.size(), none);
+}
 
 const Ps& World::getParticles() { return ps; }
 
@@ -48,8 +50,6 @@ void World::updateMap(const P_ptr &p) {
 	// Also add a true to the mask to prevent from being set to none.
 	updateMap(p->get_row(), p->get_col(), p->get_type());
 }
-
-// World::World(const Wc& rows, const Wc& cols) : rows(rows), cols(cols) {}
 
 Wc World::get_rows() const { return rows; }
 

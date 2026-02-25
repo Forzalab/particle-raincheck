@@ -38,15 +38,15 @@ public:
 
 class Game {
 private:
-	// Cannot default init with current setup- must be init in ::run() I may
-	// change this later when we are done and have time to refactor
+	// Solved: init world in MIL of game().
 	World world;
 	GameTick frame{};
 	Wc rows{}, cols{};
 	GameTick tickrate{};
 
 public:
-	Game() : world(rows, cols) {}
+	Game();
+	Game(const uint16_t &rows, const uint16_t &cols);
 	GameTick get_tickrate() const;
 	void quit();
 	void load();
