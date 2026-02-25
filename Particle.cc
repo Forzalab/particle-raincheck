@@ -126,9 +126,9 @@ void P::set_lifetime(const Tick &_lifetime) {
 		g = 0;
 		b = 0;
 	} else if (lifetime <= 20) {
-		r *= 0.8;
-		g *= 0.8;
-		b *= 0.8;
+		r *= 0.9;
+		g *= 0.9;
+		b *= 0.9;
 	}
 }
 
