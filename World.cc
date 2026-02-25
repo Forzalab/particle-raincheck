@@ -4,7 +4,16 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
+    // Reserve mem for map in construction.
+       World::World(const Wc &rows = 50, const Wc &cols = 70) : rows(rows), cols(cols) {
+                map.resize(size_t(rows) * size_t(cols));
+                map.assign(map.size(), none);
+        }
+
+const Ps& World::getParticles() { return ps; }
+
 void World::updateVecs() { map.resize(size_t(rows) * size_t(cols)); map.assign(map.size(), none); }
+
 /*
 void World::updateMap() {
 	// If no particles, clear list and return early
