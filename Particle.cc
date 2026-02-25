@@ -203,12 +203,12 @@ void Fire::physics_spec(World &world) {
 	} else if (clr < 25) {
 		// red
 		this->set_r(220);
-		this->set_g(30);
+		this->set_g(40);
 		this->set_b(0);
 	} else {
 		// orange
 		this->set_r(230);
-		this->set_g(40);
+		this->set_g(60);
 		this->set_b(0);
 	}
 

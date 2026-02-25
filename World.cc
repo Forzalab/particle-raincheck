@@ -80,8 +80,8 @@ void World::set_rows(const Wc &_rows) {
 bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
 
 P_Type World::atMap(Wc row, Wc col) {
-	if (exclusiveInRange(1, rows - 1, row) &&
-		exclusiveInRange(1, cols - 1, col)) {
+	if (exclusiveInRange(0, rows, row) &&
+		exclusiveInRange(0, cols, col)) {
 		return map.at(cols * row + col);
 	} else {
 		return OOB;
