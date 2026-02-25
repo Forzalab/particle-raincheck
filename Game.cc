@@ -69,8 +69,8 @@ void Game::run() {
 	Wc rows = 20, cols = 10;
 	world.set_rows(rows);
 	world.set_cols(cols);
-	world.updateVecs();
 	world.load("save.JSON");
+
 	{
 		// Draw a splash screen here.
 

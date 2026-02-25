@@ -4,7 +4,7 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
-void World::updateVecs() { map.resize(size_t(rows) * size_t(cols)); }
+void World::updateVecs() { map.resize(size_t(rows) * size_t(cols)); map.assign(map.size(), none); }
 /*
 void World::updateMap() {
 	// If no particles, clear list and return early
@@ -322,6 +322,7 @@ void World::parseParticlesFromJSON(std::string &s) {
 	while (!ss.eof()) {
 		P_ptr p = extractParticle(particle);
 		add_particle(p);
+		updateMap(p);
 		std::getline(ss, particle,
 					 ','); // Throw out comma inbetween each particle.
 		std::getline(ss, particle, '}');
@@ -337,7 +338,6 @@ int World::load(const std::string &str) {
 	// if file successfully opens, clear out the old data.
 	ps.clear();
 	map.clear();
-	updateVecs();
 	std::string s;
 	// Throw out the first linw, as ut is always just a open curly brace.
 	// This JSON parser will not be portable in the slightest, it will just work
@@ -360,6 +360,8 @@ int World::load(const std::string &str) {
 		std::cerr << "Val extracted for COLS invalid.\n";
 		exit(EXIT_FAILURE);
 	}
+
+	updateVecs();
 
 	std::getline(ifs, s, '\n'); // "Ps": [ line
 	std::getline(ifs, s, ']');	// Get entire json array of particles, if any.
