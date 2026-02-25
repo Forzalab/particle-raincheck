@@ -210,7 +210,7 @@ public:
 class Lightning : public P {
 public:
 	Lightning(const Pc &row, const Pc &col)
-		: Particle(255, 255, 0, false, 1, lightning) {
+		: Particle(255, 255, 0, false, 100, lightning) {
 		int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
 		int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
 
