@@ -36,16 +36,13 @@ private:
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
 	void updateMap(const Wc& x, const Wc &y, const P_Type& type);
-public:
-	void updateMap(const P_ptr &p);
-private:
 	void parseParticlesFromJSON(std::string &s);
 
 public:
 	P_ptr nullp = nullptr; // null object pattern
 
-    // Reserve mem for map in construction.
-        World(const Wc &rows, const Wc &cols);
+	// Reserve mem for map in construction
+	World(const uint16_t &rows, const uint16_t &cols);
 
 	Wc get_rows() const;
 	Wc get_cols() const;
@@ -55,6 +52,7 @@ public:
 	P_Type atMap(Wc row, Wc col);
 
 	void updateVecs();
+	void updateMap(const P_ptr &p);
 	
 	void erase(const Wc &row, const Wc &col);
 	P_ptr& at(const Pc &row, const Pc &col); // .at()
