@@ -115,7 +115,7 @@ bool World::has_gap_at(const Wc &y, const Wc &x) {
 // This returns an int used to increment Game.frame.
 int World::physics() {
 
-	if (size() == 0)
+	if (alive_count() == 0)
 		return 0;
 
 	// If no particles, clear list and return early
