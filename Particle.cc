@@ -114,7 +114,7 @@ void Fire::physics_spec(World &world) {
 	// Fire is stationary by default
 	Pc x = int(this->get_col());
 	Pc y = int(this->get_row());
-	Pc speed_scale = 0.5;
+	Pc speed_scale = 0.2;
 
 	// Lighting spawn
 	bool light = (P::bd(P::gen)) > 31; // P(X >= 33) = 1.6%
