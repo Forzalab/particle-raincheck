@@ -52,6 +52,10 @@ void resetTerminal() {
 }
 
 void Game::run() {
+	// Default of 5. Tickrate is directly proportional to framerate. 60 tickrate
+        // -> 1 / tickrate = 60fps.
+	tickrate = 30;
+
 	std::string fs;
 	fs += show_cursor(false);
 	fs += clearscreen();
@@ -67,7 +71,6 @@ void Game::run() {
 
 	{
 		// Draw a splash screen here.
-
 		fs += clearscreen();
 		std::cerr << fs;
 		fs.clear();
@@ -96,6 +99,7 @@ void Game::run() {
 		sleep(2); // Pauses for two seconds
 		std::cerr << clearscreen();
 	}
+
 	// load(); //Test
 	// save(); //Test
 	// incr_fps(); //Test

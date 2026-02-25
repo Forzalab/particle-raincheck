@@ -160,8 +160,6 @@ void P::physics(World &world) {
 	return;
 }
 
-// TODO: add constructor WITH MEM-INIT-LIST
-//       (r,g,b, stationary, lifetime) to definitions
 void Air::physics_spec(World &world) {
 
 	// if not (not st.) = stay still
