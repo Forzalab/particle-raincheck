@@ -46,7 +46,7 @@ private:
 	GameTick frame{};
 	Wc rows{}, cols{};
 	//Default of 5. Tickrate is directly proportional to framerate. 60 tickrate -> 1 / tickrate = 60fps.
-	GameTick tickrate = 30;
+	GameTick tickrate = 5;
 public:
 	Game() : world(rows, cols) {}
 	GameTick get_tickrate() const;

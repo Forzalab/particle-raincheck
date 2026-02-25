@@ -121,6 +121,8 @@ int World::physics() {
 		(*p)->physics(*this);
 
 		// After phsyics!
+		updateMap(*p);
+
 		// Decrement p lifetime if it is not a permanent particle
 		bool st = (*p)->get_stationary();
 		Wc x_new = (*p)->get_col();
@@ -134,7 +136,6 @@ int World::physics() {
 		if (type_new != none) {
 			if ((*p)->get_lifetime() != -1)
 				(*p)->set_lifetime((*p)->get_lifetime() - 1);
-			updateMap(*p);
 		}
 	}
 	// If the particle is "dead" aka lifetime is exactly 0
