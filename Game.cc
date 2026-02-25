@@ -146,7 +146,6 @@ void Game::run() {
 
 	while (true) {
 		int c = toupper(quick_read());
-
 		if (c == 'P') {
 			paused = true;
 			std::cerr << set_mouse_mode(true);

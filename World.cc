@@ -124,26 +124,39 @@ int World::physics() {
 		return 2;
 	}
 
+	// why 2 loops? we dont want half-mutated Map and ps,
+	// we want each "container" to be completed b4 working
+	// on to the next one
+
+	// hashmap for fastest access
+	std::unordered_map<P_ptr, pXY> prevPos;
+
 	for (auto p = ps.begin(); p != ps.end(); p++) {
 		Wc x = (*p)->get_col();
 		Wc y = (*p)->get_row();
-		P_Type type_old = (this->atMap(y, x));
+		
+		// The map carries on to next loop
+		// AND we need prev pos data for clearing cell
+		prevPos[*p] = {Pc(x), Pc(y)};
 
 		// Do particle physics calls here
 		(*p)->physics(*this);
-
+	}
+	
+	for (auto p = ps.begin(); p != ps.end(); p++) {
 		// After phsyics!
 		updateMap(*p);
 
+		Wc x_new = (*p)->get_col();
+                Wc y_new = (*p)->get_row();
+
 		// Decrement p lifetime if it is not a permanent particle
 		bool st = (*p)->get_stationary();
-		Wc x_new = (*p)->get_col();
-		Wc y_new = (*p)->get_row();
 
 		P_Type type_new = (this->atMap(y_new, x_new));
 
 		if (!st)
-			updateMap(y, x, none); // Old particle pos
+			updateMap(prevPos.at(*p).col, prevPos.at(*p).row, none); // Old particle pos
 		// !!!!!!!!!! del par
 		if (type_new != none && (*p)->get_lifetime() > 0)
 			(*p)->set_lifetime((*p)->get_lifetime() - 1);
