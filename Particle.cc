@@ -27,14 +27,14 @@ Air::Air(const Pc &row, const Pc &col)
 }
 
 Dust::Dust(const Pc &row, const Pc &col)
-	: P_solid(row, col, 120, 120, 120, false, 600, dust) {
+	: P_solid(row, col, 120, 120, 120, false, 300, dust) {
 	Pc dx_scale = 2, dy_scale = 2;
 	set_x_vel(((P::bd(P::gen)) - 24) * dx_scale);
 	set_y_vel(((P::bd(P::gen)) - 24) * dy_scale);
 }
 
 Fire::Fire(const Pc &row, const Pc &col)
-	: Particle(row, col, 227, 68, 32, false, 1500, fire) {}
+	: Particle(row, col, 255, 32, 16, false, 1500, fire) {}
 
 Water::Water(const Pc &row, const Pc &col)
 	: Particle(row, col, 70, 155, 235, false, 20000, water) {}
@@ -46,15 +46,18 @@ Dirt::Dirt(const Pc &row, const Pc &col)
 	: P_solid(row, col, 138, 52, 26, false, INT32_MAX, dirt) {}
 
 Lightning::Lightning(const Pc &row, const Pc &col)
-	: Particle(row, col, 255, 255, 0, false, 100, lightning) {
+	: Particle(row, col, 220, 220, 0, false, 100, lightning) {
 	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
 	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
+
+	Tick lft = 2 * P::bd(P::gen);
 
 	Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
 	Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
 
 	set_x_vel(x_grav);
 	set_y_vel(y_grav);
+	set_lifetime(lft);
 }
 
 TBD_1::TBD_1(const Pc &row, const Pc &col)
@@ -115,6 +118,17 @@ void P::set_lifetime(const Tick &_lifetime) {
 	if (_lifetime < -1)
 		throw std::runtime_error("Lifetime OOB.");
 	lifetime = _lifetime;
+	
+	// Color fade
+	if (lifetime == 1) {
+		r = 0;
+		g = 0;
+		b = 0;
+	} else if (lifetime <= 20) {
+		r *= 0.8;
+		g *= 0.8;
+		b *= 0.8;
+	}
 }
 
 void P::set_type(const P_Type &_type) {
@@ -173,8 +187,35 @@ void Fire::physics_spec(World &world) {
 	Pc y = int(this->get_row());
 	Pc speed_scale = 0.2;
 
+	// color changes for fire
+	short clr = P::bd(P::gen);
+	if (clr < 15) {
+		// red
+		this->set_r(190);
+		this->set_g(10);
+		this->set_b(0);
+	}
+	 else if (clr < 19) {
+                // red
+                this->set_r(200);
+                this->set_g(20);
+                this->set_b(0);
+        }
+	else if (clr < 25) {
+                // red
+                this->set_r(220);
+                this->set_g(30);
+                this->set_b(0);
+        }
+	else {
+		// orange
+		this->set_r(230);
+                this->set_g(40);
+                this->set_b(0);
+        }
+
 	// Lighting spawn
-	bool light = (P::bd(P::gen)) > 31; // P(X >= 33) = 1.6%
+	bool light = (P::bd(P::gen)) > 30; // P(X >= 33) = 1.6%
 	Pc sign_x = (P::bd(P::gen)) % 3 - 1;
 	Pc sign_y = (P::bd(P::gen)) % 3 - 1;
 	Pc x_spawn = ((P::bd(P::gen)) % 3) + x - 1;
