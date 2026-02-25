@@ -86,6 +86,11 @@ bool World::isInBounds(const auto &p) {
 	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
 }
 
+bool World::has_gap_at(const Wc &y, const Wc &x) {
+	// TODO: hashmap existing particle!!!!!!
+	return !P::is_solid(this->atMap(y, x));
+}
+
 // Since this function is essentially the update loop of World
 // Map map will be updated here too
 // This returns an int used to increment Game.frame.

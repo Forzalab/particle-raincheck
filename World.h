@@ -55,6 +55,7 @@ public:
 	P_ptr& at(const Pc &row, const Pc &col); // .at()
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
+	bool has_gap_at(const Wc &y, const Wc &x);
 	int physics();			 // physics() iterates all P.
 	Amt size() const;		 // get amt of P
 	Amt alive_count() const; // get amt of LIVING P.

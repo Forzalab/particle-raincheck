@@ -244,23 +244,26 @@ void Dirt::physics_spec(World &world) {
 	//	set_y_vel(get_y_vel() + gravity);
 	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
-	// world.at(get_row() + 1, get_col()) == nullptr) {
-	if (!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
-		set_row(get_row() + get_y_vel());
-		set_col(get_col() + get_x_vel());
+	Pc y = get_row();
+	Pc x = get_col();
+
+	// if ((world.at(y + 1, x)->get_type() == none) &&
+	// world.at(y + 1, x) == nullptr) {
+	if (world.has_gap_at(y + 1, x)) {
+		set_row(y + get_y_vel());
+		set_col(x + get_x_vel());
 	} else {
-		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-		// world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if (!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
-			set_row(get_row() + 1);
-			set_col(get_col() - 1);
-			// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+		// if ((world.at(y + 1, x - 1)->get_type() == none) &&
+		// world.at(y + 1, x - 1) == nullptr) {
+		if (world.has_gap_at(y + 1, x - 1)) {
+			set_row(y + 1);
+			set_col(x - 1);
+			// } else if ((world.at(y + 1, x + 1)->get_type() ==
 			// none) &&
-			// world.at(get_row() + 1, get_col() + 1) == nullptr) {
-		} else if (!P::is_solid(world.atMap(get_row() + 1, get_col()))) {
-			set_row(get_row() + 1);
-			set_col(get_col() + 1);
+			// world.at(y + 1, x + 1) == nullptr) {
+		} else if (world.has_gap_at(y + 1, x + 1)) {
+			set_row(y + 1);
+			set_col(x + 1);
 		} else {
 			set_stationary(true);
 			return;
