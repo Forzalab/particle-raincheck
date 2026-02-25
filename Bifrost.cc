@@ -13,16 +13,16 @@ Bifrost::Bifrost(const Param &api_key, const Param &username)
 
 // Getters OUTSIDE Bifrost
 wXY Bifrost::getWorldBound(const WorldSnapshot &ws) {
-	Wc x = ws.get_rows();
-	Wc y = ws.get_cols();
+	Wc x = ws.get_cols();
+	Wc y = ws.get_rows();
 	return {x, y};
 }
 
 // x y to .xy
 void pState::setXY(const ParticleCoordsValue &x, const ParticleCoordsValue &y) {
 	pXY &xy = this->xy;
-	xy.row = x;
-	xy.col = y;
+	xy.col = x;
+	xy.row = y;
 }
 
 // r g b to .rgb
@@ -46,7 +46,7 @@ void pState::setRGB(const ParticleColorValue &r, const ParticleColorValue &g,
 
 // particle <<= p_ptr
 pState &operator<<=(pState &particle, const P_ptr &p) {
-        const Pc x = p->get_row(), y = p->get_col();
+        const Pc x = p->get_col(), y = p->get_row();
 	const Color r = p->get_r(), g = p->get_g(), b = p->get_b();
 	
 	particle.setXY(x,y);
