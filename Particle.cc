@@ -140,11 +140,27 @@ void P::set_type(const P_Type &_type) {
 
 void P::physics(World &world) {
 	// general guard for all particles
-	/* here */
+	
+	Pc x_old = this->get_col();
+	Pc y_old = this->get_row();
 
 	// type-specific physics
 	physics_spec(world);
 
+	// After ONE particle move
+	Pc x_new = this->get_col();
+        Pc y_new = this->get_row();
+	/*
+	// ...but the new pos on Map (excluding generated 
+	// particle, we dont talk about Bruno) HAS the
+	// old particle type!!!!!! wtf
+	P_Type colliding_type = world.atMap(y, x);
+
+	// No-one? sprint ahead!
+	// Has one? ask first.
+	if (colliding_type != none && colliding_type != air)
+		this->touch(???, world);
+*/
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
 	return;
 }

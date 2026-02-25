@@ -9,8 +9,7 @@ const std::string SAVEFILE = "save.JSON";
 // Reserve mem for map in construction.
 World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
 	: rows(rows), cols(cols) {
-	map.resize(size_t(rows) * size_t(cols));
-	map.assign(map.size(), none);
+	updateVecs();
 }
 
 const Ps &World::getParticles() { return ps; }
@@ -18,6 +17,11 @@ const Ps &World::getParticles() { return ps; }
 void World::updateVecs() {
 	map.resize(size_t(rows) * size_t(cols));
 	map.assign(map.size(), none);
+
+	// yes i know.
+        // i welcome all deref null efforts
+	map_ptr.resize(size_t(rows) * size_t(cols));
+//	map_ptr.assign(map_ptr.size(), nullp);
 }
 
 /*
@@ -39,7 +43,7 @@ void World::updateMap() {
 }
 */
 
-void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
+void World::_updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 	// Vector mask. saves positions that contain a particle.
 	// Iter over list of Particles and update map at those indecies
 	// Also add a true to the mask to prevent from being set to none.
@@ -48,11 +52,41 @@ void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 		map.at(rawInd) = type;
 }
 
-void World::updateMap(const P_ptr &p) {
+void World::_updateMap(P_ptr &p) {
 	// Vector mask. saves positions th[Bat contain a particle.
 	// Iter over list of Particles and update map at those indecies
 	// Also add a true to the mask to prevent from being set to none.
-	updateMap(p->get_row(), p->get_col(), p->get_type());
+	_updateMap(p->get_row(), p->get_col(), p->get_type());
+}
+
+void World::updateMapPtr(const Wc &y, const Wc &x, P_ptr &ptr) {
+        // Vector mask. saves positions that contain a particle.
+        // Iter over list of Particles and update map at those indecies
+        // Also add a true to the mask to prevent from being set to none.
+        Wc rawInd = int(y) * cols + int(x);
+        if (rawInd < map_ptr.size())
+                map_ptr.at(rawInd) = ptr;
+}
+
+void World::updateMapPtr(P_ptr &p) {
+        // Vector mask. saves positions th[Bat contain a particle.
+        // Iter over list of Particles and update map at those indecies
+        // Also add a true to the mask to prevent from being set to none.
+	updateMapPtr(Wc(p->get_row()),Wc(p->get_col()), p);
+}
+
+void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
+	_updateMap(y, x, type);
+}
+
+// YES, THIS LOOKS LIKE PURE CRAP
+// BUT THIS FOR LEGACY CODE :(((
+void World::updateMap(P_ptr &p) {
+        // Vector mask. saves positions th[Bat contain a particle.
+        // Iter over list of Particles and update map at those indecies
+        // Also add a true to the mask to prevent from being set to none.
+        _updateMap(p);
+	updateMapPtr(p);
 }
 
 Wc World::get_rows() const { return rows; }
@@ -79,10 +113,10 @@ void World::set_rows(const Wc &_rows) {
 // Returns true if the particle's coordinates is within the range
 bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
 
-P_Type World::atMap(Wc row, Wc col) {
+P_Type World::atMap(const Wc &row, const Wc &col) {
 	if (exclusiveInRange(0, rows, row) &&
 		exclusiveInRange(0, cols, col)) {
-		return map.at(cols * row + col);
+		return map.at(cols * Wc(row) + Wc(col));
 	} else {
 		return OOB;
 	} // If you're checking out of bounds
@@ -96,6 +130,15 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 			break;
 	}
 	return (p != ps.end() ? *p : nullp);
+} // .at()
+
+P_ptr &World::atMap_ptr(const Pc &row, const Pc &col) {
+        if (exclusiveInRange(0, rows, row) &&
+                exclusiveInRange(0, cols, col)) {
+                return map_ptr.at(cols * row + col);
+        } else {
+                return nullp;
+        }
 } // .at()
 
 bool World::isInBounds(const auto &p) {
