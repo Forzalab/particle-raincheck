@@ -8,59 +8,43 @@ std::mt19937 P::gen(P::rd());
 std::binomial_distribution<> P::bd(50, 0.5);
 
 // cstor
-P::Particle(const Color &r, const Color &g, const Color &b,
+P::Particle(const Pc &row, const Pc &col, const Color &r, const Color &g, const Color &b,
 			const bool &stationary, const Tick &lifetime, const P_Type &type)
 	: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime), type(type) {
+	set_row(row);
+        set_col(col);
 	set_stationary(stationary);
 	set_lifetime(lifetime);
 }
 
 Air::Air(const Pc &row, const Pc &col)
-	: Particle(255, 255, 255, false, 1000, air) {
+	: Particle(row, col, 255, 255, 255, false, 1000, air) {
 	Pc dx_scale = 5, dy_scale = 5;
 	set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
 	set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
-	set_row(row);
-	set_col(col);
-	set_lifetime(1000);
 }
 
 Dust::Dust(const Pc &row, const Pc &col)
-	: P_solid(120, 120, 120, false, 600, dust) {
-	Pc dx_scale = 2;
-	Pc dy_scale = 2;
+	: P_solid(row, col, 120, 120, 120, false, 600, dust) {
+	Pc dx_scale = 2, dy_scale = 2;
 	set_x_vel(((P::bd(P::gen)) - 24) * dx_scale);
 	set_y_vel(((P::bd(P::gen)) - 24) * dy_scale);
-	set_row(row);
-	set_col(col);
 }
 
 Fire::Fire(const Pc &row, const Pc &col)
-	: Particle(227, 68, 32, true, 1500, fire) {
-	set_row(row);
-	set_col(col);
-}
+	: Particle(row, col, 227, 68, 32, false, 1500, fire) {}
 
 Water::Water(const Pc &row, const Pc &col)
-	: Particle(70, 155, 235, false, -1, water) {
-	set_row(row);
-	set_col(col);
-}
+	: Particle(row, col, 70, 155, 235, false, 20000, water) {}
 
 Earth::Earth(const Pc &row, const Pc &col)
-	: P_solid(97, 29, 25, true, INT32_MAX, earth) {
-	set_row(row);
-	set_col(col);
-}
+	: P_solid(row, col, 97, 29, 25, true, -1, earth) {}
 
 Dirt::Dirt(const Pc &row, const Pc &col)
-	: P_solid(138, 52, 26, false, INT32_MAX, dirt) {
-	set_row(row);
-	set_col(col);
-}
+	: P_solid(row, col, 138, 52, 26, false, INT32_MAX, dirt) {}
 
 Lightning::Lightning(const Pc &row, const Pc &col)
-	: Particle(255, 255, 0, false, 100, lightning) {
+	: Particle(row, col, 255, 255, 0, false, 100, lightning) {
 	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
 	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
 
@@ -69,28 +53,16 @@ Lightning::Lightning(const Pc &row, const Pc &col)
 
 	set_x_vel(x_grav);
 	set_y_vel(y_grav);
-
-	set_row(row);
-	set_col(col);
 }
 
 TBD_1::TBD_1(const Pc &row, const Pc &col)
-	: P_solid(255, 255, 255, false, INT32_MAX, tbd_1) {
-	set_row(row);
-	set_col(col);
-}
+	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_1) {}
 
 TBD_2::TBD_2(const Pc &row, const Pc &col)
-	: P(255, 255, 255, false, INT32_MAX, tbd_2) {
-	set_row(row);
-	set_col(col);
-}
+	: P(row, col, 255, 255, 255, false, INT32_MAX, tbd_2) {}
 
 TBD_3::TBD_3(const Pc &row, const Pc &col)
-	: P_solid(255, 255, 255, false, INT32_MAX, tbd_3) {
-	set_row(row);
-	set_col(col);
-}
+	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_3) {}
 
 // getters
 Pc P::get_row() const { return row; }
