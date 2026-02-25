@@ -39,11 +39,9 @@ private:
 
 public:
 	P_ptr nullp = nullptr; // null object pattern
-	// Reserve mem for map in construction.
-	World(const Wc &rows = 50, const Wc &cols = 70) : rows(rows), cols(cols) {
-		map.resize(size_t(rows) * size_t(cols));
-		map.assign(map.size(), none);
-	}
+
+    // Reserve mem for map in construction.
+        World(const Wc &rows, const Wc &cols);
 
 	Wc get_rows() const;
 	Wc get_cols() const;
@@ -65,7 +63,7 @@ public:
 
 	void add_particle(P_ptr p);
 
-	const Ps& getParticles() { return ps; }
+	const Ps& getParticles();
 	// One preset save-file is enough?
 	void save(const std::string &str);
 	int load(const std::string &str);
