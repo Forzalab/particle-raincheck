@@ -116,13 +116,16 @@ int World::physics() {
 
 		// After phsyics!
 		// Decrement p lifetime if it is not a permanent particle
+		bool st = (*p)->get_stationary();
+		Wc x_new = (*p)->get_col();
+		Wc y_new = (*p)->get_row();
 
-		P_Type type_new = (this->atMap(y, x));
-		updateMap(y, x, none);  // Old particle pos
+		P_Type type_new = (this->atMap(y_new, x_new));
+		
+		if (!st)
+			updateMap(y, x, none);  // Old particle pos
 		// !!!!!!!!!! del par
 		if (type_new != none) {
-		//	Wc x_new = (*p)->get_col();
-		//	Wc y_new = (*p)->get_row();
 			if ((*p)->get_lifetime() != -1)
 				(*p)->set_lifetime((*p)->get_lifetime() - 1);
 			updateMap(*p);
