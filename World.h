@@ -35,7 +35,7 @@ private:
 	Ps ps;			   // list of Particles' POINTERS
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
-	void updateMap(const Wc& x, const Wc &y, const P_Type& type);
+	void updateMap(const Wc &x, const Wc &y, const P_Type &type);
 	void parseParticlesFromJSON(std::string &s);
 
 public:
@@ -53,9 +53,9 @@ public:
 
 	void updateVecs();
 	void updateMap(const P_ptr &p);
-	
+
 	void erase(const Wc &row, const Wc &col);
-	P_ptr& at(const Pc &row, const Pc &col); // .at()
+	P_ptr &at(const Pc &row, const Pc &col); // .at()
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
 	bool has_gap_at(const Wc &y, const Wc &x);
@@ -65,7 +65,7 @@ public:
 
 	void add_particle(P_ptr p);
 
-	const Ps& getParticles();
+	const Ps &getParticles();
 	void save(const std::string &str);
 	int load(const std::string &str);
 };
