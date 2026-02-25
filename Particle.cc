@@ -114,15 +114,15 @@ void Fire::physics_spec(World &world) {
 	// Fire is stationary by default
 	Pc x = int(this->get_col());
 	Pc y = int(this->get_row());
-
+	Pc speed_scale = 0.1;
 	// Lighting spawn
 	bool light = (P::bd(P::gen)) > 31; // P(X >= 33) = 1.6%
 	Pc sign_x = (P::bd(P::gen)) % 3 - 1;
 	Pc sign_y = (P::bd(P::gen)) % 3 - 1;
 	Pc x_spawn = ((P::bd(P::gen)) % 3) + x - 1;
 	Pc y_spawn = ((P::bd(P::gen)) % 3) + y - 1;
-	Pc dx_spawn = 0.1 * sign_x * (((P::bd(P::gen)) % 3 - 3));
-	Pc dy_spawn = 0.1 * sign_y * (((P::bd(P::gen)) % 3 - 1));
+	Pc dx_spawn = speed_scale * sign_x * (((P::bd(P::gen)) % 3 - 1));
+	Pc dy_spawn = speed_scale * sign_y * (((P::bd(P::gen)) % 3 - 1));
 
 	// Chexks for currently gen x,y spawn
 	// no overlap spawn
@@ -134,11 +134,14 @@ void Fire::physics_spec(World &world) {
 	bool in_bound_y = (y_spawn) < world.get_rows() && (y_spawn) >= 0;
 
 	// speed check
-	bool moving = (sign_x != 0 || sign_y != 0);
+	bool moving = (dx_spawn/speed_scale >= 1 || dy_spawn/speed_scale >= 1);
 
-	// assigned the lighting particle
+	// moving-to-fire check
+	bool mtf = world.atMap((y_spawn + dy_spawn), (x_spawn + dx_spawn)) == fire;
+
+	// assign the lighting particle
 	if (light && in_bound_x && in_bound_y && !overlap_itself &&
-		!overlap_border && moving) {
+		!overlap_border && moving && !mtf) {
 		Lightning l(y_spawn, x_spawn);
 		l.set_x_vel(dx_spawn);
 		l.set_y_vel(dy_spawn);
