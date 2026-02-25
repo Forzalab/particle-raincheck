@@ -1,3 +1,6 @@
+// for the love of god, PLEASE DONT WRITE FUNCTION AND CSTOR
+// IMPLEMENTATIONS IN *.h files!!!! declarations is a-ok :))
+
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
@@ -10,6 +13,7 @@
 #include <ctime>
 #include <random>
 #include <iostream>
+
 typedef float Pc; // P-coordinates
 typedef uint8_t Color;
 typedef int32_t Tick;
@@ -52,10 +56,9 @@ protected:
 	static std::mt19937 gen;
 	static std::binomial_distribution<> bd;
 
-	Particle(const Color &r, const Color &g, const Color &b,
-			 const bool &stationary, const Tick &lifetime, const P_Type &type)
-		: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime),
-		  type(type) { set_stationary(stationary); set_lifetime(lifetime);}
+	Particle(const Pc &row, const Pc &col, const Color &r, const Color &g,
+			 const Color &b, const bool &stationary, const Tick &lifetime,
+			 const P_Type &type);
 
 public:
 	void set_type(const P_Type &_type);
@@ -130,16 +133,7 @@ public:
 class Air : public P {
 public:
 	// https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
-	Air(const Pc &row, const Pc &col)
-		: Particle(255, 255, 255, false, 1000, air) {
-		Pc dx_scale = 5, dy_scale = 5;
-		set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
-		set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
-		set_row(row);
-		set_col(col);
-		set_lifetime(1000);
-	}
-
+	Air(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
@@ -148,114 +142,63 @@ public:
 // Is a pixel-sized dust a rock, a "tumbleweed", or air?
 class Dust : public P_solid {
 public:
-	Dust(const Pc &row, const Pc &col)
-		: P_solid(120, 120, 120, false, 20000, dust) {
-		Pc dx_scale = 2;
-		Pc dy_scale = 2;
-		set_x_vel(((P::bd(P::gen)) - 24) * dx_scale);
-		set_y_vel(((P::bd(P::gen)) - 24) * dy_scale);
-		set_row(row);
-		set_col(col);
-	}
-
+	Dust(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class Fire : public P {
 public:
-	Fire(const Pc &row, const Pc &col) : Particle(227, 68, 32, true, 1500, fire) {
-		set_row(row);
-		set_col(col);
-	}
-
+	Fire(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class Water : public P {
 public:
-	Water(const Pc &row, const Pc &col)
-		: Particle(70, 155, 235, false, -1, water) {
-		set_row(row);
-		set_col(col);
-	}
-
+	Water(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class Earth : public P_solid {
 public:
-	Earth(const Pc &row, const Pc &col)
-		: P_solid(97, 29, 25, true, INT32_MAX, earth) {
-		set_row(row);
-		set_col(col);
-	}
+	Earth(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class Dirt : public P_solid {
 public:
-	Dirt(const Pc &row, const Pc &col)
-		: P_solid(138, 52, 26, false, INT32_MAX, dirt) {
-		set_row(row);
-		set_col(col);
-	}
+	Dirt(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class Lightning : public P {
 public:
-	Lightning(const Pc &row, const Pc &col)
-		: Particle(255, 255, 0, false, 1, lightning) {
-		int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
-		int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
-
-		Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
-		Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
-
-		set_x_vel(x_grav);
-		set_y_vel(y_grav);
-
-		set_row(row);
-		set_col(col);
-	}
+	Lightning(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class TBD_1 : public P_solid {
 public:
-	TBD_1(const Pc &row, const Pc &col)
-		: P_solid(255, 255, 255, false, INT32_MAX, tbd_1) {
-		set_row(row);
-		set_col(col);
-	}
+	TBD_1(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class TBD_2 : public P {
 public:
-	TBD_2(const Pc &row, const Pc &col)
-		: Particle(255, 255, 255, false, INT32_MAX, tbd_2) {
-		set_row(row);
-		set_col(col);
-	}
+	TBD_2(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
 class TBD_3 : public P_solid {
 public:
-	TBD_3(const Pc &row, const Pc &col)
-		: P_solid(255, 255, 255, false, INT32_MAX, tbd_3) {
-		set_row(row);
-		set_col(col);
-	}
+	TBD_3(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };

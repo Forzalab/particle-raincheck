@@ -1,3 +1,6 @@
+// for the love of god, PLEASE DONT WRITE FUNCTION AND CSTOR
+// IMPLEMENTATIONS IN *.h files!!!! declarations is a-ok :))
+
 #ifndef WORLD_H
 #define WORLD_H
 
@@ -6,7 +9,6 @@
 #include <limits>
 #include <memory>
 #include <numeric>
-#include "Particle.h"
 #include <cstdlib>
 #include <exception>
 #include <fstream>
@@ -16,6 +18,8 @@
 #include <list>
 #include <cstdint>
 #include <vector>
+
+#include "Particle.h"
 
 using P = Particle;
 
@@ -31,16 +35,14 @@ private:
 	Ps ps;			   // list of Particles' POINTERS
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
-
-	void updateMap();
+	void updateMap(const Wc &x, const Wc &y, const P_Type &type);
 	void parseParticlesFromJSON(std::string &s);
 
 public:
 	P_ptr nullp = nullptr; // null object pattern
-	// Reserve mem for map in construction.
-	World(const Wc &rows = 50, const Wc &cols = 70) : rows(rows), cols(cols) {
-		map.resize(size_t(rows) * size_t(cols));
-	}
+
+	// Reserve mem for map in construction
+	World(const uint16_t &rows, const uint16_t &cols);
 
 	Wc get_rows() const;
 	Wc get_cols() const;
@@ -50,19 +52,20 @@ public:
 	P_Type atMap(Wc row, Wc col);
 
 	void updateVecs();
-	
+	void updateMap(const P_ptr &p);
+
 	void erase(const Wc &row, const Wc &col);
-	P_ptr& at(const Pc &row, const Pc &col); // .at()
+	P_ptr &at(const Pc &row, const Pc &col); // .at()
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
+	bool has_gap_at(const Wc &y, const Wc &x);
 	int physics();			 // physics() iterates all P.
 	Amt size() const;		 // get amt of P
 	Amt alive_count() const; // get amt of LIVING P.
 
 	void add_particle(P_ptr p);
 
-	const Ps& getParticles() { return ps; }
-	// One preset save-file is enough?
+	const Ps &getParticles();
 	void save(const std::string &str);
 	int load(const std::string &str);
 };
