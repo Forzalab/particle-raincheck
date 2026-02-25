@@ -66,7 +66,7 @@ void Game::run() {
 	using clock = std::chrono::steady_clock;
 
 	// Placeholder vals. We can change these later.
-	Wc rows = 50, cols = 70;
+	Wc rows = 20, cols = 10;
 	world.set_rows(rows);
 	world.set_cols(cols);
 	world.updateVecs();

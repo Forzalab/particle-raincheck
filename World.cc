@@ -52,9 +52,15 @@ void World::erase(const Wc &row, const Wc &col) {
 	*it_rmv = none;
 }
 
-void World::set_cols(const Wc &_cols) { cols = _cols; }
+void World::set_cols(const Wc &_cols) { 
+	cols = _cols; 
+	this->updateVecs();
+}
 
-void World::set_rows(const Wc &_rows) { rows = _rows; }
+void World::set_rows(const Wc &_rows) { 
+	rows = _rows; 
+	this->updateVecs();
+}
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
