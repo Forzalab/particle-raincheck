@@ -56,7 +56,7 @@ protected:
 	static std::mt19937 gen;
 	static std::binomial_distribution<> bd;
 
-	Particle(const Color &r, const Color &g, const Color &b,
+	Particle(const Pc &row, const Pc &col, const Color &r, const Color &g, const Color &b,
 			 const bool &stationary, const Tick &lifetime, const P_Type &type);
 
 public:
