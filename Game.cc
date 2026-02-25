@@ -10,7 +10,7 @@ const uint16_t COLS_DFT = 70;
 
 Game::Game() : world(ROWS_DFT, COLS_DFT) { world.load(SAVEFILE); }
 
-Game::Game(const uint16_t &rows, const uint16_t &colS)
+Game::Game(const uint16_t &rows, const uint16_t &cols)
 	: rows(rows), cols(cols), world(rows, cols) {
 	world.load(SAVEFILE);
 }
