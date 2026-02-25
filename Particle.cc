@@ -114,7 +114,8 @@ void Fire::physics_spec(World &world) {
 	// Fire is stationary by default
 	Pc x = int(this->get_col());
 	Pc y = int(this->get_row());
-	Pc speed_scale = 0.1;
+	Pc speed_scale = 0.5;
+
 	// Lighting spawn
 	bool light = (P::bd(P::gen)) > 31; // P(X >= 33) = 1.6%
 	Pc sign_x = (P::bd(P::gen)) % 3 - 1;
@@ -134,7 +135,7 @@ void Fire::physics_spec(World &world) {
 	bool in_bound_y = (y_spawn) < world.get_rows() && (y_spawn) >= 0;
 
 	// speed check
-	bool moving = (dx_spawn/speed_scale >= 1 || dy_spawn/speed_scale >= 1);
+	bool moving = (std::abs(dx_spawn/speed_scale) >= 1 || std::abs(dy_spawn/speed_scale) >= 1);
 
 	// moving-to-fire check
 	bool mtf = world.atMap((y_spawn + dy_spawn), (x_spawn + dx_spawn)) == fire;
