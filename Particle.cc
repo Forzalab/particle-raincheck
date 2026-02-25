@@ -145,6 +145,7 @@ void Fire::physics_spec(World &world) {
 			p_world = p_l;
 		else
 			world.add_particle(p_l);
+		world.updateMap(p_l);
 	}
 }
 
@@ -158,7 +159,7 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 			p_world = p_a;
 		else
 			world.add_particle(p_a);
-
+		world.updateMap(p_a);
 		// make it go upwards
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
@@ -316,6 +317,7 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 			p_world = p;
 		else
 			world.add_particle(p);
+		world.updateMap(p);
 		this->set_lifetime(0);
 	}
 }
