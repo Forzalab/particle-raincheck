@@ -319,12 +319,12 @@ using CH = CallbackHandler;
 
 CH::CallbackHandler(World &inworld) : world(inworld) {}
 
-void CH::setRowCol(int inrow, int incol) {
+void CH::setRowCol(Wc inrow, Wc incol) {
 	if (type == none)
 		return;
 	row = inrow;
 	col = incol;
-	if (world.atMap(row, col) == none) { // any value other than none will not
+	if (world.atMap(Wc(row), Wc(col)) == none) { // any value other than none will not
 										 // allow particle generation. Prevents>
 		P_ptr pt = generateParticle();
 		if (pt != nullptr)

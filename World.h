@@ -57,7 +57,8 @@ public:
 	void set_rows(const Wc &_rows);
 	void set_cols(const Wc &_cols);
 
-	P_Type atMap(Wc row, Wc col);
+//	who wrote this line shod go to gulag
+//	P_Type atMap(Wc row, Wc col);
 
 	void updateVecs();
 
@@ -66,7 +67,7 @@ public:
 
 	void erase(const Wc &row, const Wc &col);
 
-	P_ptr &at(const Wc &row, const Wc &col); // .at()
+	P_ptr &at(const Pc &row, const Pc &col); // .at()
 	P_ptr &atMap_ptr(const Pc &row, const Pc &col);
 	P_Type atMap(const Wc &row, const Wc &col);
 
