@@ -149,7 +149,7 @@ public:
 class Dust : public P_solid {
 public:
 	Dust(const Pc &row, const Pc &col)
-		: P_solid(120, 120, 120, false, 20000, dust) {
+		: P_solid(120, 120, 120, false, 600, dust) {
 		Pc dx_scale = 2;
 		Pc dy_scale = 2;
 		set_x_vel(((P::bd(P::gen)) - 24) * dx_scale);
