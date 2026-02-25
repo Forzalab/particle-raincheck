@@ -28,7 +28,7 @@ void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 	// Vector mask. saves positions that contain a particle.
 	// Iter over list of Particles and update map at those indecies
 	// Also add a true to the mask to prevent from being set to none.
-	Wc rawInd = int(x) * cols + int(y);
+	Wc rawInd = int(y) * cols + int(x);
 	if (rawInd < map.size())
 		map.at(rawInd) = type;
 }
@@ -88,7 +88,7 @@ bool World::isInBounds(const auto &p) {
 
 bool World::has_gap_at(const Wc &y, const Wc &x) {
 	// TODO: hashmap existing particle!!!!!!
-	return !P::is_solid(this->atMap(y, x));
+	return !(P::is_solid(this->atMap(y, x)));
 }
 
 // Since this function is essentially the update loop of World
@@ -118,6 +118,7 @@ int World::physics() {
 		// Decrement p lifetime if it is not a permanent particle
 
 		P_Type type_new = (this->atMap(y, x));
+		updateMap(y, x, none);  // Old particle pos
 		// !!!!!!!!!! del par
 		if (type_new != none) {
 		//	Wc x_new = (*p)->get_col();
@@ -125,11 +126,7 @@ int World::physics() {
 			if ((*p)->get_lifetime() != -1)
 				(*p)->set_lifetime((*p)->get_lifetime() - 1);
 			updateMap(*p);
-			
 		}
-		updateMap(y, x, none); // Moved this in here because I realized that each time a
-					   // particle moves per frame, it needs this to be as up to
-					   // date as possible.
 	}
 	// If the particle is "dead" aka lifetime is exactly 0
 	// OR
