@@ -49,6 +49,7 @@ void P::set_stationary(const bool &_stationary) {
 		set_y_vel(0);
 		set_lifetime(-1);
 	}
+	stationary = _stationary;
 }
 
 void P::set_lifetime(const Tick &_lifetime) {
@@ -244,18 +245,20 @@ void Dirt::physics_spec(World &world) {
 	//	set_y_vel(get_y_vel() + gravity);
 	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-	Pc y = get_row();
-	Pc x = get_col();
+	// init pos
+        Wc y = get_row();
+        Wc x = get_col();
+
+	// predict future pos of dirt
+	Pc y_dy = y + get_y_vel();
+	Pc x_dx = x + get_x_vel();
 
 	// if ((world.at(y + 1, x)->get_type() == none) &&
 	// world.at(y + 1, x) == nullptr) {
 	if (world.has_gap_at(y + 1, x)) {
-		set_row(y + get_y_vel());
-		set_col(x + get_x_vel());
-	} else {
-		// if ((world.at(y + 1, x - 1)->get_type() == none) &&
-		// world.at(y + 1, x - 1) == nullptr) {
-		if (world.has_gap_at(y + 1, x - 1)) {
+		set_row(y + 1);
+		set_col(x);
+	} else if (world.has_gap_at(y + 1, x - 1)) {
 			set_row(y + 1);
 			set_col(x - 1);
 			// } else if ((world.at(y + 1, x + 1)->get_type() ==
@@ -268,6 +271,15 @@ void Dirt::physics_spec(World &world) {
 			set_stationary(true);
 			return;
 		}
+}
+
+// primitive touch for the time being, can revisit if causes problems
+void Dirt::touch(const P_ptr &nbr, World &world) {
+	if (nbr->get_type() == water &&
+		(nbr->get_row() == get_row() + 1 && nbr->get_col() == get_col())) {
+		// if dirt on top of water, switch places
+		set_row(get_row() + 1);
+		nbr->set_row(get_row());
 	}
 }
 
@@ -289,16 +301,6 @@ void Lightning::physics_spec(World &world) {
 	if (!get_stationary()) {
 		set_col(get_col() + dx);
 		set_row(get_row() + dy);
-	}
-}
-
-// primitive touch for the time being, can revisit if causes problems
-void Dirt::touch(const P_ptr &nbr, World &world) {
-	if (nbr->get_type() == water &&
-		(nbr->get_row() == get_row() + 1 && nbr->get_col() == get_col())) {
-		// if dirt on top of water, switch places
-		set_row(get_row() + 1);
-		nbr->set_row(get_row());
 	}
 }
 
