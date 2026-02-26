@@ -131,8 +131,8 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 } // .at()
 
 P_ptr &World::atMap_ptr(const Wc &row, const Wc &col) {
-        if (exclusiveInRange(0, rows, row) &&
-                exclusiveInRange(0, cols, col)) {
+        if (inclusiveInRange(0, rows - 1, row) &&
+                inlusiveInRange(0, cols - 1, col)) {
                 return map_ptr.at(cols * row + col);
         } else {
                 return nullp;
