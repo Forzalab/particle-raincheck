@@ -7,16 +7,20 @@ static_assert(sizeof(World) > 0);
 const std::string SAVEFILE = "save.JSON";
 
 // Reserve mem for map in construction.
-World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
-	: rows(rows), cols(cols) {
-	map.resize(size_t(rows) * size_t(cols));
-	map.assign(map.size(), none);
-}
+// World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
+	// : rows(rows), cols(cols) {
+	// map.resize(size_t(rows) * size_t(cols));
+	// map.assign(map.size(), none);
+// }
 
 const Ps &World::getParticles() { return ps; }
 
 void World::updateVecs() {
+	//the spread of cout debugging grows
+	// std::cout << std::endl;
+	// std::cout << rows << " " << cols << " " << size_t(rows) * size_t(cols) << endl;
 	map.resize(size_t(rows) * size_t(cols));
+	// cout << map.size();
 	map.assign(map.size(), none);
 }
 
@@ -65,14 +69,16 @@ void World::erase(const Wc &row, const Wc &col) {
 	*it_rmv = none;
 }
 
+//Setters should NOT resize vectors like this. What happens if you accidentally set rows or cols to 0?
+//setters should only set the variable they are intended to set. This is fragile, and bug indusive
 void World::set_cols(const Wc &_cols) {
 	cols = _cols;
-	this->updateVecs();
+	// updateVecs();
 }
 
 void World::set_rows(const Wc &_rows) {
 	rows = _rows;
-	this->updateVecs();
+	// updateVecs();
 }
 
 // because cpp doesnt support range conditionals Sadge
@@ -346,7 +352,7 @@ void World::parseParticlesFromJSON(std::string &s) {
 	while (!ss.eof()) {
 		P_ptr p = extractParticle(particle);
 		add_particle(p);
-		updateMap(p);
+		// updateMap(p);
 		std::getline(ss, particle,
 					 ','); // Throw out comma inbetween each particle.
 		std::getline(ss, particle, '}');
@@ -370,20 +376,21 @@ int World::load(const std::string &str) {
 	// Member primitives
 	// rows
 	std::getline(ifs, s, '\n');
-	try {
-		rows = stoi(extractVal(s));
-	} catch (std::exception &e) {
-		std::cerr << "Val extracted for ROWS invalid.\n";
-		exit(EXIT_FAILURE);
-	}
+	//LOAD THROWS OUT ROWS, COLS. THESE ARE DETERMINED AT RUNTIME BY GET_TERMINAL_SIZE.
+	// try {
+		// rows = stoi(extractVal(s));
+	// } catch (std::exception &e) {
+		// std::cerr << "Val extracted for ROWS invalid.\n";
+		// exit(EXIT_FAILURE);
+	// }
 	// cols
 	std::getline(ifs, s, '\n');
-	try {
-		cols = stoi(extractVal(s));
-	} catch (std::exception &e) {
-		std::cerr << "Val extracted for COLS invalid.\n";
-		exit(EXIT_FAILURE);
-	}
+	// try {
+		// cols = stoi(extractVal(s));
+	// } catch (std::exception &e) {
+		// std::cerr << "Val extracted for COLS invalid.\n";
+		// exit(EXIT_FAILURE);
+	// }
 
 	updateVecs();
 
