@@ -438,13 +438,17 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 			Lightning l(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Lightning>(l);
 		}
-		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
+		P_ptr &p_world = world.atMap_ptr(nbr->get_row(), nbr->get_col());
+
 		if (p_world)
 			p_world = p;
 		else
 			world.add_particle(p);
+
 		world.updateMap(p);
+
 		this->set_lifetime(0);
+		nbr->set_lifetime(0);
 	}
 }
 
