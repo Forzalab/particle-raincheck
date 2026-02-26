@@ -51,7 +51,7 @@ private:
 	void _updateMap(P_ptr &p);
 	void updateMapPtr(const Wc &x, const Wc &y, P_ptr &ptr);
 	void parseParticlesFromJSON(std::string &s);
-
+	bool inclusiveInRange(Wc min, Wc max, Wc val);
 public:
 	P_ptr nullp = nullptr; // null object pattern
 

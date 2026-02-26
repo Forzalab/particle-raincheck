@@ -51,7 +51,7 @@ Lightning::Lightning(const Pc &row, const Pc &col)
 	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
 	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
 
-	Tick lft = 1.5 * P::bd(P::gen);
+	Tick lft = 1 * P::bd(P::gen);
 
 	Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
 	Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
@@ -90,14 +90,14 @@ bool P::is_solid(const P_Type &pt) { return (pt == earth || pt == dirt); }
 
 // setters
 void P::set_row(const Pc &_row) {
-	if (_row < 0)
-		throw std::runtime_error("Row OOB.");
+	if (_row < 0) set_lifetime(0);
+		//throw std::runtime_error("Row OOB.");
 	row = _row;
 }
 
 void P::set_col(const Pc &_col) {
-	if (_col < 0)
-		throw std::runtime_error("Col OOB.");
+	if (_col < 0) set_lifetime(0);
+		//throw std::runtime_error("Col OOB.");
 	col = _col;
 }
 

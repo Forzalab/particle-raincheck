@@ -109,9 +109,9 @@ void World::set_rows(const Wc &_rows) {
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool inclusiveInRange(Wc min, Wc max, Wc val) { return min <= val && val <= max; }
+bool World::inclusiveInRange(Wc min, Wc max, Wc val) { return min <= val && val <= max; }
 
-P_Type World::atMap(Wc row, Wc col) {
+P_Type World::atMap(const Wc &row, const Wc &col) {
 	if (inclusiveInRange(0, rows - 1, row) &&
 		inclusiveInRange(0, cols - 1, col)) {
 		return map.at(cols * row + col);
@@ -132,7 +132,7 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 
 P_ptr &World::atMap_ptr(const Wc &row, const Wc &col) {
         if (inclusiveInRange(0, rows - 1, row) &&
-                inlusiveInRange(0, cols - 1, col)) {
+                inclusiveInRange(0, cols - 1, col)) {
                 return map_ptr.at(cols * row + col);
         } else {
                 return nullp;
