@@ -52,8 +52,10 @@
 - Working on the actual physics simulation of the particles
     - Dirt travels downwards and forms piles when it hits something solid
     - Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
+    ----So if you turn stationary true on water it will not move even if a spot opens up beneath it
 ### Game class
-- Implemented all input from mouse and keyboard using non-blocking I/O
+--It has to handle all input from mouse and keyboard using non-blocking I/O
+--Implement a command to start simulating the world
 
 ## Ho
 ### Particle class
