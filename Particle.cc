@@ -409,10 +409,8 @@ void Lightning::physics_spec(World &world) {
 	Pc y_dy = int(y + dy);
 	P_Type pt = world.atMap(y_dy, x_dx);
 
-	if (pt == fire || is_solid(pt)) {
-		set_lifetime(0);
-		return;
-	}
+	if (pt == fire || is_solid(pt))
+		set_lifetime(1); // leave some tine for solid detection
 
 	if (!get_stationary()) {
 		set_col(get_col() + dx);
