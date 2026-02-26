@@ -265,11 +265,7 @@ void Fire::physics_spec(World &world) {
 		l.set_x_vel(dx_spawn);
 		l.set_y_vel(dy_spawn);
 		P_ptr p_l = std::make_shared<Lightning>(l);
-		P_ptr &p_world = world.at(y_spawn, x_spawn);
-		if (p_world)
-			p_world = p_l;
-		else
-			world.add_particle(p_l);
+		world.add_particle(p_l);
 		world.updateMap(p_l);
 	}
 }
@@ -280,10 +276,7 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		Air a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Air>(a);
 		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
-		if (p_world)
-			p_world = p_a;
-		else
-			world.add_particle(p_a);
+		world.add_particle(p_a);
 
 		world.updateMap(p_a);
 		// make it go upwards
@@ -430,6 +423,7 @@ void Lightning::physics_spec(World &world) {
 void Lightning::touch(const P_ptr &nbr, World &world) {
 	if (nbr->get_type() == earth || nbr->get_type() == water) {
 		P_ptr p;
+
 		if (nbr->get_type() == earth) {
 			Dirt d(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Dirt>(d);
@@ -438,15 +432,11 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 			Lightning l(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Lightning>(l);
 		}
-		P_ptr &p_world = world.atMap_ptr(nbr->get_row(), nbr->get_col());
 
-		if (p_world)
-			p_world = p;
-		else
-			world.add_particle(p);
-
+		world.add_particle(p);
 		world.updateMap(p);
 
+		// Particle delete
 		this->set_lifetime(0);
 		nbr->set_lifetime(0);
 	}

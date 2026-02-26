@@ -242,6 +242,7 @@ Amt World::size() const {
 	// casting just to get rid of annoying warning.
 	return Amt(ps.size());
 } // get amt of P
+
 Amt World::alive_count() const {
 	// Guard from empty list, return -1 as err
 	if (ps.size() == 0)
