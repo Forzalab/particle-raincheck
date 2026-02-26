@@ -46,7 +46,7 @@ private:
 
 public:
 	Game();
-	Game(const uint16_t &rows, const uint16_t &cols);
+	// Game(const uint16_t &rows, const uint16_t &cols);
 	GameTick get_tickrate() const;
 	void quit();
 	void load();

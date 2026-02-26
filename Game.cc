@@ -1,19 +1,29 @@
 // put all #include in header file pls
 
 #include "Game.h"
+#include "colors.h"
 
 typedef uint32_t GameTick;
 
 const std::string SAVEFILE = "save.JSON";
-const uint16_t ROWS_DFT = 50;
-const uint16_t COLS_DFT = 70;
+// const uint16_t ROWS_DFT = 50;
+// const uint16_t COLS_DFT = 70;
 
-Game::Game() : world(ROWS_DFT, COLS_DFT) { world.load(SAVEFILE); }
-
-Game::Game(const uint16_t &rows, const uint16_t &cols)
-	: rows(rows), cols(cols), world(rows, cols) {
-	world.load(SAVEFILE);
+Game::Game() : world() { 
+	const auto [ROWS, COLS] = get_terminal_size();
+	world.set_cols(COLS);
+	//Leave unused rows beneath for FPS / menus.
+	world.set_rows(ROWS - 10);
+	cerr << ROWS << " " << COLS << endl;;
+	cerr << world.get_rows() << " " << world.get_cols();
+	world.load(SAVEFILE); 
+	world.updateVecs();
 }
+
+// Game::Game(const uint16_t &rows, const uint16_t &cols)
+	// : rows(rows), cols(cols), world(rows, cols) {
+	// world.load(SAVEFILE);
+// }
 
 GameTick Game::get_tickrate() const { return tickrate; }
 
@@ -61,10 +71,13 @@ void resetTerminal() {
 	s += clearscreen();
 	s += show_cursor(true);
 	s += movecursor(0, 0);
+	s += set_mouse_mode(false);
+	set_raw_mode(false);
 	std::cerr << s;
 }
 
 void Game::run() {
+	cerr << world.get_rows() << " " << world.get_cols();
 	// Default of 5. Tickrate is directly proportional to framerate. 60 tickrate
 	// -> 1 / tickrate = 60fps.
 	tickrate = 30;
@@ -79,33 +92,33 @@ void Game::run() {
 	// Placeholder vals. We can change these later.
 	{
 		// Draw a splash screen here.
-		fs += clearscreen();
-		std::cerr << fs;
-		fs.clear();
-		system("figlet =======");
-		system("figlet Particles");
-		system("figlet =======");
+		// fs += clearscreen();
+		// std::cerr << fs;
+		// fs.clear();
+		// system("figlet =======");
+		// system("figlet Particles");
+		// system("figlet =======");
 
 		// Options on splash screen- "Start,
 		// Load
 		// Draw on bridges
 		// Quit
 
-		system("figlet =======");
-		system("figlet Start");
-		system("figlet =======");
+		// system("figlet =======");
+		// system("figlet Start");
+		// system("figlet =======");
 
-		system("figlet =======");
-		system("figlet Load");
-		system("figlet =======");
+		// system("figlet =======");
+		// system("figlet Load");
+		// system("figlet =======");
 
-		system("figlet =======");
-		system("figlet Quit");
-		system("figlet =======");
+		// system("figlet =======");
+		// system("figlet Quit");
+		// system("figlet =======");
 
 		// Add a time delay for users to see splash screen before game starts
 		sleep(2); // Pauses for two seconds
-		std::cerr << clearscreen();
+		// std::cerr << clearscreen();
 	}
 
 	// load(); //Test
