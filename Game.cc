@@ -1,7 +1,6 @@
 // put all #include in header file pls
 
 #include "Game.h"
-#include "Bifrost.h"
 #include <iostream>
 
 typedef uint32_t GameTick;
