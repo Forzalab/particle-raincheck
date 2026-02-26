@@ -83,11 +83,11 @@ void World::set_rows(const Wc &_rows) {
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
+bool inclusiveInRange(Wc min, Wc max, Wc val) { return min <= val && val <= max; }
 
 P_Type World::atMap(Wc row, Wc col) {
-	if (exclusiveInRange(1, rows - 1, row) &&
-		exclusiveInRange(1, cols - 1, col)) {
+	if (inclusiveInRange(0, rows - 1, row) &&
+		inclusiveInRange(0, cols - 1, col)) {
 		return map.at(cols * row + col);
 	} else {
 		return OOB;
@@ -108,7 +108,7 @@ bool World::isInBounds(const auto &p) {
 	Wc col = int(p->get_col());
 	Wc row = int(p->get_row());
 
-	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
+	return (inclusiveInRange(0, cols, col) && inclusiveInRange(0, rows, row));
 }
 
 bool World::has_gap_at(const Wc &y, const Wc &x) {
