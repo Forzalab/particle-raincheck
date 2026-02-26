@@ -215,12 +215,12 @@ int World::physics() {
 		// w/o this, accidental deletion of slow-moving
 		// particles (which will be realized in frame
 		// eventually, but affects fading)
-		bool stay = (x_new == prev_pos.at(*p).col && y_new == prev_pos.at(*p).row);
+		bool stay = (x_new == Wc(prev_pos.at(*p).col) && y_new == Wc(prev_pos.at(*p).row));
 
 		// count check for sentinel explained above
 		// stay check, as abive, wont delete "unmoving"
 		// particles
-		if (!stay && count > 0) {
+		if (!st && !stay && count > 0) {
 			updateMap(prev_pos.at(*p).col, prev_pos.at(*p).row, none); // Old particle pos
 			count--;
 		}
