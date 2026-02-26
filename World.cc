@@ -202,8 +202,18 @@ int World::physics() {
                 Wc y_new = (*p)->get_row();
 
 		bool st = (*p)->get_stationary();
+		
+		// note the deximal truncation.
+		// equal = "in floor range"
+		// w/o this, accidental deletion of slow-moving
+		// particles (which will be realized in frame
+		// eventually, but affects fading)
+		bool stay = (x_new == prev_pos.at(*p).col && y_new == prev_pos.at(*p).row);
 
-		if (!st && count > 0) {
+		// count check for sentinel explained above
+		// stay check, as abive, wont delete "unmoving"
+		// particles
+		if (!stay && count > 0) {
 			updateMap(prev_pos.at(*p).col, prev_pos.at(*p).row, none); // Old particle pos
 			count--;
 		}

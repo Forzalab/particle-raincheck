@@ -51,7 +51,7 @@ Lightning::Lightning(const Pc &row, const Pc &col)
 	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
 	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
 
-	Tick lft = 2 * P::bd(P::gen);
+	Tick lft = 1.5 * P::bd(P::gen);
 
 	Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
 	Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
@@ -122,9 +122,9 @@ void P::set_lifetime(const Tick &_lifetime) {
 
 	// Color fade
 	if (lifetime <= 20) {
-		r *= 0.9;
-		g *= 0.9;
-		b *= 0.9;
+		r *= 0.86;
+		g *= 0.86;
+		b *= 0.86;
 	}
 }
 
