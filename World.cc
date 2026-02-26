@@ -7,15 +7,20 @@ static_assert(sizeof(World) > 0);
 const std::string SAVEFILE = "save.JSON";
 
 // Reserve mem for map in construction.
-World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
-	: rows(rows), cols(cols) {
-	updateVecs();
-}
+// World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
+	// : rows(rows), cols(cols) {
+	// map.resize(size_t(rows) * size_t(cols));
+	// map.assign(map.size(), none);
+// }
 
 const Ps &World::getParticles() { return ps; }
 
 void World::updateVecs() {
+	//the spread of cout debugging grows
+	// std::cout << std::endl;
+	// std::cout << rows << " " << cols << " " << size_t(rows) * size_t(cols) << endl;
 	map.resize(size_t(rows) * size_t(cols));
+	// cout << map.size();
 	map.assign(map.size(), none);
 
 	// yes i know.
@@ -90,24 +95,26 @@ void World::erase(const Wc &row, const Wc &col) {
 	*it_rmv = none;
 }
 
+//Setters should NOT resize vectors like this. What happens if you accidentally set rows or cols to 0?
+//setters should only set the variable they are intended to set. This is fragile, and bug indusive
 void World::set_cols(const Wc &_cols) {
 	cols = _cols;
-	this->updateVecs();
+	// updateVecs();
 }
 
 void World::set_rows(const Wc &_rows) {
 	rows = _rows;
-	this->updateVecs();
+	// updateVecs();
 }
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
+bool inclusiveInRange(Wc min, Wc max, Wc val) { return min <= val && val <= max; }
 
-P_Type World::atMap(const Wc &row, const Wc &col) {
-	if (exclusiveInRange(0, rows, row) &&
-		exclusiveInRange(0, cols, col)) {
-		return map.at(cols * Wc(row) + Wc(col));
+P_Type World::atMap(Wc row, Wc col) {
+	if (inclusiveInRange(0, rows - 1, row) &&
+		inclusiveInRange(0, cols - 1, col)) {
+		return map.at(cols * row + col);
 	} else {
 		return OOB;
 	} // If you're checking out of bounds
@@ -136,7 +143,7 @@ bool World::isInBounds(const auto &p) {
 	Wc col = int(p->get_col());
 	Wc row = int(p->get_row());
 
-	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
+	return (inclusiveInRange(0, cols, col) && inclusiveInRange(0, rows, row));
 }
 
 bool World::has_gap_at(const Wc &y, const Wc &x) {
@@ -154,7 +161,7 @@ void World::updateMapPrev(const Wc &y, const Wc &x, const P_ptr &p) {
 // This returns an int used to increment Game.frame.
 int World::physics() {
 
-	if (size() == 0)
+	if (alive_count() == 0)
 		return 0;
 
 	// If no particles, clear list and return early
@@ -415,7 +422,7 @@ void World::parseParticlesFromJSON(std::string &s) {
 	while (!ss.eof()) {
 		P_ptr p = extractParticle(particle);
 		add_particle(p);
-		updateMap(p);
+		// updateMap(p);
 		std::getline(ss, particle,
 					 ','); // Throw out comma inbetween each particle.
 		std::getline(ss, particle, '}');
@@ -439,20 +446,21 @@ int World::load(const std::string &str) {
 	// Member primitives
 	// rows
 	std::getline(ifs, s, '\n');
-	try {
-		rows = stoi(extractVal(s));
-	} catch (std::exception &e) {
-		std::cerr << "Val extracted for ROWS invalid.\n";
-		exit(EXIT_FAILURE);
-	}
+	//LOAD THROWS OUT ROWS, COLS. THESE ARE DETERMINED AT RUNTIME BY GET_TERMINAL_SIZE.
+	// try {
+		// rows = stoi(extractVal(s));
+	// } catch (std::exception &e) {
+		// std::cerr << "Val extracted for ROWS invalid.\n";
+		// exit(EXIT_FAILURE);
+	// }
 	// cols
 	std::getline(ifs, s, '\n');
-	try {
-		cols = stoi(extractVal(s));
-	} catch (std::exception &e) {
-		std::cerr << "Val extracted for COLS invalid.\n";
-		exit(EXIT_FAILURE);
-	}
+	// try {
+		// cols = stoi(extractVal(s));
+	// } catch (std::exception &e) {
+		// std::cerr << "Val extracted for COLS invalid.\n";
+		// exit(EXIT_FAILURE);
+	// }
 
 	updateVecs();
 

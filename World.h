@@ -55,6 +55,9 @@ private:
 public:
 	P_ptr nullp = nullptr; // null object pattern
 
+	//Default cstor used to generate world size based on terminal size
+	World() = default;
+
 	// Reserve mem for map in construction
 	World(const uint16_t &rows, const uint16_t &cols);
 
