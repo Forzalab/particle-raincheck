@@ -146,11 +146,6 @@ bool World::isInBounds(const auto &p) {
 	return (inclusiveInRange(0, cols, col) && inclusiveInRange(0, rows, row));
 }
 
-bool World::has_gap_at(const Wc &y, const Wc &x) {
-	// TODO: hashmap existing particle!!!!!!
-	return !(P::is_solid(this->atMap(y, x)));
-}
-
 // To mutate prevPos, capturing old state WHEN running each particle touch/physics_spec
 void World::updateMapPrev(const Wc &y, const Wc &x, const P_ptr &p) {
         prev_pos[p] = {Pc(x), Pc(y)};
