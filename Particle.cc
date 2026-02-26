@@ -121,11 +121,7 @@ void P::set_lifetime(const Tick &_lifetime) {
 	lifetime = _lifetime;
 
 	// Color fade
-	if (lifetime == 1) {
-		r = 0;
-		g = 0;
-		b = 0;
-	} else if (lifetime <= 20) {
+	if (lifetime <= 20) {
 		r *= 0.9;
 		g *= 0.9;
 		b *= 0.9;
