@@ -454,6 +454,17 @@ void Dirt::physics_spec(World &world) {
 			set_stationary(true);
 }
 
+// primitive touch for the time being, can revisit if causes problems
+void Dirt::touch(const P_ptr &nbr, World &world) {
+	if (nbr->get_type() == water &&
+		(nbr->get_row() == get_row() + 1 && nbr->get_col() == get_col())) {
+		// if dirt on top of water, switch places
+		set_row(get_row() + 1);
+		nbr->set_row(get_row());
+	}
+}
+
+
 void Lightning::physics_spec(World &world) {
 	Pc x = this->get_col();
 	Pc y = this->get_row();

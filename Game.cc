@@ -94,7 +94,7 @@ void Game::run() {
 		// std::cerr << fs;
 		// fs.clear();
 		// system("figlet =======");
-		// system("figlet Particles");
+		 system("figlet demo");
 		// system("figlet =======");
 
 		// Options on splash screen- "Start,
@@ -103,7 +103,7 @@ void Game::run() {
 		// Quit
 
 		// system("figlet =======");
-		// system("figlet Start");
+//		 system("figlet mode");
 		// system("figlet =======");
 
 		// system("figlet =======");
@@ -115,7 +115,8 @@ void Game::run() {
 		// system("figlet =======");
 
 		// Add a time delay for users to see splash screen before game starts
-	//	sleep(2); // Pauses for two seconds
+		sleep(1); // Pauses for two seconds
+		std::cerr << "[ DEMO MODE ] (L) to load file." << endl;
 		bool paused = true;
 		while (paused == true) {
 			set_raw_mode(true);
