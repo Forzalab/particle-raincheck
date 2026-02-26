@@ -1,11 +1,30 @@
+// put all #include in header file pls
+
 #include "World.h"
 
 static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
-void World::updateVecs() { map.resize(size_t(rows) * size_t(cols)); }
+// Reserve mem for map in construction.
+// World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
+	// : rows(rows), cols(cols) {
+	// map.resize(size_t(rows) * size_t(cols));
+	// map.assign(map.size(), none);
+// }
 
+const Ps &World::getParticles() { return ps; }
+
+void World::updateVecs() {
+	//the spread of cout debugging grows
+	// std::cout << std::endl;
+	// std::cout << rows << " " << cols << " " << size_t(rows) * size_t(cols) << endl;
+	map.resize(size_t(rows) * size_t(cols));
+	// cout << map.size();
+	map.assign(map.size(), none);
+}
+
+/*
 void World::updateMap() {
 	// If no particles, clear list and return early
 	if (ps.size() == 0) {
@@ -22,8 +41,23 @@ void World::updateMap() {
 		map.at(rawInd) = p->get_type();
 	}
 }
+*/
 
-// World::World(const Wc& rows, const Wc& cols) : rows(rows), cols(cols) {}
+void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
+	// Vector mask. saves positions that contain a particle.
+	// Iter over list of Particles and update map at those indecies
+	// Also add a true to the mask to prevent from being set to none.
+	Wc rawInd = int(y) * cols + int(x);
+	if (rawInd < map.size())
+		map.at(rawInd) = type;
+}
+
+void World::updateMap(const P_ptr &p) {
+	// Vector mask. saves positions th[Bat contain a particle.
+	// Iter over list of Particles and update map at those indecies
+	// Also add a true to the mask to prevent from being set to none.
+	updateMap(p->get_row(), p->get_col(), p->get_type());
+}
 
 Wc World::get_rows() const { return rows; }
 
@@ -35,17 +69,25 @@ void World::erase(const Wc &row, const Wc &col) {
 	*it_rmv = none;
 }
 
-void World::set_cols(const Wc &_cols) { cols = _cols; }
+//Setters should NOT resize vectors like this. What happens if you accidentally set rows or cols to 0?
+//setters should only set the variable they are intended to set. This is fragile, and bug indusive
+void World::set_cols(const Wc &_cols) {
+	cols = _cols;
+	// updateVecs();
+}
 
-void World::set_rows(const Wc &_rows) { rows = _rows; }
+void World::set_rows(const Wc &_rows) {
+	rows = _rows;
+	// updateVecs();
+}
 
 // because cpp doesnt support range conditionals Sadge
 // Returns true if the particle's coordinates is within the range
-bool exclusiveInRange(Wc min, Wc max, Wc val) { return min < val && val < max; }
+bool inclusiveInRange(Wc min, Wc max, Wc val) { return min <= val && val <= max; }
 
 P_Type World::atMap(Wc row, Wc col) {
-	if (exclusiveInRange(1, rows - 1, row) &&
-		exclusiveInRange(1, cols - 1, col)) {
+	if (inclusiveInRange(0, rows - 1, row) &&
+		inclusiveInRange(0, cols - 1, col)) {
 		return map.at(cols * row + col);
 	} else {
 		return OOB;
@@ -66,7 +108,12 @@ bool World::isInBounds(const auto &p) {
 	Wc col = int(p->get_col());
 	Wc row = int(p->get_row());
 
-	return (exclusiveInRange(0, cols, col) && exclusiveInRange(0, rows, row));
+	return (inclusiveInRange(0, cols, col) && inclusiveInRange(0, rows, row));
+}
+
+bool World::has_gap_at(const Wc &y, const Wc &x) {
+	// TODO: hashmap existing particle!!!!!!
+	return !(P::is_solid(this->atMap(y, x)));
 }
 
 // Since this function is essentially the update loop of World
@@ -74,24 +121,51 @@ bool World::isInBounds(const auto &p) {
 // This returns an int used to increment Game.frame.
 int World::physics() {
 
-	if (size() == 0)
+	if (alive_count() == 0)
 		return 0;
+
+	// If no particles, clear list and return early
+	if (ps.size() == 0) {
+		map.clear();
+		return 2;
+	}
+
+	// why 2 loops? we dont want half-mutated Map and ps,
+	// we want each "container" to be completed b4 working
+	// on to the next one
+
+	// hashmap for fastest access
+	std::unordered_map<P_ptr, pXY> prevPos;
 
 	for (auto p = ps.begin(); p != ps.end(); p++) {
 		Wc x = (*p)->get_col();
 		Wc y = (*p)->get_row();
+		
+		// The map carries on to next loop
+		// AND we need prev pos data for clearing cell
+		prevPos[*p] = {Pc(x), Pc(y)};
+
 		// Do particle physics calls here
 		(*p)->physics(*this);
-		// Decrement p lifetime if it is not a permanent particle
-		// !!!!!!!!!! del par
-		if (this->atMap(x, y) == none) goto updatemap;
+	}
+	
+	for (auto p = ps.begin(); p != ps.end(); p++) {
+		// After phsyics!
+		updateMap(*p);
 
-		if ((*p)->get_lifetime() != -1)
+		Wc x_new = (*p)->get_col();
+                Wc y_new = (*p)->get_row();
+
+		// Decrement p lifetime if it is not a permanent particle
+		bool st = (*p)->get_stationary();
+
+		P_Type type_new = (this->atMap(y_new, x_new));
+
+		if (!st)
+			updateMap(prevPos.at(*p).col, prevPos.at(*p).row, none); // Old particle pos
+		// !!!!!!!!!! del par
+		if (type_new != none && (*p)->get_lifetime() > 0)
 			(*p)->set_lifetime((*p)->get_lifetime() - 1);
-updatemap:
-		updateMap(); // Moved this in here because I realized that each time a
-					 // particle moves per frame, it needs this to be as up to
-					 // date as possible.
 	}
 	// If the particle is "dead" aka lifetime is exactly 0
 	// OR
@@ -118,11 +192,10 @@ Amt World::alive_count() const {
 	// is still a valid count, -1 as error prevents exception via error as
 	// return, Allowing us to detect empty list vs none above 0 lfetime
 	// particles.
-	return std::count_if(ps.begin(), ps.end(),
-						   [](const P_ptr &p) {
-							   const Amt pl = p->get_lifetime();
-							   return pl > 0;
-						   });
+	return std::count_if(ps.begin(), ps.end(), [](const P_ptr &p) {
+		const Amt pl = p->get_lifetime();
+		return pl > 0;
+	});
 } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
@@ -279,6 +352,7 @@ void World::parseParticlesFromJSON(std::string &s) {
 	while (!ss.eof()) {
 		P_ptr p = extractParticle(particle);
 		add_particle(p);
+		// updateMap(p);
 		std::getline(ss, particle,
 					 ','); // Throw out comma inbetween each particle.
 		std::getline(ss, particle, '}');
@@ -289,12 +363,11 @@ int World::load(const std::string &str) {
 	std::ifstream ifs(str);
 	// std::ifstream ifs(SAVEFILE);
 	if (!ifs) {
-		return -1; //reported error file not found
+		return -1; // reported error file not found
 	}
-	//if file successfully opens, clear out the old data.
+	// if file successfully opens, clear out the old data.
 	ps.clear();
 	map.clear();
-	updateVecs();
 	std::string s;
 	// Throw out the first linw, as ut is always just a open curly brace.
 	// This JSON parser will not be portable in the slightest, it will just work
@@ -303,20 +376,23 @@ int World::load(const std::string &str) {
 	// Member primitives
 	// rows
 	std::getline(ifs, s, '\n');
-	try {
-		rows = stoi(extractVal(s));
-	} catch (std::exception &e) {
-		std::cerr << "Val extracted for ROWS invalid.\n";
-		exit(EXIT_FAILURE);
-	}
+	//LOAD THROWS OUT ROWS, COLS. THESE ARE DETERMINED AT RUNTIME BY GET_TERMINAL_SIZE.
+	// try {
+		// rows = stoi(extractVal(s));
+	// } catch (std::exception &e) {
+		// std::cerr << "Val extracted for ROWS invalid.\n";
+		// exit(EXIT_FAILURE);
+	// }
 	// cols
 	std::getline(ifs, s, '\n');
-	try {
-		cols = stoi(extractVal(s));
-	} catch (std::exception &e) {
-		std::cerr << "Val extracted for COLS invalid.\n";
-		exit(EXIT_FAILURE);
-	}
+	// try {
+		// cols = stoi(extractVal(s));
+	// } catch (std::exception &e) {
+		// std::cerr << "Val extracted for COLS invalid.\n";
+		// exit(EXIT_FAILURE);
+	// }
+
+	updateVecs();
 
 	std::getline(ifs, s, '\n'); // "Ps": [ line
 	std::getline(ifs, s, ']');	// Get entire json array of particles, if any.
@@ -324,5 +400,5 @@ int World::load(const std::string &str) {
 		parseParticlesFromJSON(s);
 	}
 	ifs.close();
-	return 0;//no error
+	return 0; // no error
 }

@@ -6,14 +6,14 @@ int main() {
 }
 
 // Testing code for Bifrost
-// int main() {
-// 	World w(10, 20);
-// 	w.load("save.JSON");
-// 	VisualizerURL url;
-// 	url <<= w;
-// 	std::cout << url;
-// }
-
+/* int main() {
+ 	World w(10, 20);
+ 	w.load("save.JSON");
+ 	VisualizerURL url;
+ 	url <<= w;
+ 	std::cout << url;
+ }
+*/
 /*
 int main() {
 	World w(300, 400);

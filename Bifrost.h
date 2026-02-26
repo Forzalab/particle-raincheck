@@ -25,7 +25,7 @@ using BColorGrid = bridges::datastructure::ColorGrid;
 // for clarity purpose
 using ParticleColorValue = Color;
 using ParticleCoordsValue = Pc;
-using WorldCoordsValue = Wc;
+using WorldCoordsValue = uint32_t;
 
 // typedef for color and particles and size from World
 using ParticleColor = struct {

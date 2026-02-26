@@ -1,3 +1,5 @@
+// put all #include in header file pls
+
 #include "Particle.h"
 #include "World.h"
 
@@ -6,6 +8,67 @@ using P = Particle;
 std::random_device P::rd;
 std::mt19937 P::gen(P::rd());
 std::binomial_distribution<> P::bd(50, 0.5);
+
+// cstor
+P::Particle(const Pc &row, const Pc &col, const Color &r, const Color &g,
+			const Color &b, const bool &stationary, const Tick &lifetime,
+			const P_Type &type)
+	: r(r), g(g), b(b), stationary(stationary), lifetime(lifetime), type(type) {
+	set_row(row);
+	set_col(col);
+	set_stationary(stationary);
+	set_lifetime(lifetime);
+}
+
+Air::Air(const Pc &row, const Pc &col)
+	: Particle(row, col, 255, 255, 255, false, 1000, air) {
+	Pc dx_scale = 5, dy_scale = 5;
+	set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
+	set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
+}
+
+Dust::Dust(const Pc &row, const Pc &col)
+	: P_solid(row, col, 120, 120, 120, false, 300, dust) {
+	Pc dx_scale = 2, dy_scale = 2;
+	set_x_vel(((P::bd(P::gen)) - 24) * dx_scale);
+	set_y_vel(((P::bd(P::gen)) - 24) * dy_scale);
+}
+
+Fire::Fire(const Pc &row, const Pc &col)
+	: Particle(row, col, 255, 32, 16, false, 1500, fire) {}
+
+Water::Water(const Pc &row, const Pc &col)
+	: Particle(row, col, 70, 155, 235, false, 20000, water) {}
+
+Earth::Earth(const Pc &row, const Pc &col)
+	: P_solid(row, col, 97, 29, 25, true, -1, earth) {}
+
+Dirt::Dirt(const Pc &row, const Pc &col)
+	: P_solid(row, col, 138, 52, 26, false, INT32_MAX, dirt) {}
+
+Lightning::Lightning(const Pc &row, const Pc &col)
+	: Particle(row, col, 220, 220, 0, false, 100, lightning) {
+	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
+	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
+
+	Tick lft = 2 * P::bd(P::gen);
+
+	Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
+	Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
+
+	set_x_vel(x_grav);
+	set_y_vel(y_grav);
+	set_lifetime(lft);
+}
+
+TBD_1::TBD_1(const Pc &row, const Pc &col)
+	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_1) {}
+
+TBD_2::TBD_2(const Pc &row, const Pc &col)
+	: P(row, col, 255, 255, 255, false, INT32_MAX, tbd_2) {}
+
+TBD_3::TBD_3(const Pc &row, const Pc &col)
+	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_3) {}
 
 // getters
 Pc P::get_row() const { return row; }
@@ -23,9 +86,7 @@ bool P_solid::get_solid() const { return true; }
 bool P::is_equal(const Pc &lhs, const Pc &rhs) {
 	return std::abs(lhs - rhs) < 1E-6;
 }
-bool P::is_solid(const P_Type &pt) {
-	return (pt == earth || pt == dirt);
-}
+bool P::is_solid(const P_Type &pt) { return (pt == earth || pt == dirt); }
 
 // setters
 void P::set_row(const Pc &_row) {
@@ -51,12 +112,24 @@ void P::set_stationary(const bool &_stationary) {
 		set_y_vel(0);
 		set_lifetime(-1);
 	}
+	stationary = _stationary;
 }
 
 void P::set_lifetime(const Tick &_lifetime) {
 	if (_lifetime < -1)
 		throw std::runtime_error("Lifetime OOB.");
 	lifetime = _lifetime;
+
+	// Color fade
+	if (lifetime == 1) {
+		r = 0;
+		g = 0;
+		b = 0;
+	} else if (lifetime <= 20) {
+		r *= 0.9;
+		g *= 0.9;
+		b *= 0.9;
+	}
 }
 
 void P::set_type(const P_Type &_type) {
@@ -66,18 +139,16 @@ void P::set_type(const P_Type &_type) {
 }
 
 void P::physics(World &world) {
-		// general guard for all particles
-		/* here */
+	// general guard for all particles
+	/* here */
 
-		// type-specific physics
-		physics_spec(world);
+	// type-specific physics
+	physics_spec(world);
 
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
 	return;
 }
 
-// TODO: add constructor WITH MEM-INIT-LIST
-//       (r,g,b, stationary, lifetime) to definitions
 void Air::physics_spec(World &world) {
 
 	// if not (not st.) = stay still
@@ -99,9 +170,7 @@ void Dust::physics_spec(World &world) {
 	Pc dx_scale = 0.125 * rand_sign * (((P::bd(P::gen)) >= 25) ? -1 : 1);
 	Pc dy_scale = gravity * (((P::bd(P::gen)) > 27) ? -1 : 1);
 
-	set_x_vel([&]() {
-		return dx_scale;
-	}());
+	set_x_vel([&]() { return dx_scale; }());
 	set_y_vel(get_y_vel() + dy_scale);
 
 	if (!get_stationary()) {
@@ -115,38 +184,72 @@ void Dust::physics_spec(World &world) {
 void Dust::touch(const P_ptr &nbr, World &world) {}
 void Fire::physics_spec(World &world) {
 	// Fire is stationary by default
+	Pc x = int(this->get_col());
+	Pc y = int(this->get_row());
+	Pc speed_scale = 0.2;
 
-	Pc y = int(this->get_col());
-        Pc x = int(this->get_row());
+	// color changes for fire
+	short clr = P::bd(P::gen);
+	if (clr < 15) {
+		// red
+		this->set_r(190);
+		this->set_g(10);
+		this->set_b(0);
+	} else if (clr < 19) {
+		// red
+		this->set_r(200);
+		this->set_g(20);
+		this->set_b(0);
+	} else if (clr < 25) {
+		// red
+		this->set_r(220);
+		this->set_g(30);
+		this->set_b(0);
+	} else {
+		// orange
+		this->set_r(230);
+		this->set_g(40);
+		this->set_b(0);
+	}
 
 	// Lighting spawn
-	bool light = (P::bd(P::gen)) > 1;
+	bool light = (P::bd(P::gen)) > 30; // P(X >= 33) = 1.6%
 	Pc sign_x = (P::bd(P::gen)) % 3 - 1;
 	Pc sign_y = (P::bd(P::gen)) % 3 - 1;
-	Pc x_spawn = ((P::bd(P::gen)) % 3) + x;
+	Pc x_spawn = ((P::bd(P::gen)) % 3) + x - 1;
 	Pc y_spawn = ((P::bd(P::gen)) % 3) + y - 1;
-	Pc dx_spawn = 0.1 * sign_x * (((P::bd(P::gen)) % 3 - 1));
-        Pc dy_spawn = 0.1 * sign_y * (((P::bd(P::gen)) % 3 - 3));
+	Pc dx_spawn = speed_scale * sign_x * (((P::bd(P::gen)) % 3 - 1));
+	Pc dy_spawn = speed_scale * sign_y * (((P::bd(P::gen)) % 3 - 1));
 
 	// Chexks for currently gen x,y spawn
 	// no overlap spawn
 	bool overlap_itself = (Wc(x_spawn) == Wc(x) && Wc(y_spawn) == Wc(y));
-	bool overlap_border = is_solid(world.atMap(x_spawn, y_spawn));
+	bool overlap_border = is_solid(world.atMap(y_spawn, x_spawn));
 
 	// inbound check
 	bool in_bound_x = (x_spawn) < world.get_cols() && (x_spawn) >= 0;
 	bool in_bound_y = (y_spawn) < world.get_rows() && (y_spawn) >= 0;
-	
-	// assigned the lighting particle
-	if (light && in_bound_x && in_bound_y && !overlap_itself && !overlap_border) {
-		Lightning l(x_spawn, y_spawn);
-            	l.set_x_vel(dx_spawn); l.set_y_vel(dy_spawn);
-	        P_ptr p_l = std::make_shared<Lightning>(l);
-                P_ptr &p_world = world.at(x_spawn, y_spawn);
-                if (p_world)
-                        p_world = p_l;
-                else
-                        world.add_particle(p_l);
+
+	// speed check
+	bool moving = (std::abs(dx_spawn / speed_scale) >= 1 ||
+				   std::abs(dy_spawn / speed_scale) >= 1);
+
+	// moving-to-fire check
+	bool mtf = world.atMap((y_spawn + dy_spawn), (x_spawn + dx_spawn)) == fire;
+
+	// assign the lighting particle
+	if (light && in_bound_x && in_bound_y && !overlap_itself &&
+		!overlap_border && moving && !mtf) {
+		Lightning l(y_spawn, x_spawn);
+		l.set_x_vel(dx_spawn);
+		l.set_y_vel(dy_spawn);
+		P_ptr p_l = std::make_shared<Lightning>(l);
+		P_ptr &p_world = world.at(y_spawn, x_spawn);
+		if (p_world)
+			p_world = p_l;
+		else
+			world.add_particle(p_l);
+		world.updateMap(p_l);
 	}
 }
 
@@ -161,6 +264,7 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		else
 			world.add_particle(p_a);
 
+		world.updateMap(p_a);
 		// make it go upwards
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
@@ -298,59 +402,44 @@ void Dirt::physics_spec(World &world) {
 }
 
 void Lightning::physics_spec(World &world) {
-        Pc x = this->get_col();
-        Pc y = this->get_row();
+	Pc x = this->get_col();
+	Pc y = this->get_row();
 	Pc dx = this->get_x_vel();
-        Pc dy = this->get_y_vel();
+	Pc dy = this->get_y_vel();
 
 	Pc x_dx = int(x + dx);
 	Pc y_dy = int(y + dy);
-	P_Type pt = world.atMap(x_dx, y_dy);
-	
+	P_Type pt = world.atMap(y_dy, x_dx);
+
 	if (pt == fire || is_solid(pt)) {
 		set_lifetime(0);
 		return;
 	}
-	
+
 	if (!get_stationary()) {
 		set_col(get_col() + dx);
 		set_row(get_row() + dy);
 	}
 }
 
-// primitive touch for the time being, can revisit if causes problems
-void Dirt::touch(const P_ptr &nbr, World &world) {
-	if (nbr->get_type() == water &&
-		(nbr->get_row() == get_row() + 1 && nbr->get_col() == get_col())) {
-		// if dirt on top of water, switch places
-		set_row(get_row() + 1);
-		nbr->set_row(get_row());
-	}
-}
-
 void Lightning::touch(const P_ptr &nbr, World &world) {
+	if (nbr->get_type() == earth || nbr->get_type() == water) {
+		P_ptr p;
+		if (nbr->get_type() == earth) {
+			Dirt d(nbr->get_row(), nbr->get_col());
+			p = std::make_shared<Dirt>(d);
 
-	if (nbr->get_type() == earth) {
-		Dirt d(nbr->get_row(), nbr->get_col());
-		P_ptr p_d = std::make_shared<Dirt>(d);
+		} else if (nbr->get_type() == water) {
+			Lightning l(nbr->get_row(), nbr->get_col());
+			p = std::make_shared<Lightning>(l);
+		}
 		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
 		if (p_world)
-			p_world = p_d;
+			p_world = p;
 		else
-			world.add_particle(p_d);
-
-		// Delete Lightning
-
-	} else if (nbr->get_type() == water) {
-		Lightning l(nbr->get_row(), nbr->get_col());
-		P_ptr p_l = std::make_shared<Lightning>(l);
-		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
-		if (p_world)
-			p_world = p_l;
-		else
-			world.add_particle(p_l);
-
-		// Delete Water
+			world.add_particle(p);
+		world.updateMap(p);
+		this->set_lifetime(0);
 	}
 }
 
