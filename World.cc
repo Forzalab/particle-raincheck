@@ -53,9 +53,6 @@ void World::_updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 }
 
 void World::_updateMap(P_ptr &p) {
-	// Vector mask. saves positions th[Bat contain a particle.
-	// Iter over list of Particles and update map at those indecies
-	// Also add a true to the mask to prevent from being set to none.
 	_updateMap(p->get_row(), p->get_col(), p->get_type());
 }
 
@@ -69,9 +66,6 @@ void World::updateMapPtr(const Wc &y, const Wc &x, P_ptr &ptr) {
 }
 
 void World::updateMapPtr(P_ptr &p) {
-        // Vector mask. saves positions th[Bat contain a particle.
-        // Iter over list of Particles and update map at those indecies
-        // Also add a true to the mask to prevent from being set to none.
 	updateMapPtr(Wc(p->get_row()),Wc(p->get_col()), p);
 }
 
@@ -82,9 +76,6 @@ void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 // YES, THIS LOOKS LIKE PURE CRAP: 1 func running 2 similarily named funcs :))
 // BUT THIS FOR LEGACY CODE :(((
 void World::updateMap(P_ptr &p) {
-        // Vector mask. saves positions th[Bat contain a particle.
-        // Iter over list of Particles and update map at those indecies
-        // Also add a true to the mask to prevent from being set to none.
         _updateMap(p);
 	updateMapPtr(p);
 }
@@ -183,9 +174,10 @@ int World::physics() {
 	// prev_pos is guranteed NOT to be deleted any elements!
 	// as deletion is executed AFTER these 2 for-loops below.
 	uint16_t count = 0;
+	auto end = ps.end();
 
 	// First loop represent old state ps
-	for (auto p = ps.begin(); p != ps.end(); p++) {
+	for (auto p = ps.begin(); p != end; p++) {
 		Wc x = (*p)->get_col();
 		Wc y = (*p)->get_row();
 		

@@ -275,10 +275,9 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		// create new upwards Air
 		Air a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Air>(a);
-		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
 		world.add_particle(p_a);
-
 		world.updateMap(p_a);
+
 		// make it go upwards
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
@@ -430,13 +429,25 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 			Lightning l(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Lightning>(l);
 		}
+		
+		// A cautionary tale:
+		// Once upon a time, a ptr 'p' is born
+		// then it was added to his crib
+		// but the roon to that crib has a door
+		// the door, opened for everyone, is named 'nbr'
+		// set_lifetime(0) is a killer:
+		// it kills babies on sight
+		// door is open, so sadly 'p' was mutilated
+		// Life lesson: let the killer mutilates his parents
+		// b4 bringing the child into a crib.
+		
+                // Particle "delete"
+		// the order is improtant, read the fairy tale above
+                this->set_lifetime(0);
+                nbr->set_lifetime(0);
 
 		world.add_particle(p);
 		world.updateMap(p);
-
-		// Particle delete
-		this->set_lifetime(0);
-		nbr->set_lifetime(0);
 	}
 }
 
