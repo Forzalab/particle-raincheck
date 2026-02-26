@@ -21,7 +21,7 @@ P::Particle(const Pc &row, const Pc &col, const Color &r, const Color &g,
 }
 
 Air::Air(const Pc &row, const Pc &col)
-	: Particle(row, col, 255, 255, 255, false, 1000, air) {
+	: Particle(row, col, 255, 255, 255, false, 100, air) {
 	Pc dx_scale = 5, dy_scale = 5;
 	set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
 	set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
@@ -47,7 +47,7 @@ Dirt::Dirt(const Pc &row, const Pc &col)
 	: P_solid(row, col, 138, 52, 26, false, INT32_MAX, dirt) {}
 
 Lightning::Lightning(const Pc &row, const Pc &col)
-	: Particle(row, col, 220, 220, 0, false, 100, lightning) {
+	: Particle(row, col, 220, 220, 0, false, 75, lightning) {
 	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
 	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
 
@@ -121,10 +121,10 @@ void P::set_lifetime(const Tick &_lifetime) {
 	lifetime = _lifetime;
 
 	// Color fade
-	if (lifetime <= 20) {
-		r *= 0.86;
-		g *= 0.86;
-		b *= 0.86;
+	if (lifetime <= 30) {
+		r *= 0.88;
+		g *= 0.88;
+		b *= 0.88;
 	}
 }
 
