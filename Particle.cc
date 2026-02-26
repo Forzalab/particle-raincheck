@@ -22,9 +22,11 @@ P::Particle(const Pc &row, const Pc &col, const Color &r, const Color &g,
 
 Air::Air(const Pc &row, const Pc &col)
 	: Particle(row, col, 255, 255, 255, false, 1000, air) {
-	Pc dx_scale = 5, dy_scale = 5;
-	set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale);
-	set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale);
+	Pc sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
+	Pc sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
+	Pc dx_scale = 0.1, dy_scale = 0.1, bounces = 0;
+	set_x_vel(((P::bd(P::gen) * 100) % 3) * dx_scale * sign_x);
+	set_y_vel(((P::bd(P::gen) * 100) % 2 + 1) * dy_scale * sign_y);
 }
 
 Dust::Dust(const Pc &row, const Pc &col)
@@ -150,18 +152,59 @@ void P::physics(World &world) {
 }
 
 void Air::physics_spec(World &world) {
-
-	// if not (not st.) = stay still
-	// ==> change nothing about pos
-	if (!get_stationary()) {
+	Pc x = get_col(), y = get_row();
+	//if there is nothing solid in front of the moving particle
+	if (!P::is_solid(world.atMap(get_y_vel() + y, get_x_vel() + x))) {
 		set_row(get_row() + get_y_vel());
 		set_col(get_col() + get_x_vel());
 	}
+	else {
+		//Flips the velocity sign 
+		//Top Right Corner
+		
+		/*
+		if (P::is_solid(world.atMap(y + 1, x + 1)) and P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y, x + 1))) {
+			set_y_vel(-(get_y_vel()));
+			set_x_vel(-(get_x_vel()));
+		}
+		//Bottom Right Corner
+		else if (P::is_solid(world.atMap(y - 1, x + 1)) and P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x + 1))) {
+			set_y_vel(-(get_y_vel()));
+			set_x_vel(-(get_x_vel()));
+		}
+		//Top Left Corner
+		else if (P::is_solid(world.atMap(y + 1, x - 1)) and P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y, x - 1))) {
+			set_y_vel(-(get_y_vel()));
+			set_x_vel(-(get_x_vel()));
+		}
+		//Bottom Left Corner
+		else if (P::is_solid(world.atMap(y - 1, x - 1)) and P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x - 1))) {
+			set_y_vel(-(get_y_vel()));
+			set_x_vel(-(get_x_vel()));
+		}
+		else if (P::is_solid(world.atMap(y + 1, x)) or P::is_solid(world.atMap(y - 1, x))) {
+			set_y_vel(-(get_y_vel()));
+		}
+		else if (P::is_solid(world.atMap(y, x + 1)) or P::is_solid(world.atMap(y, x - 1))) {
+			set_x_vel(-(get_x_vel()));
+		}
+		*/
+		 if (P::is_solid(world.atMap(y + 1, x))) set_y_vel(-(get_y_vel()));
+		 if (P::is_solid(world.atMap(y - 1, x))) set_y_vel(-(get_y_vel()));
+		 if (P::is_solid(world.atMap(y, x + 1))) set_x_vel(-(get_x_vel()));
+		 if (P::is_solid(world.atMap(y, x - 1))) set_x_vel(-(get_x_vel()));
+		
 
+		//Moves the particle
+		set_row(y + get_y_vel());
+		set_col(x + get_x_vel());
+	}
 	return;
 }
 
-void Air::touch(const P_ptr &nbr, World &world) {}
+void Air::touch(const P_ptr &nbr, World &world) {
+	
+}
 
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.00025;

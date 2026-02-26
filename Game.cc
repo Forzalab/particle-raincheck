@@ -39,15 +39,18 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 
 	if (paused == false) {
 		s += "(P):Pause (+):Increase_FPS (-):Decrease_FPS";
-		for (int i = 0; i < 70; i++) {
-			//			s += " ";
+		s += movecursor(rows + 6, size - 6);
+		for (int i = 0; i < 71; i++) {
+			s += " ";
 		} // Clean up trailing chars from prev frame
 	} else {
 		size = s.size();
-		s += movecursor(rows + 5, size);
+		//s += movecursor(rows + 5, size);
 		s += "(S):Unpause (Q):Quit (A):Save (L):Load";
-
-		s += movecursor(rows + 6, size);
+		for (int i = 0; i < 30; i++) {
+			s += " ";
+		} // Clean up trailing chars from prev frame
+		s += movecursor(rows + 6, size - 6);
 		s += "(0):Air (1):Dust (2):Fire (3):Water (4):Earth (5):Dirt "
 			 "(6):Lightning";
 	}
