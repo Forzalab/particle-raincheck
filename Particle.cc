@@ -150,17 +150,22 @@ void P::physics(World &world) {
 	// After ONE particle move
 	Pc x_new = this->get_col();
         Pc y_new = this->get_row();
-	/*
+
 	// ...but the new pos on Map (excluding generated 
 	// particle, we dont talk about Bruno) HAS the
 	// old particle type!!!!!! wtf
-	P_Type colliding_type = world.atMap(y, x);
+	// Map wont be updated DURING this function scope.
+	P_Type colliding_type = world.atMap(y_new, x_new);
+	P_ptr &p = world.atMap_ptr(y_new, x_new);
 
 	// No-one? sprint ahead!
 	// Has one? ask first.
-	if (colliding_type != none && colliding_type != air)
-		this->touch(???, world);
-*/
+	// Then, generated p updates the prev map automatically.
+	// Axiom: last P in the list gets to APPEAR!
+	if (p && colliding_type != none && colliding_type != air) {
+		this->touch(p, world);
+	}
+
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
 	return;
 }

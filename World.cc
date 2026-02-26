@@ -79,7 +79,7 @@ void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 	_updateMap(y, x, type);
 }
 
-// YES, THIS LOOKS LIKE PURE CRAP
+// YES, THIS LOOKS LIKE PURE CRAP: 1 func running 2 similarily named funcs :))
 // BUT THIS FOR LEGACY CODE :(((
 void World::updateMap(P_ptr &p) {
         // Vector mask. saves positions th[Bat contain a particle.
@@ -132,7 +132,7 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 	return (p != ps.end() ? *p : nullp);
 } // .at()
 
-P_ptr &World::atMap_ptr(const Pc &row, const Pc &col) {
+P_ptr &World::atMap_ptr(const Wc &row, const Wc &col) {
         if (exclusiveInRange(0, rows, row) &&
                 exclusiveInRange(0, cols, col)) {
                 return map_ptr.at(cols * row + col);
@@ -153,6 +153,11 @@ bool World::has_gap_at(const Wc &y, const Wc &x) {
 	return !(P::is_solid(this->atMap(y, x)));
 }
 
+// To mutate prevPos, capturing old state WHEN running each particle touch/physics_spec
+void World::updateMapPrev(const Wc &y, const Wc &x, const P_ptr &p) {
+        prev_pos[p] = {Pc(x), Pc(y)};
+}
+
 // Since this function is essentially the update loop of World
 // Map map will be updated here too
 // This returns an int used to increment Game.frame.
@@ -167,43 +172,61 @@ int World::physics() {
 		return 2;
 	}
 
+	// double suffering... oops, i mean double buffering
+	// algo that brings sufferings
+
 	// why 2 loops? we dont want half-mutated Map and ps,
 	// we want each "container" to be completed b4 working
 	// on to the next one
 
-	// hashmap for fastest access
-	std::unordered_map<P_ptr, pXY> prevPos;
+	// sentinel to GUARD element count in prev_pos.
+	// prev_pos is guranteed NOT to be deleted any elements!
+	// as deletion is executed AFTER these 2 for-loops below.
+	uint16_t count = 0;
 
+	// First loop represent old state ps
 	for (auto p = ps.begin(); p != ps.end(); p++) {
 		Wc x = (*p)->get_col();
 		Wc y = (*p)->get_row();
 		
-		// The map carries on to next loop
+		// The map carries on ITS PREV STATE to next loop as it isn't updated!
 		// AND we need prev pos data for clearing cell
-		prevPos[*p] = {Pc(x), Pc(y)};
+		// BUT mutated cell obvs wont be captured
+		// So need be careful. Lock bound? Yes!
+		updateMapPrev(y, x, *p);
+		count++;
 
 		// Do particle physics calls here
 		(*p)->physics(*this);
 	}
 	
+	// Second loop iterate thru MUTATED ps
+	// ps is guranteed to NOT go down in elem.
 	for (auto p = ps.begin(); p != ps.end(); p++) {
-		// After phsyics!
+		// After phsyics! ps includes mutated particles.
 		updateMap(*p);
 
 		Wc x_new = (*p)->get_col();
                 Wc y_new = (*p)->get_row();
 
-		// Decrement p lifetime if it is not a permanent particle
 		bool st = (*p)->get_stationary();
 
-		P_Type type_new = (this->atMap(y_new, x_new));
+		if (!st && count > 0) {
+			updateMap(prev_pos.at(*p).col, prev_pos.at(*p).row, none); // Old particle pos
+			count--;
+		}
+		
+		// 'Map' is now updated with new ps location
+		// type check for lifetime decrement
+		P_Type type_new = this->atMap(y_new, x_new);
 
-		if (!st)
-			updateMap(prevPos.at(*p).col, prevPos.at(*p).row, none); // Old particle pos
-		// !!!!!!!!!! del par
+		// Decrement p lifetime if it is not a permanent particle
 		if (type_new != none && (*p)->get_lifetime() > 0)
 			(*p)->set_lifetime((*p)->get_lifetime() - 1);
 	}
+
+	// i need a double cheeseburger after this
+
 	// If the particle is "dead" aka lifetime is exactly 0
 	// OR
 	// If it's out of bounds

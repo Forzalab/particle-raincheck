@@ -32,12 +32,8 @@ using ParticleColor = struct {
 	ParticleColorValue red{}, green{}, blue{};
 };
 
-using ParticleCoords = struct {
-	ParticleCoordsValue row{}, col{};
-};
-
 using ParticleState = struct {
-	ParticleCoords xy{};
+	pXY xy{};
 	ParticleColor rgb{};
 
 	// x y to .xy
@@ -52,7 +48,6 @@ using WorldCoords = struct {
 };
 
 using pRGB = ParticleColor;
-using pXY = ParticleCoords;
 using pState = ParticleState;
 using wXY = WorldCoords;
 

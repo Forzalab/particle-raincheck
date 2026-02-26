@@ -16,20 +16,25 @@
 #include <sstream>
 #include <string>
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <cstdint>
 #include <vector>
 
 #include "Particle.h"
-#include "Bifrost.h"
 
 using P = Particle;
 
-typedef uint32_t Wc; // World-coords
-typedef int32_t Amt;
-typedef std::list<P_ptr> Ps; // ParticleS
-typedef std::vector<P_Type> Map;
-typedef std::vector<P_ptr> Map_ptr;
+struct pXY {
+        Pc row{}, col{};
+};
+
+using Wc = uint32_t; // World-coords
+using Amt = int32_t;
+using Ps = std::list<P_ptr>; // ParticleS
+using Map = std::vector<P_Type>;
+using Map_ptr = std::vector<P_ptr>;
+using PtrXY = std::unordered_map<P_ptr, pXY>;
+
 class World {
 private:
 	Wc rows{}, cols{}; // WxH of World
@@ -37,6 +42,7 @@ private:
 	// non-disruptive integration
 	Map map;		   // FLATTENED map
 	Map_ptr map_ptr;
+	PtrXY prev_pos;
 	Ps ps;			   // list of Particles' POINTERS
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
@@ -64,11 +70,12 @@ public:
 
 	void updateMapPtr(P_ptr &p);
 	void updateMap(P_ptr &p);
+	void updateMapPrev(const Wc &y, const Wc &x, const P_ptr &p);
 
 	void erase(const Wc &row, const Wc &col);
 
 	P_ptr &at(const Pc &row, const Pc &col); // .at()
-	P_ptr &atMap_ptr(const Pc &row, const Pc &col);
+	P_ptr &atMap_ptr(const Wc &row, const Wc &col);
 	P_Type atMap(const Wc &row, const Wc &col);
 
 	// Helper func to make World::physics() cleaner
