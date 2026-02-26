@@ -22,6 +22,11 @@ void World::updateVecs() {
 	map.resize(size_t(rows) * size_t(cols));
 	// cout << map.size();
 	map.assign(map.size(), none);
+
+	// yes i know.
+        // i welcome all deref null efforts
+	map_ptr.resize(size_t(rows) * size_t(cols));
+//	map_ptr.assign(map_ptr.size(), nullp);
 }
 
 /*
@@ -43,7 +48,7 @@ void World::updateMap() {
 }
 */
 
-void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
+void World::_updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 	// Vector mask. saves positions that contain a particle.
 	// Iter over list of Particles and update map at those indecies
 	// Also add a true to the mask to prevent from being set to none.
@@ -52,11 +57,32 @@ void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 		map.at(rawInd) = type;
 }
 
-void World::updateMap(const P_ptr &p) {
-	// Vector mask. saves positions th[Bat contain a particle.
-	// Iter over list of Particles and update map at those indecies
-	// Also add a true to the mask to prevent from being set to none.
-	updateMap(p->get_row(), p->get_col(), p->get_type());
+void World::_updateMap(P_ptr &p) {
+	_updateMap(p->get_row(), p->get_col(), p->get_type());
+}
+
+void World::updateMapPtr(const Wc &y, const Wc &x, P_ptr &ptr) {
+        // Vector mask. saves positions that contain a particle.
+        // Iter over list of Particles and update map at those indecies
+        // Also add a true to the mask to prevent from being set to none.
+        Wc rawInd = int(y) * cols + int(x);
+        if (rawInd < map_ptr.size())
+                map_ptr.at(rawInd) = ptr;
+}
+
+void World::updateMapPtr(P_ptr &p) {
+	updateMapPtr(Wc(p->get_row()),Wc(p->get_col()), p);
+}
+
+void World::updateMap(const Wc &y, const Wc &x, const P_Type &type) {
+	_updateMap(y, x, type);
+}
+
+// YES, THIS LOOKS LIKE PURE CRAP: 1 func running 2 similarily named funcs :))
+// BUT THIS FOR LEGACY CODE :(((
+void World::updateMap(P_ptr &p) {
+        _updateMap(p);
+	updateMapPtr(p);
 }
 
 Wc World::get_rows() const { return rows; }
@@ -104,6 +130,15 @@ P_ptr &World::at(const Pc &row, const Pc &col) {
 	return (p != ps.end() ? *p : nullp);
 } // .at()
 
+P_ptr &World::atMap_ptr(const Wc &row, const Wc &col) {
+        if (inclusiveInRange(0, rows - 1, row) &&
+                inlusiveInRange(0, cols - 1, col)) {
+                return map_ptr.at(cols * row + col);
+        } else {
+                return nullp;
+        }
+} // .at()
+
 bool World::isInBounds(const auto &p) {
 	Wc col = int(p->get_col());
 	Wc row = int(p->get_row());
@@ -114,6 +149,11 @@ bool World::isInBounds(const auto &p) {
 bool World::has_gap_at(const Wc &y, const Wc &x) {
 	// TODO: hashmap existing particle!!!!!!
 	return !(P::is_solid(this->atMap(y, x)));
+}
+
+// To mutate prevPos, capturing old state WHEN running each particle touch/physics_spec
+void World::updateMapPrev(const Wc &y, const Wc &x, const P_ptr &p) {
+        prev_pos[p] = {Pc(x), Pc(y)};
 }
 
 // Since this function is essentially the update loop of World
@@ -130,43 +170,72 @@ int World::physics() {
 		return 2;
 	}
 
+	// double suffering... oops, i mean double buffering
+	// algo that brings sufferings
+
 	// why 2 loops? we dont want half-mutated Map and ps,
 	// we want each "container" to be completed b4 working
 	// on to the next one
 
-	// hashmap for fastest access
-	std::unordered_map<P_ptr, pXY> prevPos;
+	// sentinel to GUARD element count in prev_pos.
+	// prev_pos is guranteed NOT to be deleted any elements!
+	// as deletion is executed AFTER these 2 for-loops below.
+	uint16_t count = 0;
+	auto end = ps.end();
 
-	for (auto p = ps.begin(); p != ps.end(); p++) {
+	// First loop represent old state ps
+	for (auto p = ps.begin(); p != end; p++) {
 		Wc x = (*p)->get_col();
 		Wc y = (*p)->get_row();
 		
-		// The map carries on to next loop
+		// The map carries on ITS PREV STATE to next loop as it isn't updated!
 		// AND we need prev pos data for clearing cell
-		prevPos[*p] = {Pc(x), Pc(y)};
+		// BUT mutated cell obvs wont be captured
+		// So need be careful. Lock bound? Yes!
+		updateMapPrev(y, x, *p);
+		count++;
 
 		// Do particle physics calls here
 		(*p)->physics(*this);
 	}
 	
+	// Second loop iterate thru MUTATED ps
+	// ps is guranteed to NOT go down in elem.
 	for (auto p = ps.begin(); p != ps.end(); p++) {
-		// After phsyics!
+		// After phsyics! ps includes mutated particles.
 		updateMap(*p);
 
 		Wc x_new = (*p)->get_col();
                 Wc y_new = (*p)->get_row();
 
-		// Decrement p lifetime if it is not a permanent particle
 		bool st = (*p)->get_stationary();
+		
+		// note the deximal truncation.
+		// equal = "in floor range"
+		// w/o this, accidental deletion of slow-moving
+		// particles (which will be realized in frame
+		// eventually, but affects fading)
+		bool stay = (x_new == prev_pos.at(*p).col && y_new == prev_pos.at(*p).row);
 
-		P_Type type_new = (this->atMap(y_new, x_new));
+		// count check for sentinel explained above
+		// stay check, as abive, wont delete "unmoving"
+		// particles
+		if (!stay && count > 0) {
+			updateMap(prev_pos.at(*p).col, prev_pos.at(*p).row, none); // Old particle pos
+			count--;
+		}
+		
+		// 'Map' is now updated with new ps location
+		// type check for lifetime decrement
+		P_Type type_new = this->atMap(y_new, x_new);
 
-		if (!st)
-			updateMap(prevPos.at(*p).col, prevPos.at(*p).row, none); // Old particle pos
-		// !!!!!!!!!! del par
+		// Decrement p lifetime if it is not a permanent particle
 		if (type_new != none && (*p)->get_lifetime() > 0)
 			(*p)->set_lifetime((*p)->get_lifetime() - 1);
 	}
+
+	// i need a double cheeseburger after this
+
 	// If the particle is "dead" aka lifetime is exactly 0
 	// OR
 	// If it's out of bounds
@@ -182,6 +251,7 @@ Amt World::size() const {
 	// casting just to get rid of annoying warning.
 	return Amt(ps.size());
 } // get amt of P
+
 Amt World::alive_count() const {
 	// Guard from empty list, return -1 as err
 	if (ps.size() == 0)

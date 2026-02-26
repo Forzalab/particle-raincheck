@@ -16,28 +16,40 @@
 #include <sstream>
 #include <string>
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <cstdint>
 #include <vector>
 
 #include "Particle.h"
-#include "Bifrost.h"
 
 using P = Particle;
 
-typedef uint32_t Wc; // World-coords
-typedef int32_t Amt;
-typedef std::list<P_ptr> Ps; // ParticleS
-typedef std::vector<P_Type> Map;
+struct pXY {
+        Pc row{}, col{};
+};
+
+using Wc = uint32_t; // World-coords
+using Amt = int32_t;
+using Ps = std::list<P_ptr>; // ParticleS
+using Map = std::vector<P_Type>;
+using Map_ptr = std::vector<P_ptr>;
+using PtrXY = std::unordered_map<P_ptr, pXY>;
 
 class World {
 private:
 	Wc rows{}, cols{}; // WxH of World
+	// 2vectors instead of 1 pair<P_Type, P_Ptr> for 
+	// non-disruptive integration
 	Map map;		   // FLATTENED map
+	Map_ptr map_ptr;
+	PtrXY prev_pos;
 	Ps ps;			   // list of Particles' POINTERS
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
+	void _updateMap(const Wc &x, const Wc &y, const P_Type &type);
 	void updateMap(const Wc &x, const Wc &y, const P_Type &type);
+	void _updateMap(P_ptr &p);
+	void updateMapPtr(const Wc &x, const Wc &y, P_ptr &ptr);
 	void parseParticlesFromJSON(std::string &s);
 
 public:
@@ -54,13 +66,21 @@ public:
 	void set_rows(const Wc &_rows);
 	void set_cols(const Wc &_cols);
 
-	P_Type atMap(Wc row, Wc col);
+//	who wrote this line shod go to gulag
+//	P_Type atMap(Wc row, Wc col);
 
 	void updateVecs();
-	void updateMap(const P_ptr &p);
+
+	void updateMapPtr(P_ptr &p);
+	void updateMap(P_ptr &p);
+	void updateMapPrev(const Wc &y, const Wc &x, const P_ptr &p);
 
 	void erase(const Wc &row, const Wc &col);
+
 	P_ptr &at(const Pc &row, const Pc &col); // .at()
+	P_ptr &atMap_ptr(const Wc &row, const Wc &col);
+	P_Type atMap(const Wc &row, const Wc &col);
+
 	// Helper func to make World::physics() cleaner
 	bool isInBounds(const auto &p);
 	bool has_gap_at(const Wc &y, const Wc &x);

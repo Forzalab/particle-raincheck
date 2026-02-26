@@ -51,7 +51,7 @@ Lightning::Lightning(const Pc &row, const Pc &col)
 	int8_t sign_x = (P::bd(P::gen) >= 25) ? 1 : -1;
 	int8_t sign_y = (P::bd(P::gen) >= 25) ? 1 : -1;
 
-	Tick lft = 2 * P::bd(P::gen);
+	Tick lft = 1.5 * P::bd(P::gen);
 
 	Pc x_grav = ((P::bd(P::gen)) % 3 + 1) * sign_x * 0.1;
 	Pc y_grav = ((P::bd(P::gen)) % 3 + 1) * sign_y * 0.1;
@@ -121,14 +121,10 @@ void P::set_lifetime(const Tick &_lifetime) {
 	lifetime = _lifetime;
 
 	// Color fade
-	if (lifetime == 1) {
-		r = 0;
-		g = 0;
-		b = 0;
-	} else if (lifetime <= 20) {
-		r *= 0.9;
-		g *= 0.9;
-		b *= 0.9;
+	if (lifetime <= 20) {
+		r *= 0.86;
+		g *= 0.86;
+		b *= 0.86;
 	}
 }
 
@@ -140,10 +136,31 @@ void P::set_type(const P_Type &_type) {
 
 void P::physics(World &world) {
 	// general guard for all particles
-	/* here */
+	
+	Pc x_old = this->get_col();
+	Pc y_old = this->get_row();
 
 	// type-specific physics
 	physics_spec(world);
+
+	// After ONE particle move
+	Pc x_new = this->get_col();
+        Pc y_new = this->get_row();
+
+	// ...but the new pos on Map (excluding generated 
+	// particle, we dont talk about Bruno) HAS the
+	// old particle type!!!!!! wtf
+	// Map wont be updated DURING this function scope.
+	P_Type colliding_type = world.atMap(y_new, x_new);
+	P_ptr &p = world.atMap_ptr(y_new, x_new);
+
+	// No-one? sprint ahead!
+	// Has one? ask first.
+	// Then, generated p updates the prev map automatically.
+	// Axiom: last P in the list gets to APPEAR!
+	if (p && colliding_type != none && colliding_type != air) {
+		this->touch(p, world);
+	}
 
 	// DO NOT INPLMENT ANYTHING IN THIS SPACE
 	return;
@@ -203,12 +220,12 @@ void Fire::physics_spec(World &world) {
 	} else if (clr < 25) {
 		// red
 		this->set_r(220);
-		this->set_g(30);
+		this->set_g(40);
 		this->set_b(0);
 	} else {
 		// orange
 		this->set_r(230);
-		this->set_g(40);
+		this->set_g(60);
 		this->set_b(0);
 	}
 
@@ -244,11 +261,7 @@ void Fire::physics_spec(World &world) {
 		l.set_x_vel(dx_spawn);
 		l.set_y_vel(dy_spawn);
 		P_ptr p_l = std::make_shared<Lightning>(l);
-		P_ptr &p_world = world.at(y_spawn, x_spawn);
-		if (p_world)
-			p_world = p_l;
-		else
-			world.add_particle(p_l);
+		world.add_particle(p_l);
 		world.updateMap(p_l);
 	}
 }
@@ -258,13 +271,9 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		// create new upwards Air
 		Air a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Air>(a);
-		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
-		if (p_world)
-			p_world = p_a;
-		else
-			world.add_particle(p_a);
-
+		world.add_particle(p_a);
 		world.updateMap(p_a);
+
 		// make it go upwards
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
@@ -395,10 +404,8 @@ void Lightning::physics_spec(World &world) {
 	Pc y_dy = int(y + dy);
 	P_Type pt = world.atMap(y_dy, x_dx);
 
-	if (pt == fire || is_solid(pt)) {
-		set_lifetime(0);
-		return;
-	}
+	if (pt == fire || is_solid(pt))
+		set_lifetime(1); // leave some tine for solid detection
 
 	if (!get_stationary()) {
 		set_col(get_col() + dx);
@@ -409,6 +416,7 @@ void Lightning::physics_spec(World &world) {
 void Lightning::touch(const P_ptr &nbr, World &world) {
 	if (nbr->get_type() == earth || nbr->get_type() == water) {
 		P_ptr p;
+
 		if (nbr->get_type() == earth) {
 			Dirt d(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Dirt>(d);
@@ -417,13 +425,25 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 			Lightning l(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Lightning>(l);
 		}
-		P_ptr &p_world = world.at(nbr->get_row(), nbr->get_col());
-		if (p_world)
-			p_world = p;
-		else
-			world.add_particle(p);
+		
+		// A cautionary tale:
+		// Once upon a time, a ptr 'p' is born
+		// then it was added to his crib
+		// but the roon to that crib has a door
+		// the door, opened for everyone, is named 'nbr'
+		// set_lifetime(0) is a killer:
+		// it kills babies on sight
+		// door is open, so sadly 'p' was mutilated
+		// Life lesson: let the killer mutilates his parents
+		// b4 bringing the child into a crib.
+		
+                // Particle "delete"
+		// the order is improtant, read the fairy tale above
+                this->set_lifetime(0);
+                nbr->set_lifetime(0);
+
+		world.add_particle(p);
 		world.updateMap(p);
-		this->set_lifetime(0);
 	}
 }
 
