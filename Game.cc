@@ -1,6 +1,8 @@
 // put all #include in header file pls
 
 #include "Game.h"
+#include "Bifrost.h"
+#include <iostream>
 
 typedef uint32_t GameTick;
 
@@ -48,15 +50,18 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 
 	if (paused == false) {
 		s += "(P)ause (+) Increase FPS (-) Decrease FPS";
-		for (int i = 0; i < 70; i++) {
-			//			s += " ";
+		for (int i = 0; i < 5; i++) {
+						s += " ";
 		} // Clean up trailing chars from prev frame
 	} else {
 		size = s.size();
-		s += movecursor(rows + 5, size);
-		s += "Unpau(s)e (Q)uit S(a)ve (L)oad";
+		s += movecursor(rows + 5, size - 6);
+		s += "Unpau(s)e (Q)uit S(a)ve (L)oad Bri(d)ges";
+		for (int i = 0; i < 5; i++) {
+						s += " ";
+		} // Clean up trailing chars from prev frame
 
-		s += movecursor(rows + 6, size);
+		s += movecursor(rows + 6, size - 6);
 		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning";
 	}
 
@@ -79,7 +84,8 @@ void Game::run() {
 	// Default of 5. Tickrate is directly proportional to framerate. 60 tickrate
 	// -> 1 / tickrate = 60fps.
 	tickrate = 30;
-
+	
+	VisualizerURL url;
 	std::string fs;
 	fs += show_cursor(false);
 	fs += clearscreen();
@@ -207,6 +213,11 @@ void Game::run() {
 				break;
 			case 'L':
 				load();
+				break;
+			case 'D':
+				url <<= world;
+				std::cerr << movecursor(50,0);
+				std::cerr << url;
 				break;
 			}
 		}
