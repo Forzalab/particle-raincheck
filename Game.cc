@@ -1,7 +1,6 @@
 // put all #include in header file pls
 
 #include "Game.h"
-#include "colors.h"
 
 typedef uint32_t GameTick;
 
@@ -48,18 +47,17 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 	} // Clean up trailing chars from prev frame
 
 	if (paused == false) {
-		s += "(P):Pause (+):Increase_FPS (-):Decrease_FPS";
+		s += "(P)ause (+) Increase FPS (-) Decrease FPS";
 		for (int i = 0; i < 70; i++) {
 			//			s += " ";
 		} // Clean up trailing chars from prev frame
 	} else {
 		size = s.size();
 		s += movecursor(rows + 5, size);
-		s += "(S):Unpause (Q):Quit (A):Save (L):Load";
+		s += "Unpau(s)e (Q)uit S(a)ve (L)oad";
 
 		s += movecursor(rows + 6, size);
-		s += "(0):Air (1):Dust (2):Fire (3):Water (4):Earth (5):Dirt "
-			 "(6):Lightning";
+		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning";
 	}
 
 	return s;
@@ -246,8 +244,7 @@ std::string Game::render() {
 	for (const auto &p : particles) {
 		Wc row = int(p->get_row());
 		Wc col = int(p->get_col());
-		if (col < 0 || col > world.get_cols() || row > world.get_rows() ||
-			row < 0)
+		if (col > world.get_cols() || row > world.get_rows())
 			continue; // Do not print particles that are OOB and not yet culled
 					  // by world::physics()
 		s += movecursor(int(row), int(col));
@@ -349,12 +346,12 @@ using CH = CallbackHandler;
 
 CH::CallbackHandler(World &inworld) : world(inworld) {}
 
-void CH::setRowCol(int inrow, int incol) {
+void CH::setRowCol(Wc inrow, Wc incol) {
 	if (type == none)
 		return;
 	row = inrow;
 	col = incol;
-	if (world.atMap(row, col) == none) { // any value other than none will not
+	if (world.atMap(Wc(row), Wc(col)) == none) { // any value other than none will not
 										 // allow particle generation. Prevents>
 		P_ptr pt = generateParticle();
 		if (pt != nullptr)
