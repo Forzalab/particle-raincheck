@@ -5,15 +5,24 @@
 typedef uint32_t GameTick;
 
 const std::string SAVEFILE = "save.JSON";
-const uint16_t ROWS_DFT = 50;
-const uint16_t COLS_DFT = 70;
+// const uint16_t ROWS_DFT = 50;
+// const uint16_t COLS_DFT = 70;
 
-Game::Game() : world(ROWS_DFT, COLS_DFT) { world.load(SAVEFILE); }
-
-Game::Game(const uint16_t &rows, const uint16_t &cols)
-	: rows(rows), cols(cols), world(rows, cols) {
-	world.load(SAVEFILE);
+Game::Game() : world() { 
+	const auto [ROWS, COLS] = get_terminal_size();
+	world.set_cols(COLS);
+	//Leave unused rows beneath for FPS / menus.
+	world.set_rows(ROWS - 10);
+	cerr << ROWS << " " << COLS << endl;;
+	cerr << world.get_rows() << " " << world.get_cols();
+	world.load(SAVEFILE); 
+	world.updateVecs();
 }
+
+// Game::Game(const uint16_t &rows, const uint16_t &cols)
+	// : rows(rows), cols(cols), world(rows, cols) {
+	// world.load(SAVEFILE);
+// }
 
 GameTick Game::get_tickrate() const { return tickrate; }
 
@@ -38,21 +47,17 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 	} // Clean up trailing chars from prev frame
 
 	if (paused == false) {
-		s += "(P):Pause (+):Increase_FPS (-):Decrease_FPS";
-		s += movecursor(rows + 6, size - 6);
-		for (int i = 0; i < 71; i++) {
-			s += " ";
+		s += "(P)ause (+) Increase FPS (-) Decrease FPS";
+		for (int i = 0; i < 70; i++) {
+			//			s += " ";
 		} // Clean up trailing chars from prev frame
 	} else {
 		size = s.size();
-		//s += movecursor(rows + 5, size);
-		s += "(S):Unpause (Q):Quit (A):Save (L):Load";
-		for (int i = 0; i < 30; i++) {
-			s += " ";
-		} // Clean up trailing chars from prev frame
-		s += movecursor(rows + 6, size - 6);
-		s += "(0):Air (1):Dust (2):Fire (3):Water (4):Earth (5):Dirt "
-			 "(6):Lightning";
+		s += movecursor(rows + 5, size);
+		s += "Unpau(s)e (Q)uit S(a)ve (L)oad";
+
+		s += movecursor(rows + 6, size);
+		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning";
 	}
 
 	return s;
@@ -64,10 +69,13 @@ void resetTerminal() {
 	s += clearscreen();
 	s += show_cursor(true);
 	s += movecursor(0, 0);
+	s += set_mouse_mode(false);
+	set_raw_mode(false);
 	std::cerr << s;
 }
 
 void Game::run() {
+	cerr << world.get_rows() << " " << world.get_cols();
 	// Default of 5. Tickrate is directly proportional to framerate. 60 tickrate
 	// -> 1 / tickrate = 60fps.
 	tickrate = 30;
@@ -82,33 +90,33 @@ void Game::run() {
 	// Placeholder vals. We can change these later.
 	{
 		// Draw a splash screen here.
-		fs += clearscreen();
-		std::cerr << fs;
-		fs.clear();
-		system("figlet =======");
-		system("figlet Particles");
-		system("figlet =======");
+		// fs += clearscreen();
+		// std::cerr << fs;
+		// fs.clear();
+		// system("figlet =======");
+		// system("figlet Particles");
+		// system("figlet =======");
 
 		// Options on splash screen- "Start,
 		// Load
 		// Draw on bridges
 		// Quit
 
-		system("figlet =======");
-		system("figlet Start");
-		system("figlet =======");
+		// system("figlet =======");
+		// system("figlet Start");
+		// system("figlet =======");
 
-		system("figlet =======");
-		system("figlet Load");
-		system("figlet =======");
+		// system("figlet =======");
+		// system("figlet Load");
+		// system("figlet =======");
 
-		system("figlet =======");
-		system("figlet Quit");
-		system("figlet =======");
+		// system("figlet =======");
+		// system("figlet Quit");
+		// system("figlet =======");
 
 		// Add a time delay for users to see splash screen before game starts
 		sleep(2); // Pauses for two seconds
-		std::cerr << clearscreen();
+		// std::cerr << clearscreen();
 	}
 
 	// load(); //Test
@@ -221,8 +229,7 @@ std::string Game::render() {
 	for (const auto &p : particles) {
 		Wc row = int(p->get_row());
 		Wc col = int(p->get_col());
-		if (col < 0 || col > world.get_cols() || row > world.get_rows() ||
-			row < 0)
+		if (col > world.get_cols() || row > world.get_rows())
 			continue; // Do not print particles that are OOB and not yet culled
 					  // by world::physics()
 		s += movecursor(int(row), int(col));
@@ -324,12 +331,12 @@ using CH = CallbackHandler;
 
 CH::CallbackHandler(World &inworld) : world(inworld) {}
 
-void CH::setRowCol(int inrow, int incol) {
+void CH::setRowCol(Wc inrow, Wc incol) {
 	if (type == none)
 		return;
 	row = inrow;
 	col = incol;
-	if (world.atMap(row, col) == none) { // any value other than none will not
+	if (world.atMap(Wc(row), Wc(col)) == none) { // any value other than none will not
 										 // allow particle generation. Prevents>
 		P_ptr pt = generateParticle();
 		if (pt != nullptr)

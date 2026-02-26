@@ -32,7 +32,7 @@ private:
 
 public:
 	CallbackHandler(World &inworld);
-	void setRowCol(int inrow, int incol);
+	void setRowCol(Wc inrow, Wc incol);
 	void setPType(P_Type inType);
 };
 
@@ -46,7 +46,7 @@ private:
 
 public:
 	Game();
-	Game(const uint16_t &rows, const uint16_t &cols);
+	// Game(const uint16_t &rows, const uint16_t &cols);
 	GameTick get_tickrate() const;
 	void quit();
 	void load();
