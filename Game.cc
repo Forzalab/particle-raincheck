@@ -1,6 +1,7 @@
 // put all #include in header file pls
 
 #include "Game.h"
+#include "colors.h"
 #include <iostream>
 
 typedef uint32_t GameTick;
@@ -52,6 +53,10 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 		for (int i = 0; i < 5; i++) {
 						s += " ";
 		} // Clean up trailing chars from prev frame
+		s += movecursor(rows + 6, size - 6);
+		for (int i = 0; i < 71; i++) {
+						s += " ";
+		} // Clean up trailing chars from prev frame
 	} else {
 		size = s.size();
 		s += movecursor(rows + 5, size - 6);
@@ -98,9 +103,9 @@ void Game::run() {
 		// fs += clearscreen();
 		// std::cerr << fs;
 		// fs.clear();
-		// system("figlet =======");
-		 system("figlet demo");
-		// system("figlet =======");
+		system("figlet =======");
+		system("figlet Particles | lolcat");
+		system("figlet =======");
 
 		// Options on splash screen- "Start,
 		// Load
@@ -121,7 +126,14 @@ void Game::run() {
 
 		// Add a time delay for users to see splash screen before game starts
 		sleep(1); // Pauses for two seconds
-		std::cerr << "[ DEMO MODE ] (L) to load file." << endl;
+		//std::cerr << "[ DEMO MODE ] (L) to load file." << endl;
+		
+		std::cerr << "|-----------------------------------------|" << endl;
+		std::cerr << "  |\t(S) to start.\t\t\t|" << endl;
+		std::cerr << "  |\t(Q) to quit.\t\t\t|" << endl;
+		std::cerr << "  |\t(L) to load file.\t\t|" << endl;
+		std::cerr << "|-----------------------------------------|" << endl;
+		
 		bool paused = true;
 		while (paused == true) {
 			set_raw_mode(true);

@@ -38,6 +38,7 @@
 
 ## Romero
 ### Game class
+- Implement a command to draw the world on BRIDGES (see below)
 - On launch draw a splash screen (Implementing)
 - Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc) (Implemented
 - Implement a command to increase frame rate (Implemented)
@@ -46,6 +47,7 @@
 - Implement a command to save the world to disk (Implemented)
 ### Particle class
 - Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt (Implementing)
+- Air moves in a straight line (ignoring gravity) bouncing off solid
 
 ## Jackson
 ### Particle class

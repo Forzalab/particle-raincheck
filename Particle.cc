@@ -177,9 +177,18 @@ void Air::physics_spec(World &world) {
 	}
 	else {
 		//Flips the velocity sign 
-		//Top Right Corner
-		
+		if (P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x + 1))and P::is_solid(world.atMap(y, x - 1))) {
+			set_y_vel(0);
+			set_x_vel(0);
+		}
+		else if (P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y - 1, x))) {
+			set_y_vel(0);
+		}
+		else if (P::is_solid(world.atMap(y, x + 1)) and P::is_solid(world.atMap(y, x - 1))) {
+			set_x_vel(0);
+		}
 		/*
+		//Top Right Corner
 		if (P::is_solid(world.atMap(y + 1, x + 1)) and P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y, x + 1))) {
 			set_y_vel(-(get_y_vel()));
 			set_x_vel(-(get_x_vel()));
@@ -399,6 +408,9 @@ void Water::physics_spec(World &world) {
 void Water::touch(const P_ptr &nbr, World &world) {
 	// Every interaction between a certain particle type and water has already
 	// been taken care of in the other particle's touch function to my knowledge
+	if (nbr->get_type() == fire) {
+		set_lifetime(0);	
+	}
 }
 
 void Earth::physics_spec(World &world) {
