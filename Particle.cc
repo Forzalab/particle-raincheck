@@ -537,7 +537,9 @@ void Life::physics_spec(World &world) {
 	for(int i = -1; i <= 1; i++) {
 		for(int j = -1; j <= 1; j++) {
 			if(i == 0 && j == 0) continue;
-			world.neighborCount[worldXY(wRow + i, wCol + j)]++;
+			Wc nbrRow = (wRow + i + world.get_rows()) % world.get_rows();
+			Wc nbrCol = (wCol + j + world.get_cols()) % world.get_cols();
+			world.neighborCount[worldXY(nbrRow, nbrCol)]++;
 		}
 	}
 }
