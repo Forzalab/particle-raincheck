@@ -53,9 +53,17 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 						s += " ";
 		} // Clean up trailing chars from prev frame
 		s += movecursor(rows + 6, size - 6);
-		for (int i = 0; i < 71; i++) {
+		for (int i = 0; i < 91; i++) {
 						s += " ";
 		} // Clean up trailing chars from prev frame
+		s += movecursor(rows + 7, 0);
+		 for (int i = 0; i < 91; i++) {
+                                                s += " ";
+                } // Clean up trailing chars from prev frame
+		s += movecursor(rows + 8, 0);
+		 for (int i = 0; i < 91; i++) {
+                                                s += " ";
+                } // Clean up trailing chars from prev frame
 	} else {
 		size = s.size();
 		s += movecursor(rows + 5, size - 6);
@@ -65,7 +73,16 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 		} // Clean up trailing chars from prev frame
 
 		s += movecursor(rows + 6, size - 6);
-		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning (7) Life";
+		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning (8) Confetti!";
+		s += movecursor(rows + 7, 0);
+		s += setbgcolor(240,240,240);
+		s += setcolor(0,0,0);
+		s += "Draw by choosing a number (0-9) and left-click anywhere.";
+		s += movecursor(rows + 8, 0);
+		s += setbgcolor(200, 0, 0);
+		s += setcolor(255, 255, 255);
+		s += "(S) to start simulation.";
+		s += resetcolor();
 	}
 
 	return s;
@@ -189,10 +206,11 @@ void Game::run() {
 	// Sets the function that happens on mouse click down to the created
 	// function wrapper
 	on_mousedown(drawFunc);
-
 	while (true) {
-		int c = toupper(quick_read());
-		if (c == 'P') {
+	int c = toupper(quick_read());
+		// makes game pause on starr
+		// TODO: add prompt "draw to continue"
+		if ((c == 'P' || world.alive_count() <= 0)) {
 			paused = true;
 			std::cerr << set_mouse_mode(true);
 		} else if (c == 'S') {
@@ -217,8 +235,7 @@ void Game::run() {
 		auto tickDur = std::chrono::duration<double>(1.0 / double(tickrate));
 		next_frame += std::chrono::duration_cast<clock::duration>(tickDur);
 		if (!paused)
-			frame += world.physics(); // Physics will always return 1, unless
-									  // there are no particles.
+			frame += world.physics(); // Physics will always return 1, unless									  // there are no particles.
 		else {
 			switch (c) {
 			case 'Q':
@@ -277,8 +294,8 @@ std::string Game::render() {
 					  // by world::physics()
 		s += movecursor(int(row), int(col));
 		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
-		s += to_string(int(p->get_type()));
-		// s += " ";
+//		s += to_string(int(p->get_type()));
+		s += " ";
 		s += resetcolor();
 	}
 	return s;
@@ -368,6 +385,9 @@ P_ptr CallbackHandler::generateParticle() {
 	case earth:
 		pt = make_shared<Earth>(row, col);
 		break;
+	case confetti:
+		pt = make_shared<Confetti>(row, col);
+		break;
 	case life:
 		pt = make_shared<Life>(row, col);
 	}
@@ -396,7 +416,6 @@ void CH::setRowCol(Wc inrow, Wc incol) {
 										 // allow particle generation. Prevents>
 		P_ptr pt = generateParticle();
 		if (pt != nullptr) {
-			pt->set_lifetime(1000); // arbitrary for testing
 			world.add_particle(pt); // Ensure it doesnt generate a nullptr
 		}
 		// yes this func updates every particle. leave it. alone.

@@ -232,73 +232,7 @@ int World::physics() {
 	updateMap();
 
 	return 1;
-	/*
-	// double suffering... oops, i mean double buffering
-	// algo that brings sufferings
 
-	// why 2 loops? we dont want half-mutated Map and ps,
-	// we want each "container" to be completed b4 working
-	// on to the next one
-
-	// sentinel to GUARD element count in prev_pos.
-	// prev_pos is guranteed NOT to be deleted any elements!
-	// as deletion is executed AFTER these 2 for-loops below.
-	uint16_t count = 0;
-	auto end = ps.end();
-
-	// First loop represent old state ps
-	for (auto p = ps.begin(); p != end; p++) {
-		Wc x = (*p)->get_col();
-		Wc y = (*p)->get_row();
-		
-		// The map carries on ITS PREV STATE to next loop as it isn't updated!
-		// AND we need prev pos data for clearing cell
-		// BUT mutated cell obvs wont be captured
-		// So need be careful. Lock bound? Yes!
-		updateMapPrev(y, x, *p);
-		count++;
-
-		// Do particle physics calls here
-		(*p)->physics(*this);
-	}
-	
-	// Second loop iterate thru MUTATED ps
-	// ps is guranteed to NOT go down in elem.
-	for (auto p = ps.begin(); p != ps.end(); p++) {
-		// After phsyics! ps includes mutated particles.
-		updateMap(*p);
-
-		Wc x_new = (*p)->get_col();
-                Wc y_new = (*p)->get_row();
-
-		bool st = (*p)->get_stationary();
-		
-		// note the deximal truncation.
-		// equal = "in floor range"
-		// w/o this, accidental deletion of slow-moving
-		// particles (which will be realized in frame
-		// eventually, but affects fading)
-		bool stay = (x_new == Wc(prev_pos.at(*p).col) && y_new == Wc(prev_pos.at(*p).row));
-
-		// count check for sentinel explained above
-		// stay check, as abive, wont delete "unmoving"
-		// particles
-		if (!st && !stay && count > 0) {
-			updateMap(prev_pos.at(*p).col, prev_pos.at(*p).row, none); // Old particle pos
-			count--;
-		}
-		
-		// 'Map' is now updated with new ps location
-		// type check for lifetime decrement
-		P_Type type_new = this->atMap(y_new, x_new);
-
-		// Decrement p lifetime if it is not a permanent particle
-		if (type_new != none && (*p)->get_lifetime() > 0)
-			(*p)->set_lifetime((*p)->get_lifetime() - 1);
-	}
-
-	// i need a double cheeseburger after this
-	*/
 } // physics() iterates all P.
 
 Amt World::size() const {
@@ -455,6 +389,8 @@ P_ptr extractParticle(std::string &s) {
 		p = std::make_shared<Dirt>(row, col);
 	if (type == 7)
 		p = std::make_shared<Lightning>(row, col);
+	if (type == 9)
+		p = std::make_shared<Confetti>(row, col);
 	if (type == 8)
 		p = std::make_shared<Life>(row, col);
 
