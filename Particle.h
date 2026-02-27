@@ -30,7 +30,7 @@ enum P_Type : uint8_t {
 	dirt,
 	lightning,
 	tbd_1, // confetti?
-	tbd_2,
+	confetti,
 	tbd_3,
 	OOB,		  // Checking an out of bounds loc in atMap()
 	E_MIN = none, // change as enum list changed
@@ -189,9 +189,9 @@ public:
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
-class TBD_2 : public P {
+class Confetti : public P {
 public:
-	TBD_2(const Pc &row, const Pc &col);
+	Confetti(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
