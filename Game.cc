@@ -344,6 +344,7 @@ P_ptr CallbackHandler::generateParticle() {
 		break;
 	case earth:
 		pt = make_shared<Earth>(row, col);
+		break;
 	}
 	return pt;
 }
