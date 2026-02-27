@@ -356,15 +356,11 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		world.add_particle(p_a);
 		world.updateMap(p_a);
 
-		world.updateMap(p_a);
 		// make it go upwards
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
-		nbr->set_y_vel(std::abs(get_y_vel()) * (-4));
-		nbr->set_lifetime(0);
-
-		// delete water? it has been "replaced"
-		std::cout << "Water touched\n";
+		nbr->set_y_vel(-std::abs(get_y_vel()));
+		nbr->set_lifetime(70);
 	}
 }
 
@@ -443,6 +439,9 @@ void Water::touch(const P_ptr &nbr, World &world) {
 	// Every interaction between a certain particle type and water has already
 	// been taken care of in the other particle's touch function to my knowledge
 	if (nbr->get_type() == fire) {
+		Pc row = nbr->get_row();
+		Pc col = nbr->get_col();
+		nbr->touch(world.atMap_ptr(row, col), world);
 		set_lifetime(0);
 	}
 }
