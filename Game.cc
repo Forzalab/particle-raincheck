@@ -388,6 +388,8 @@ P_ptr CallbackHandler::generateParticle() {
 	case confetti:
 		pt = make_shared<Confetti>(row, col);
 		break;
+	case life:
+		pt = make_shared<Life>(row, col);
 	}
 	return pt;
 }

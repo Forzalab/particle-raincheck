@@ -29,7 +29,7 @@ enum P_Type : uint8_t {
 	earth,
 	dirt,
 	lightning,
-	tbd_1, // confetti?
+	life,
 	confetti,
 	tbd_3,
 	OOB,		  // Checking an out of bounds loc in atMap()
@@ -182,9 +182,9 @@ public:
 	void touch(const P_ptr &nbr, World &world) final;
 };
 
-class TBD_1 : public P_solid {
+class Life : public P_solid {
 public:
-	TBD_1(const Pc &row, const Pc &col);
+	Life(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;
 	void touch(const P_ptr &nbr, World &world) final;
 };
