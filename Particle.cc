@@ -565,6 +565,7 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 		world.add_particle(p);
 		world.updateMap(p);
   }
+}
   
 void Confetti::physics_spec(World &world) {
 	Pc x = this->get_col();

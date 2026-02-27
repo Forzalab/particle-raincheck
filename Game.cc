@@ -73,7 +73,7 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 		} // Clean up trailing chars from prev frame
 
 		s += movecursor(rows + 6, size - 6);
-		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning (8) Confetti!";
+		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning (7) Life (8) Confetti!";
 		s += movecursor(rows + 7, 0);
 		s += setbgcolor(240,240,240);
 		s += setcolor(0,0,0);
