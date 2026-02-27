@@ -482,8 +482,6 @@ int World::load(const std::string &str) {
 
 	updateVecs();
 
-	updateVecs();
-
 	std::getline(ifs, s, '\n'); // "Ps": [ line
 	std::getline(ifs, s, ']');	// Get entire json array of particles, if any.
 	if (s.length() > 1) {		// == 1 means it is empty
