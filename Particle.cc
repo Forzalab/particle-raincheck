@@ -38,7 +38,7 @@ Dust::Dust(const Pc &row, const Pc &col)
 }
 
 Fire::Fire(const Pc &row, const Pc &col)
-	: Particle(row, col, 255, 32, 16, false, 150, fire) {}
+	: Particle(row, col, 255, 32, 16, true, 100, fire) {}
 
 Water::Water(const Pc &row, const Pc &col)
 	: Particle(row, col, 70, 155, 235, false, 20000, water) {}
@@ -68,10 +68,12 @@ TBD_1::TBD_1(const Pc &row, const Pc &col)
 	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_1) {}
 
 Confetti::Confetti(const Pc &row, const Pc &col)
-	: P(row, col, 255, 255, 255, false, 2, confetti) {
+	: P(row, col, 255, 255, 255, false, 75, confetti) {
 	this->set_r((P::bd(P::gen)) * 100 % 256);
 	this->set_g((P::bd(P::gen)) * 100 % 256);
 	this->set_b((P::bd(P::gen)) * 100 % 256);
+	
+	set_lifetime(get_lifetime());
 
 	// v0
 	set_y_vel(-((P::bd(P::gen) * 2 / 75.0f))+0.2);
@@ -132,13 +134,6 @@ void P::set_lifetime(const Tick &_lifetime) {
 	if (_lifetime < -1)
 		throw std::runtime_error("Lifetime OOB.");
 	lifetime = _lifetime;
-
-	// Color fade
-	if (lifetime <= 30) {
-		r *= 0.88;
-		g *= 0.88;
-		b *= 0.88;
-	}
 }
 
 void P::set_type(const P_Type &_type) {
@@ -155,6 +150,14 @@ void P::physics(World &world) {
 
 	// type-specific physics
 	physics_spec(world);
+	
+	Tick lft = this->get_lifetime();
+
+	if (lft / 30 < 1 && lft >= 0) {
+                this->set_r(this->get_r()*std::pow(0.88, 30-lft));
+                this->set_g(this->get_g()*std::pow(0.88, 30-lft));
+                this->set_b(this->get_b()*std::pow(0.88, 30-lft));
+        }
 
 	// After ONE particle move
 	Pc x_new = this->get_col();
@@ -177,8 +180,8 @@ void P::physics(World &world) {
 	// Axiom: last P in the list gets to APPEAR!
 	if (p && colliding_type != none && colliding_type != air &&
 		colliding_type != type) {
-		if (this->type == lightning)
-			std::cerr << std::to_string(int(colliding_type));
+//		if (this->type == lightning)
+//			std::cerr << std::to_string(int(colliding_type));
 		this->touch(p, world);
 	}
 
@@ -576,15 +579,13 @@ void Confetti::physics_spec(World &world) {
 	Tick lft = this->get_lifetime();
 
 	if (pt == fire || is_solid(pt))
-                set_lifetime(0);
+                set_lifetime(1);
 
 	if (lft % 3) {
 		this->set_r((P::bd(P::gen)) * 100 % 256);
 		this->set_g((P::bd(P::gen)) * 100 % 256);
 		this->set_b((P::bd(P::gen)) * 100 % 256);
-	}
-
-	this->set_lifetime(lft);
+	}	
 
 	// spawn
 /*	if (lft % 60) {

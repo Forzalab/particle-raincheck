@@ -277,8 +277,8 @@ std::string Game::render() {
 					  // by world::physics()
 		s += movecursor(int(row), int(col));
 		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
-		s += to_string(int(p->get_type()));
-		// s += " ";
+//		s += to_string(int(p->get_type()));
+		s += " ";
 		s += resetcolor();
 	}
 	return s;
@@ -397,7 +397,6 @@ void CH::setRowCol(Wc inrow, Wc incol) {
 										 // allow particle generation. Prevents>
 		P_ptr pt = generateParticle();
 		if (pt != nullptr) {
-			pt->set_lifetime(1000); // arbitrary for testing
 			world.add_particle(pt); // Ensure it doesnt generate a nullptr
 		}
 		// yes this func updates every particle. leave it. alone.
