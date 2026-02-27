@@ -38,7 +38,7 @@ Dust::Dust(const Pc &row, const Pc &col)
 }
 
 Fire::Fire(const Pc &row, const Pc &col)
-	: Particle(row, col, 255, 32, 16, false, 1500, fire) {}
+	: Particle(row, col, 255, 32, 16, false, 150, fire) {}
 
 Water::Water(const Pc &row, const Pc &col)
 	: Particle(row, col, 70, 155, 235, false, 20000, water) {}
@@ -68,7 +68,7 @@ TBD_1::TBD_1(const Pc &row, const Pc &col)
 	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_1) {}
 
 Confetti::Confetti(const Pc &row, const Pc &col)
-	: P(row, col, 255, 255, 255, false, 100, confetti) {
+	: P(row, col, 255, 255, 255, false, 2, confetti) {
 	this->set_r((P::bd(P::gen)) * 100 % 256);
 	this->set_g((P::bd(P::gen)) * 100 % 256);
 	this->set_b((P::bd(P::gen)) * 100 % 256);
@@ -583,6 +583,8 @@ void Confetti::physics_spec(World &world) {
 		this->set_g((P::bd(P::gen)) * 100 % 256);
 		this->set_b((P::bd(P::gen)) * 100 % 256);
 	}
+
+	this->set_lifetime(lft);
 
 	// spawn
 /*	if (lft % 60) {
