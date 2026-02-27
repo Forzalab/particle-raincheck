@@ -106,6 +106,7 @@ void Game::run() {
 		system("figlet =======");
 		system("figlet Particles | lolcat");
 		system("figlet =======");
+		std::cerr << show_cursor(false);
 
 		// Options on splash screen- "Start,
 		// Load

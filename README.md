@@ -38,9 +38,9 @@
 
 ## Romero
 ### Game class
-- Implement a command to draw the world on BRIDGES (see below)
-- On launch draw a splash screen (Implementing)
-- Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc) (Implemented
+- Implement a command to draw the world on BRIDGES (Implemented)
+- On launch draw a splash screen (Implemented)
+- Below the world you should display the frame count and show the commands possible (L)oad S)ave P)ause etc) (Implemented)
 - Implement a command to increase frame rate (Implemented)
 - Implement a command to decrease frame rate (Implemented)
 - Implement a command to load the world from disk (Implemented)
