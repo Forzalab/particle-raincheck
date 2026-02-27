@@ -38,7 +38,7 @@ Dust::Dust(const Pc &row, const Pc &col)
 }
 
 Fire::Fire(const Pc &row, const Pc &col)
-	: Particle(row, col, 255, 32, 16, false, 1500, fire) {}
+	: Particle(row, col, 255, 32, 16, true, 1500, fire) {}
 
 Water::Water(const Pc &row, const Pc &col)
 	: Particle(row, col, 70, 155, 235, false, 20000, water) {}

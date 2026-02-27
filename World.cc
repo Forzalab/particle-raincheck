@@ -179,7 +179,7 @@ int World::physics() {
 
 		//coords are verified good here on
 		P_ptr otherp = atMap_ptr(newRow, newCol);
-		if(atMap(newRow, newCol) != none && otherp != nullp && otherp != p) { //If two particles try to occupy same positions, we swap other p to old coords.
+		if(atMap(newRow, newCol) != none && otherp != nullp && otherp != p && !otherp->get_stationary()) { //If two particles try to occupy same positions, we swap other p to old coords.
 			otherp->set_col(oldCol);
 			otherp->set_row(oldRow);
 			map.at(oldRow * cols + oldCol) = otherp->get_type();
