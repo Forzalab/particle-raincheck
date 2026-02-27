@@ -466,11 +466,11 @@ void Dirt::touch(const P_ptr &nbr, World &world) {
 	if (nbr->get_type() == water) {
 		Dirt d(nbr->get_row(), nbr->get_col());
 		p = std::make_shared<Dirt>(d);
+		this->set_lifetime(0);
+		nbr->set_lifetime(0);
+		world.add_particle(p);
+		world.updateMap(p);
 	}
-	this->set_lifetime(0);
-	nbr->set_lifetime(0);
-	world.add_particle(p);
-	world.updateMap(p);
 }
 
 
