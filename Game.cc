@@ -1,7 +1,6 @@
 // put all #include in header file pls
 
 #include "Game.h"
-#include "colors.h"
 #include <iostream>
 
 typedef uint32_t GameTick;
