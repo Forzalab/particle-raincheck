@@ -51,16 +51,16 @@
 
 ## Jackson
 ### Particle class
-- Working on the actual physics simulation of the particles
+- Each type has a different physics movement type:
     - Dirt travels downwards and forms piles when it hits something solid
-    - Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
-    ----So if you turn stationary true on water it will not move even if a spot opens up beneath it
-    ------Earth is always stationary and solid
-    --A .touch() method that gets called when another particle touches it. 
-    --Between .physics and .touch you can handle all interactions (fire x water, water x lightning, etc.)
+    - Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards 
+- So if you turn stationary true on water it will not move even if a spot opens up beneath it
+- Earth is always stationary and solid
+- A .touch() method that gets called when another particle touches it. 
+- Between .physics and .touch you can handle all interactions (fire x water, water x lightning, etc.)
 ### Game class
---It has to handle all input from mouse and keyboard using non-blocking I/O
---Implement a command to start simulating the world
+- It has to handle all input from mouse and keyboard using non-blocking I/O
+- Implement a command to start simulating the world
 
 ## Ho
 ### Particle class
