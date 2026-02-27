@@ -166,7 +166,6 @@ void P::physics(World &world) {
 	// Then, generated p updates the prev map automatically.
 	// Axiom: last P in the list gets to APPEAR!
 	if (p && colliding_type != none && colliding_type != air && colliding_type != type) {
-		if(this->type == lightning) std::cerr << std::to_string(int(colliding_type));
 		this->touch(p, world);
 	}
 

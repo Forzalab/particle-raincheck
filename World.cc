@@ -178,10 +178,19 @@ int World::physics() {
 		if(atMap(newRow, newCol) == OOB || atMap(oldRow, oldCol) == OOB) continue; //particle is OOB and will get eaten after loop
 
 		//coords are verified good here on
-		map.at(oldRow * cols + oldCol) = none;
+		P_ptr otherp = atMap_ptr(newRow, newCol);
+		if(atMap(newRow, newCol) != none && otherp != nullp && otherp != p) { //If two particles try to occupy same positions, we swap other p to old coords.
+			otherp->set_col(oldCol);
+			otherp->set_row(oldRow);
+			map.at(oldRow * cols + oldCol) = otherp->get_type();
+			updateMapPtr(oldRow, oldCol, otherp);
+		}
+		else {
+			map.at(oldRow * cols + oldCol) = none;
+			updateMapPtr(oldRow, oldCol, nullp);
+		}
 		map.at(newRow * cols + newCol) = p->get_type();
 
-		updateMapPtr(oldRow, oldCol, nullp);
 		updateMapPtr(p);
 		//yes this gets skipped if OOB, boo hoo, gets caught in erase if below anyways. doesnt matter.
 		if(p->get_lifetime() > 0) {
