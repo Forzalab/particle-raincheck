@@ -1,6 +1,7 @@
 // put all #include in header file pls
 
 #include "Game.h"
+#include <iostream>
 
 typedef uint32_t GameTick;
 
@@ -48,15 +49,18 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 
 	if (paused == false) {
 		s += "(P)ause (+) Increase FPS (-) Decrease FPS";
-		for (int i = 0; i < 70; i++) {
-			//			s += " ";
+		for (int i = 0; i < 5; i++) {
+						s += " ";
 		} // Clean up trailing chars from prev frame
 	} else {
 		size = s.size();
-		s += movecursor(rows + 5, size);
-		s += "Unpau(s)e (Q)uit S(a)ve (L)oad";
+		s += movecursor(rows + 5, size - 6);
+		s += "Unpau(s)e (Q)uit S(a)ve (L)oad Bri(d)ges";
+		for (int i = 0; i < 5; i++) {
+						s += " ";
+		} // Clean up trailing chars from prev frame
 
-		s += movecursor(rows + 6, size);
+		s += movecursor(rows + 6, size - 6);
 		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning";
 	}
 
@@ -79,7 +83,8 @@ void Game::run() {
 	// Default of 5. Tickrate is directly proportional to framerate. 60 tickrate
 	// -> 1 / tickrate = 60fps.
 	tickrate = 30;
-
+	
+	VisualizerURL url;
 	std::string fs;
 	fs += show_cursor(false);
 	fs += clearscreen();
@@ -165,11 +170,13 @@ void Game::run() {
 	CallbackHandler ch{world};
 	// Creates a callable function wrapper of type function<void(int, int)> with
 	// two placeholder params that will be supplied by mousedown events
-	auto boundFunc = bind(&CallbackHandler::setRowCol, &ch, placeholders::_1,
+	const auto drawFunc = bind(&CallbackHandler::setRowCol, &ch, placeholders::_1,
+						  placeholders::_2);
+	const auto removeFunc = bind(&CallbackHandler::removeRowCol, &ch, placeholders::_1,
 						  placeholders::_2);
 	// Sets the function that happens on mouse click down to the created
 	// function wrapper
-	on_mousedown(boundFunc);
+	on_mousedown(drawFunc);
 
 	while (true) {
 		int c = toupper(quick_read());
@@ -182,12 +189,15 @@ void Game::run() {
 		}
 		//- '0' gets 0-9 in integer form
 		// +1 to map to 1(air)-10(TBD3)
-		else if (c <= '9' && c >= '0') {
+		else if (paused && c <= '9' && c >= '0') {
 			ch.setPType(static_cast<P_Type>(c - '0' + 1));
+			on_mousedown(drawFunc);
 		} else if (c == '-') {
 			dcrs_fps();
 		} else if (c == '+') {
 			incr_fps();
+		} else if (paused && c == 'X') {
+			on_mousedown(removeFunc);
 		}
 		fs += printFPS(prev_frame, world.get_rows(), paused);
 		;
@@ -207,6 +217,11 @@ void Game::run() {
 				break;
 			case 'L':
 				load();
+				break;
+			case 'D':
+				url <<= world;
+				std::cerr << movecursor(50,0);
+				std::cerr << url;
 				break;
 			}
 		}
@@ -250,7 +265,8 @@ std::string Game::render() {
 					  // by world::physics()
 		s += movecursor(int(row), int(col));
 		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
-		s += " ";
+		s += to_string(int(p->get_type()));
+		// s += " ";
 		s += resetcolor();
 	}
 	return s;
@@ -339,6 +355,7 @@ P_ptr CallbackHandler::generateParticle() {
 		break;
 	case earth:
 		pt = make_shared<Earth>(row, col);
+		break;
 	}
 	return pt;
 }
@@ -346,6 +363,15 @@ P_ptr CallbackHandler::generateParticle() {
 using CH = CallbackHandler;
 
 CH::CallbackHandler(World &inworld) : world(inworld) {}
+
+void CH::removeRowCol(Wc inrow, Wc incol) {
+	if(world.atMap(inrow, incol) == OOB || world.atMap(inrow, incol) == none) return;
+	//  coords verified good && particle clicked on
+	world.erase(inrow, incol);
+	// yes this func updates every particle. leave it. alone.
+	world.updateMap();
+
+}
 
 void CH::setRowCol(Wc inrow, Wc incol) {
 	if (type == none)
@@ -355,10 +381,12 @@ void CH::setRowCol(Wc inrow, Wc incol) {
 	if (world.atMap(Wc(row), Wc(col)) == none) { // any value other than none will not
 										 // allow particle generation. Prevents>
 		P_ptr pt = generateParticle();
-		if (pt != nullptr)
+		if (pt != nullptr) {
 			pt->set_lifetime(1000); // arbitrary for testing
-		if (pt != nullptr)
 			world.add_particle(pt); // Ensure it doesnt generate a nullptr
+		}
+		// yes this func updates every particle. leave it. alone.
+		world.updateMap();
 	}
 } // inrow and incol are previously verified in bounds. This is the function
   // called on mousedown

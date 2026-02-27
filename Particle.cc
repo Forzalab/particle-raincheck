@@ -2,6 +2,7 @@
 
 #include "Particle.h"
 #include "World.h"
+#include <iostream>
 
 using P = Particle;
 
@@ -153,14 +154,19 @@ void P::physics(World &world) {
 	// particle, we dont talk about Bruno) HAS the
 	// old particle type!!!!!! wtf
 	// Map wont be updated DURING this function scope.
+	// y_new += (y_vel > 0 ? std::ceil(y_vel) : std::floor(y_vel));
+	// x_new += (x_vel > 0 ? std::ceil(x_vel) : std::floor(x_vel));
+	
 	P_Type colliding_type = world.atMap(y_new, x_new);
 	P_ptr &p = world.atMap_ptr(y_new, x_new);
+	// P_ptr &p = world.at(y_new, x_new);
 
 	// No-one? sprint ahead!
 	// Has one? ask first.
 	// Then, generated p updates the prev map automatically.
 	// Axiom: last P in the list gets to APPEAR!
-	if (p && colliding_type != none && colliding_type != air) {
+	if (p && colliding_type != none && colliding_type != air && colliding_type != type) {
+		if(this->type == lightning) std::cerr << std::to_string(int(colliding_type));
 		this->touch(p, world);
 	}
 
