@@ -65,7 +65,7 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 		} // Clean up trailing chars from prev frame
 
 		s += movecursor(rows + 6, size - 6);
-		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning";
+		s += "(0) Air (1) Dust (2) Fire (3) Water (4) Earth (5) Dirt (6) Lightning (7) Life";
 	}
 
 	return s;
@@ -368,6 +368,8 @@ P_ptr CallbackHandler::generateParticle() {
 	case earth:
 		pt = make_shared<Earth>(row, col);
 		break;
+	case life:
+		pt = make_shared<Life>(row, col);
 	}
 	return pt;
 }

@@ -1,6 +1,9 @@
 // put all #include in header file pls
 
 #include "World.h"
+#include <algorithm>
+#include <iostream>
+#include <memory>
 
 static_assert(sizeof(World) > 0);
 
@@ -35,6 +38,7 @@ void World::updateMap() {
 	if (ps.size() == 0) {
 		return;
 	}
+	map_ptr.assign(map_ptr.size(), nullp);
 	map.assign(map.size(), none);
 	// Vector mask. saves positions that contain a particle.
 	// Iter over list of Particles and update map at those indecies
@@ -43,6 +47,7 @@ void World::updateMap() {
 		Wc rawInd = int(p->get_row()) * cols + int(p->get_col());
 		if(rawInd >= map.size()) continue;
 		map.at(rawInd) = p->get_type();
+		map_ptr.at(rawInd) = p;
 	}
 }
 
@@ -159,7 +164,6 @@ bool World::has_gap_at(const Wc &y, const Wc &x) {
 // Map map will be updated here too
 // This returns an int used to increment Game.frame.
 int World::physics() {
-
 	if (alive_count() == 0)
 		return 0;
 
@@ -169,25 +173,54 @@ int World::physics() {
 		//map.clear();
 		return 0;
 	}
-
+	//more jank
 	for(auto &p : ps) {
 		Wc oldRow = p->get_row(), oldCol = p->get_col();
 		p->physics(*this);
 		Wc newRow = p->get_row(), newCol = p->get_col();
-
+		if(p->get_type() == life) continue;
 		if(atMap(newRow, newCol) == OOB || atMap(oldRow, oldCol) == OOB) continue; //particle is OOB and will get eaten after loop
-
 		//coords are verified good here on
-		map.at(oldRow * cols + oldCol) = none;
-		map.at(newRow * cols + newCol) = p->get_type();
+		P_ptr otherp = atMap_ptr(newRow, newCol);
+		if(atMap(newRow, newCol) != none && otherp != nullp && otherp != p && !otherp->get_stationary() && p->get_type() != life) {
+			//If two particles try to occupy same positions, we swap other p to old coords.
+			otherp->set_col(oldCol);
+			otherp->set_row(oldRow);
+			map.at(oldRow * cols + oldCol) = otherp->get_type();
+			updateMapPtr(oldRow, oldCol, otherp);
+		}
+		else {
+			map.at(oldRow * cols + oldCol) = none;
+			updateMapPtr(oldRow, oldCol, nullp);
+		}
+		// map.at(newRow * cols + newCol) = p->get_type();
 
-		updateMapPtr(oldRow, oldCol, nullp);
-		updateMapPtr(p);
+		// updateMapPtr(p);
 		//yes this gets skipped if OOB, boo hoo, gets caught in erase if below anyways. doesnt matter.
 		if(p->get_lifetime() > 0) {
 			p->set_lifetime(p->get_lifetime() - 1);
 		}
 	}
+
+	//for life particles
+	for(auto& [coord, count] : neighborCount) {
+		bool alive = (atMap(coord.row, coord.col) == life);
+		if(alive) {
+			if(count < 2 || count > 3) {
+				P_ptr temp = at(coord.row, coord.col);
+				if(temp) temp->set_lifetime(0);
+			}
+		} else {
+			if(count == 3) {
+				add_life(std::make_shared<Life>(coord.row, coord.col));
+			}
+		}
+ 	}
+	neighborCount.clear();
+	if(nextFrame.size()) { 
+		ps.splice(ps.end(), nextFrame); 
+	}
+
 
 	// If the particle is "dead" aka lifetime is exactly 0
 	// OR
@@ -196,6 +229,7 @@ int World::physics() {
 		// OOB or 0 lifetime = ded
 		return (p->get_lifetime() == 0) || !isInBounds(p);
 	});
+	updateMap();
 
 	return 1;
 	/*
@@ -289,6 +323,7 @@ Amt World::alive_count() const {
 } // get amt of LIVING P.
 
 void World::add_particle(P_ptr p) { ps.push_back(p); }
+void World::add_life(P_ptr p) { nextFrame.push_back(p); }
 
 // One preset save-file is enough?
 //	Yeah. Will be saved in JSON (IMMITATED) Format. If we want, we can implement
@@ -420,6 +455,8 @@ P_ptr extractParticle(std::string &s) {
 		p = std::make_shared<Dirt>(row, col);
 	if (type == 7)
 		p = std::make_shared<Lightning>(row, col);
+	if (type == 8)
+		p = std::make_shared<Life>(row, col);
 
 	p->set_x_vel(stof(Pvals.at(2)));
 	p->set_y_vel(stof(Pvals.at(3)));

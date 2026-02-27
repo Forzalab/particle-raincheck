@@ -3,6 +3,8 @@
 #include "Particle.h"
 #include "World.h"
 #include <iostream>
+#include <memory>
+#include <utility>
 
 using P = Particle;
 
@@ -64,8 +66,8 @@ Lightning::Lightning(const Pc &row, const Pc &col)
 	set_lifetime(lft);
 }
 
-TBD_1::TBD_1(const Pc &row, const Pc &col)
-	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_1) {}
+Life::Life(const Pc &row, const Pc &col)
+	: P_solid(row, col, 30, 220,255, false, -1, life) {}
 
 TBD_2::TBD_2(const Pc &row, const Pc &col)
 	: P(row, col, 255, 255, 255, false, INT32_MAX, tbd_2) {}
@@ -140,6 +142,12 @@ void P::set_type(const P_Type &_type) {
 void P::physics(World &world) {
 	// general guard for all particles
 	
+	if((type == water || type == dirt) && stationary) {
+		Wc rowBelow = row + 1, colBelow = col;
+		if(world.atMap(rowBelow, colBelow) == none)
+			stationary = !stationary;
+	}
+
 	Pc x_old = this->get_col();
 	Pc y_old = this->get_row();
 
@@ -166,7 +174,6 @@ void P::physics(World &world) {
 	// Then, generated p updates the prev map automatically.
 	// Axiom: last P in the list gets to APPEAR!
 	if (p && colliding_type != none && colliding_type != air && colliding_type != type) {
-		if(this->type == lightning) std::cerr << std::to_string(int(colliding_type));
 		this->touch(p, world);
 	}
 
@@ -540,8 +547,19 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 	}
 }
 
-void TBD_1::physics_spec(World &world) {}
-void TBD_1::touch(const P_ptr &nbr, World &world) {}
+void Life::physics_spec(World &world) {
+	Wc wRow = get_row(), wCol = get_col();
+	world.neighborCount[worldXY(wRow, wCol)] += 0; //in case this has no neighbors, its in the map to be culled
+	for(int i = -1; i <= 1; i++) {
+		for(int j = -1; j <= 1; j++) {
+			if(i == 0 && j == 0) continue;
+			Wc nbrRow = (wRow + i + world.get_rows()) % world.get_rows();
+			Wc nbrCol = (wCol + j + world.get_cols()) % world.get_cols();
+			world.neighborCount[worldXY(nbrRow, nbrCol)]++;
+		}
+	}
+}
+void Life::touch(const P_ptr &nbr, World &world) {}
 void TBD_2::physics_spec(World &world) {}
 void TBD_2::touch(const P_ptr &nbr, World &world) {}
 void TBD_3::physics_spec(World &world) {}
