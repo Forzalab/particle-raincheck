@@ -328,6 +328,7 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
 		nbr->set_y_vel(std::abs(get_y_vel()) * (-4));
+		nbr->set_lifetime(0);
 
 		// delete water? it has been "replaced"
 		std::cout << "Water touched\n";
