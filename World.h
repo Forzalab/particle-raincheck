@@ -66,11 +66,8 @@ public:
 	void set_rows(const Wc &_rows);
 	void set_cols(const Wc &_cols);
 
-//	who wrote this line shod go to gulag
-//	P_Type atMap(Wc row, Wc col);
-
 	void updateVecs();
-
+	void updateMap();
 	void updateMapPtr(P_ptr &p);
 	void updateMap(P_ptr &p);
 	void updateMapPrev(const Wc &y, const Wc &x, const P_ptr &p);
