@@ -353,14 +353,15 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		// create new upwards Air
 		Air a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Air>(a);
-		world.add_particle(p_a);
-		world.updateMap(p_a);
 
 		// make it go upwards
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
-		nbr->set_y_vel(-std::abs(get_y_vel()));
-		nbr->set_lifetime(70);
+		p_a->set_y_vel(-std::abs(p_a->get_y_vel()));
+		p_a->set_lifetime(50);
+
+		world.add_particle(p_a);
+		world.updateMap(p_a);
 	}
 }
 

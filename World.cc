@@ -127,8 +127,8 @@ P_Type World::atMap(const Wc &row, const Wc &col) {
 P_ptr &World::at(const Pc &row, const Pc &col) {
 	auto p = ps.begin();
 	for (; p != ps.end(); p++) {
-		if (P::is_equal(row, (*p)->get_row()) &&
-			P::is_equal(col, (*p)->get_col()))
+		if (row == Wc((*p)->get_row()) &&
+			col == Wc((*p)->get_col()))
 			break;
 	}
 	return (p != ps.end() ? *p : nullp);
