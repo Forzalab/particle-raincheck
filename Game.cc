@@ -265,8 +265,8 @@ std::string Game::render() {
 					  // by world::physics()
 		s += movecursor(int(row), int(col));
 		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
-		// s += to_string(int(p->get_type()));
-		s += " ";
+		s += to_string(int(p->get_type()));
+		// s += " ";
 		s += resetcolor();
 	}
 	return s;

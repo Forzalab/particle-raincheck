@@ -67,7 +67,7 @@ Lightning::Lightning(const Pc &row, const Pc &col)
 }
 
 Life::Life(const Pc &row, const Pc &col)
-	: P_solid(row, col, 30, 220,255, true, -1, life) {}
+	: P_solid(row, col, 30, 220,255, false, -1, life) {}
 
 TBD_2::TBD_2(const Pc &row, const Pc &col)
 	: P(row, col, 255, 255, 255, false, INT32_MAX, tbd_2) {}
@@ -532,36 +532,14 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 }
 
 void Life::physics_spec(World &world) {
-	int count = 0;
 	Wc wRow = get_row(), wCol = get_col();
-	std::vector<std::pair<Wc, Wc>> emptyNeighbors;
+	world.neighborCount[worldXY(wRow, wCol)] += 0; //in case this has no neighbors, its in the map to be culled
 	for(int i = -1; i <= 1; i++) {
 		for(int j = -1; j <= 1; j++) {
-			if(i == 0 and j == 0) continue; //us
-			if(world.atMap(wCol + i, wRow + j) == life) count++;
-			else if(world.atMap(wCol + i, wRow + j) == none) emptyNeighbors.push_back({wCol + i, wRow + j});
+			if(i == 0 && j == 0) continue;
+			world.neighborCount[worldXY(wRow + i, wCol + j)]++;
 		}
 	}
-	//its time for turbo jank!
-	//does this look familiar? :P
-	for(const auto p : emptyNeighbors) {
-		int emptycount = 0;
-		for(int i = -1; i <= 1; i++) {
-			for(int j = -1; j <= 1; j++) {
-				if(i == 0 && j == 0) continue;
-				if(world.atMap(p.first + i, p.second + j) == life) emptycount++;
-			}
-		}
-		if(emptycount == 3) {
-			P_ptr newp = std::make_shared<Life>(p.first, p.second);
-			world.add_particle(newp);
-			world.updateMap();
-			world.updateMapPtr(newp);
-		}
-	}
-
-	// if(count < 2 || count > 3) //die
-		// set_lifetime(0);
 }
 void Life::touch(const P_ptr &nbr, World &world) {}
 void TBD_2::physics_spec(World &world) {}
