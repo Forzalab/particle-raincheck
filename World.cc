@@ -170,7 +170,7 @@ int World::physics() {
 		return 0;
 	}
 
-	for(const auto &p : ps) {
+	for(auto &p : ps) {
 		Wc oldRow = p->get_row(), oldCol = p->get_col();
 		p->physics(*this);
 		Wc newRow = p->get_row(), newCol = p->get_col();
@@ -181,6 +181,8 @@ int World::physics() {
 		map.at(oldRow * cols + oldCol) = none;
 		map.at(newRow * cols + newCol) = p->get_type();
 
+		updateMapPtr(oldRow, oldCol, nullp);
+		updateMapPtr(p);
 		//yes this gets skipped if OOB, boo hoo, gets caught in erase if below anyways. doesnt matter.
 		if(p->get_lifetime() > 0) {
 			p->set_lifetime(p->get_lifetime() - 1);
