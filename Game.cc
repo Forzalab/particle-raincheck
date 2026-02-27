@@ -192,7 +192,7 @@ void Game::run() {
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	std::vector<pair<Wc, Wc>> prevPs;
-	bool paused = false;
+	bool paused = true;
 	// Stores which P_Type user selects, is none by default. Also contains a
 	// member function which will be set as the callback for on mouse down,
 	// adding that particle type at the mouse loc
