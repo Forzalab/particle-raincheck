@@ -53,7 +53,7 @@ std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 						s += " ";
 		} // Clean up trailing chars from prev frame
 		s += movecursor(rows + 6, size - 6);
-		for (int i = 0; i < 91; i++) {
+		for (int i = 0; i < 94; i++) {
 						s += " ";
 		} // Clean up trailing chars from prev frame
 		s += movecursor(rows + 7, 0);
@@ -207,7 +207,7 @@ void Game::run() {
 	// function wrapper
 	on_mousedown(drawFunc);
 	while (true) {
-	int c = toupper(quick_read());
+		int c = toupper(quick_read());
 		// makes game pause on starr
 		// TODO: add prompt "draw to continue"
 		if ((c == 'P' || world.alive_count() <= 0)) {
@@ -219,7 +219,10 @@ void Game::run() {
 		}
 		//- '0' gets 0-9 in integer form
 		// +1 to map to 1(air)-10(TBD3)
-		else if (paused && c <= '9' && c >= '0') {
+		cerr.flush();
+		//do NOT make this else if. do not ask why
+		//(I don't know why, but it breaks.) 67
+		if (paused && c <= '9' && c >= '0') {
 			ch.setPType(static_cast<P_Type>(c - '0' + 1));
 			on_mousedown(drawFunc);
 		} else if (c == '-') {

@@ -183,7 +183,7 @@ int World::physics() {
 		//coords are verified good here on
 		P_ptr otherp = atMap_ptr(newRow, newCol);
 		if(atMap(newRow, newCol) != none && otherp != nullp && otherp != p && !otherp->get_stationary() && p->get_type() != life) {
-			//If two particles try to occupy same positions, we swap other p to old coords.
+			// If two particles try to occupy same positions, we swap other p to old coords.
 			otherp->set_col(oldCol);
 			otherp->set_row(oldRow);
 			map.at(oldRow * cols + oldCol) = otherp->get_type();
@@ -193,9 +193,9 @@ int World::physics() {
 			map.at(oldRow * cols + oldCol) = none;
 			updateMapPtr(oldRow, oldCol, nullp);
 		}
-		// map.at(newRow * cols + newCol) = p->get_type();
+		map.at(newRow * cols + newCol) = p->get_type();
 
-		// updateMapPtr(p);
+		updateMapPtr(p);
 		//yes this gets skipped if OOB, boo hoo, gets caught in erase if below anyways. doesnt matter.
 		if(p->get_lifetime() > 0) {
 			p->set_lifetime(p->get_lifetime() - 1);

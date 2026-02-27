@@ -183,6 +183,8 @@ public:
 };
 
 class Life : public P_solid {
+private:
+	int mutate = 0;
 public:
 	Life(const Pc &row, const Pc &col);
 	void physics_spec(World &world) final;

@@ -40,7 +40,7 @@ Dust::Dust(const Pc &row, const Pc &col)
 }
 
 Fire::Fire(const Pc &row, const Pc &col)
-	: Particle(row, col, 255, 32, 16, true, 100, fire) {}
+	: Particle(row, col, 255, 32, 16, false, 180, fire) {}
 
 Water::Water(const Pc &row, const Pc &col)
 	: Particle(row, col, 70, 155, 235, false, 20000, water) {}
@@ -540,7 +540,6 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 		if (nbr->get_type() == earth) {
 			Dirt d(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Dirt>(d);
-
 		} else if (nbr->get_type() == water) {
 			Lightning l(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Lightning>(l);
@@ -608,6 +607,8 @@ void Confetti::physics_spec(World &world) {
 void Confetti::touch(const P_ptr &nbr, World &world) {}
 
 void Life::physics_spec(World &world) {
+	mutate++;
+	if(mutate % 4) return;
 	Wc wRow = get_row(), wCol = get_col();
 	world.neighborCount[worldXY(wRow, wCol)] += 0; //in case this has no neighbors, its in the map to be culled
 	for(int i = -1; i <= 1; i++) {
