@@ -456,12 +456,15 @@ void Dirt::physics_spec(World &world) {
 
 // primitive touch for the time being, can revisit if causes problems
 void Dirt::touch(const P_ptr &nbr, World &world) {
-	if (nbr->get_type() == water &&
-		(nbr->get_row() == get_row() + 1 && nbr->get_col() == get_col())) {
-		// if dirt on top of water, switch places
-		set_row(get_row() + 1);
-		nbr->set_row(get_row());
+	P_ptr p;
+	if (nbr->get_type() == water) {
+		Dirt d(nbr->get_row(), nbr->get_col());
+		p = std::make_shared<Dirt>(d);
 	}
+	this->set_lifetime(0);
+	nbr->set_lifetime(0);
+	world.add_particle(p);
+	world.updateMap(p);
 }
 
 
