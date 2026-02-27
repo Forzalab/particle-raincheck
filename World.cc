@@ -29,11 +29,10 @@ void World::updateVecs() {
 //	map_ptr.assign(map_ptr.size(), nullp);
 }
 
-/*
+
 void World::updateMap() {
 	// If no particles, clear list and return early
 	if (ps.size() == 0) {
-		map.clear();
 		return;
 	}
 	map.assign(map.size(), none);
@@ -46,7 +45,7 @@ void World::updateMap() {
 		map.at(rawInd) = p->get_type();
 	}
 }
-*/
+
 
 void World::_updateMap(const Wc &y, const Wc &x, const P_Type &type) {
 	// Vector mask. saves positions that contain a particle.
@@ -166,10 +165,40 @@ int World::physics() {
 
 	// If no particles, clear list and return early
 	if (ps.size() == 0) {
-		map.clear();
-		return 2;
+		//NEVER clear map. this does NOT change elems to none. this resizes map to zero.
+		//map.clear();
+		return 0;
 	}
 
+	for(auto &p : ps) {
+		Wc oldRow = p->get_row(), oldCol = p->get_col();
+		p->physics(*this);
+		Wc newRow = p->get_row(), newCol = p->get_col();
+
+		if(atMap(newRow, newCol) == OOB || atMap(oldRow, oldCol) == OOB) continue; //particle is OOB and will get eaten after loop
+
+		//coords are verified good here on
+		map.at(oldRow * cols + oldCol) = none;
+		map.at(newRow * cols + newCol) = p->get_type();
+
+		updateMapPtr(oldRow, oldCol, nullp);
+		updateMapPtr(p);
+		//yes this gets skipped if OOB, boo hoo, gets caught in erase if below anyways. doesnt matter.
+		if(p->get_lifetime() > 0) {
+			p->set_lifetime(p->get_lifetime() - 1);
+		}
+	}
+
+	// If the particle is "dead" aka lifetime is exactly 0
+	// OR
+	// If it's out of bounds
+	std::erase_if(ps, [this](const auto &p) {
+		// OOB or 0 lifetime = ded
+		return (p->get_lifetime() == 0) || !isInBounds(p);
+	});
+
+	return 1;
+	/*
 	// double suffering... oops, i mean double buffering
 	// algo that brings sufferings
 
@@ -235,16 +264,7 @@ int World::physics() {
 	}
 
 	// i need a double cheeseburger after this
-
-	// If the particle is "dead" aka lifetime is exactly 0
-	// OR
-	// If it's out of bounds
-	std::erase_if(ps, [this](const auto &p) {
-		// OOB or 0 lifetime = ded
-		return (p->get_lifetime() == 0) || !isInBounds(p);
-	});
-
-	return 1;
+	*/
 } // physics() iterates all P.
 
 Amt World::size() const {
@@ -461,8 +481,6 @@ int World::load(const std::string &str) {
 		// std::cerr << "Val extracted for COLS invalid.\n";
 		// exit(EXIT_FAILURE);
 	// }
-
-	updateVecs();
 
 	updateVecs();
 

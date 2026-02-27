@@ -32,6 +32,7 @@ private:
 
 public:
 	CallbackHandler(World &inworld);
+	void removeRowCol(Wc inrow, Wc incol);
 	void setRowCol(Wc inrow, Wc incol);
 	void setPType(P_Type inType);
 };

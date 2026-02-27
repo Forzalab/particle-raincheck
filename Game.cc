@@ -182,11 +182,13 @@ void Game::run() {
 	CallbackHandler ch{world};
 	// Creates a callable function wrapper of type function<void(int, int)> with
 	// two placeholder params that will be supplied by mousedown events
-	auto boundFunc = bind(&CallbackHandler::setRowCol, &ch, placeholders::_1,
+	const auto drawFunc = bind(&CallbackHandler::setRowCol, &ch, placeholders::_1,
+						  placeholders::_2);
+	const auto removeFunc = bind(&CallbackHandler::removeRowCol, &ch, placeholders::_1,
 						  placeholders::_2);
 	// Sets the function that happens on mouse click down to the created
 	// function wrapper
-	on_mousedown(boundFunc);
+	on_mousedown(drawFunc);
 
 	while (true) {
 		int c = toupper(quick_read());
@@ -199,12 +201,15 @@ void Game::run() {
 		}
 		//- '0' gets 0-9 in integer form
 		// +1 to map to 1(air)-10(TBD3)
-		else if (c <= '9' && c >= '0') {
+		else if (paused && c <= '9' && c >= '0') {
 			ch.setPType(static_cast<P_Type>(c - '0' + 1));
+			on_mousedown(drawFunc);
 		} else if (c == '-') {
 			dcrs_fps();
 		} else if (c == '+') {
 			incr_fps();
+		} else if (paused && c == 'X') {
+			on_mousedown(removeFunc);
 		}
 		fs += printFPS(prev_frame, world.get_rows(), paused);
 		;
@@ -272,7 +277,8 @@ std::string Game::render() {
 					  // by world::physics()
 		s += movecursor(int(row), int(col));
 		s += setbgcolor(p->get_r(), p->get_g(), p->get_b());
-		s += " ";
+		s += to_string(int(p->get_type()));
+		// s += " ";
 		s += resetcolor();
 	}
 	return s;
@@ -361,6 +367,7 @@ P_ptr CallbackHandler::generateParticle() {
 		break;
 	case earth:
 		pt = make_shared<Earth>(row, col);
+		break;
 	}
 	return pt;
 }
@@ -368,6 +375,15 @@ P_ptr CallbackHandler::generateParticle() {
 using CH = CallbackHandler;
 
 CH::CallbackHandler(World &inworld) : world(inworld) {}
+
+void CH::removeRowCol(Wc inrow, Wc incol) {
+	if(world.atMap(inrow, incol) == OOB || world.atMap(inrow, incol) == none) return;
+	//  coords verified good && particle clicked on
+	world.erase(inrow, incol);
+	// yes this func updates every particle. leave it. alone.
+	world.updateMap();
+
+}
 
 void CH::setRowCol(Wc inrow, Wc incol) {
 	if (type == none)
@@ -377,10 +393,12 @@ void CH::setRowCol(Wc inrow, Wc incol) {
 	if (world.atMap(Wc(row), Wc(col)) == none) { // any value other than none will not
 										 // allow particle generation. Prevents>
 		P_ptr pt = generateParticle();
-		if (pt != nullptr)
+		if (pt != nullptr) {
 			pt->set_lifetime(1000); // arbitrary for testing
-		if (pt != nullptr)
 			world.add_particle(pt); // Ensure it doesnt generate a nullptr
+		}
+		// yes this func updates every particle. leave it. alone.
+		world.updateMap();
 	}
 } // inrow and incol are previously verified in bounds. This is the function
   // called on mousedown
