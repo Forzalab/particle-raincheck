@@ -36,9 +36,7 @@ make && \
 - A .physics() method which runs through the list of Particles and runs .physics() on each one
     - If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list 
     - If a particle now has a lifetime of exactly 0, delete it from the list
-    - Any point which leaves the boundary must be deleted 
    - Physics (see below) will decrement it each frame by 1 to a minimum of 0.
-    - If a particle is now out of bounds (no YOU'RE out of bounds) then delete it from the list
     - It has the world (.world World) as a member variable
 #### Game class
 - A .frame member variable that starts at 0 and counts up by 1 each time physics is run
@@ -53,7 +51,8 @@ make && \
 - Implement a command to pause simulating the world
 - Implement a command to quit
 - The user must be able to edit the game world by adding and deleting particles while the world is paused
-- It must work with mouse input
+- It has to handle all input using non-blocking I/O
+    - It must handle mouse input
 
 ### Romero
 #### Game class
@@ -65,20 +64,18 @@ make && \
 - Implement a command to load the world from disk
 - Implement a command to save the world to disk
 #### Particle class
-- Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt.
 - Air moves in a straight line (ignoring gravity) bouncing off solid
 
 ### Jackson
 #### Particle class
 - Each type has a different physics movement type:
     - Dirt travels downwards and forms piles when it hits something solid
-    - Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards 
+    - Water drips down and if it hits something solid it will slide sideways to find the lowest level. Water touching fire turns into air moving upwards
     - So if you turn stationary true on water it will not move even if a spot opens up beneath it
-- Earth is always stationary and solid
-- A .touch() method that gets called when another particle touches it. 
-- Between .physics and .touch you can handle all interactions (fire x water, water x lightning, etc.)
+- Interaction (water x lightning, water x earth)
 ### Game class
-- It has to handle all input from mouse and keyboard using non-blocking I/O
+- It has to handle all input from using non-blocking I/O
+    - Keyboard input.
 - Implement a command to start simulating the world
 
 ### Ho
@@ -87,10 +84,11 @@ make && \
 - A velocity (.x_vel and .y_vel float) indicating how many cells per tick it moves
 - A .type which must be an enum which indicates if it is air, dust, fire, water, earth, dirt, lightning
 - Each type has a different physics movement type:
-    - Air moves in a straight line (ignoring gravity) bouncing off solid
     - Dust has a small amount of gravity and randomly moves left and right every frame
     - Fire is stationary and shoots sparks of lightning in different directions over time
     - Earth is always stationary and solid
+    - Lightning travels in a straight line and stops when it hits something solid. If it touches water, the water turns into lightning. If it hits earth it turns into dirt.
+    
 - Color (.r .g .b uint8_t) that should be set initially by its type (fire should be red) but can change
 - A boolean named .stationary that if true means it is solid and does not move/simulate physics
 - A .lifetime variable which holds how many frames more it will exist for
@@ -101,6 +99,7 @@ make && \
 - A .physics() method that gets the world map passed in by reference, that runs physics for the particle and updates the world map if it moved. If it runs into another particle, it calls .touch() on the other particle.
     - Physics also decrements .lifetime by one each frame
 - A .touch() method that gets called when another particle touches it.
+- Interaction (fire x water)
 - Confetti particle (extra credit)
 #### BRIDGES (through `Bifrost.h`)
 - Read the BRIDGES documentation: https://bridgesuncc.github.io/ and comprehend it
