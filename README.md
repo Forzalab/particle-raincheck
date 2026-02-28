@@ -21,6 +21,7 @@ make && \
 ## Who does what?
 ### Raymond
 #### Particle class
+- No two Particles can be on the same location
 - Game of Life particle (extra credit)
 #### World class
 - A size (.rows .cols int) that is the boundary of the world.
