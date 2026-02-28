@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -23,12 +24,27 @@
 #include "Particle.h"
 
 using P = Particle;
+using Wc = uint32_t; // World-coords
 
 struct pXY {
         Pc row{}, col{};
 };
 
-using Wc = uint32_t; // World-coords
+struct worldXY {
+		Wc row{}, col{};		
+		bool operator==(const worldXY& rhs) const noexcept {
+			return row == rhs.row && col == rhs.col;
+		}
+};
+
+struct lifeHash {
+	size_t operator()(const worldXY wxy) const noexcept {
+		size_t h1 = std::hash<Wc>{}(wxy.row);
+		size_t h2 = std::hash<Wc>{}(wxy.col);
+		return h1 ^ (h2 >> 1);
+	}
+};
+
 using Amt = int32_t;
 using Ps = std::list<P_ptr>; // ParticleS
 using Map = std::vector<P_Type>;
@@ -44,6 +60,7 @@ private:
 	Map_ptr map_ptr;
 	PtrXY prev_pos;
 	Ps ps;			   // list of Particles' POINTERS
+	Ps nextFrame;      //IGNORE- for life particles ;)
 	// Pointer is used for flexible intercasting to
 	// derived 'Particle' type
 	void _updateMap(const Wc &x, const Wc &y, const P_Type &type);
@@ -86,6 +103,8 @@ public:
 	Amt alive_count() const; // get amt of LIVING P.
 
 	void add_particle(P_ptr p);
+	void add_life(P_ptr p);//IGNORE -for life particles
+	std::unordered_map<worldXY, int, lifeHash> neighborCount;
 
 	const Ps &getParticles();
 	void save(const std::string &str);

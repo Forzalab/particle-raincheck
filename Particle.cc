@@ -3,6 +3,8 @@
 #include "Particle.h"
 #include "World.h"
 #include <iostream>
+#include <memory>
+#include <utility>
 
 using P = Particle;
 
@@ -38,7 +40,7 @@ Dust::Dust(const Pc &row, const Pc &col)
 }
 
 Fire::Fire(const Pc &row, const Pc &col)
-	: Particle(row, col, 255, 32, 16, false, 1500, fire) {}
+	: Particle(row, col, 255, 32, 16, false, 180, fire) {}
 
 Water::Water(const Pc &row, const Pc &col)
 	: Particle(row, col, 70, 155, 235, false, 20000, water) {}
@@ -64,11 +66,21 @@ Lightning::Lightning(const Pc &row, const Pc &col)
 	set_lifetime(lft);
 }
 
-TBD_1::TBD_1(const Pc &row, const Pc &col)
-	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_1) {}
+Life::Life(const Pc &row, const Pc &col)
+	: P_solid(row, col, 30, 220,255, false, -1, life) {}
 
-TBD_2::TBD_2(const Pc &row, const Pc &col)
-	: P(row, col, 255, 255, 255, false, INT32_MAX, tbd_2) {}
+Confetti::Confetti(const Pc &row, const Pc &col)
+	: P(row, col, 255, 255, 255, false, 75, confetti) {
+	this->set_r((P::bd(P::gen)) * 100 % 256);
+	this->set_g((P::bd(P::gen)) * 100 % 256);
+	this->set_b((P::bd(P::gen)) * 100 % 256);
+	
+	set_lifetime(get_lifetime());
+
+	// v0
+	set_y_vel(-((P::bd(P::gen) * 2 / 75.0f))+0.2);
+	set_x_vel((P::bd(P::gen) % 11 - 5) / 40.0);
+}
 
 TBD_3::TBD_3(const Pc &row, const Pc &col)
 	: P_solid(row, col, 255, 255, 255, false, INT32_MAX, tbd_3) {}
@@ -93,14 +105,16 @@ bool P::is_solid(const P_Type &pt) { return (pt == earth || pt == dirt); }
 
 // setters
 void P::set_row(const Pc &_row) {
-	if (_row < 0) set_lifetime(0);
-		//throw std::runtime_error("Row OOB.");
+	if (_row < 0)
+		set_lifetime(0);
+	// throw std::runtime_error("Row OOB.");
 	row = _row;
 }
 
 void P::set_col(const Pc &_col) {
-	if (_col < 0) set_lifetime(0);
-		//throw std::runtime_error("Col OOB.");
+	if (_col < 0)
+		set_lifetime(0);
+	// throw std::runtime_error("Col OOB.");
 	col = _col;
 }
 
@@ -122,13 +136,6 @@ void P::set_lifetime(const Tick &_lifetime) {
 	if (_lifetime < -1)
 		throw std::runtime_error("Lifetime OOB.");
 	lifetime = _lifetime;
-
-	// Color fade
-	if (lifetime <= 30) {
-		r *= 0.88;
-		g *= 0.88;
-		b *= 0.88;
-	}
 }
 
 void P::set_type(const P_Type &_type) {
@@ -140,23 +147,37 @@ void P::set_type(const P_Type &_type) {
 void P::physics(World &world) {
 	// general guard for all particles
 	
+	if((type == water || type == dirt) && stationary) {
+		Wc rowBelow = row + 1, colBelow = col;
+		if(world.atMap(rowBelow, colBelow) == none)
+			stationary = !stationary;
+	}
+
 	Pc x_old = this->get_col();
 	Pc y_old = this->get_row();
 
 	// type-specific physics
 	physics_spec(world);
+	
+	Tick lft = this->get_lifetime();
+
+	if (lft / 30 < 1 && lft >= 0) {
+                this->set_r(this->get_r()*std::pow(0.88, 30-lft));
+                this->set_g(this->get_g()*std::pow(0.88, 30-lft));
+                this->set_b(this->get_b()*std::pow(0.88, 30-lft));
+        }
 
 	// After ONE particle move
 	Pc x_new = this->get_col();
-        Pc y_new = this->get_row();
+	Pc y_new = this->get_row();
 
-	// ...but the new pos on Map (excluding generated 
+	// ...but the new pos on Map (excluding generated
 	// particle, we dont talk about Bruno) HAS the
 	// old particle type!!!!!! wtf
 	// Map wont be updated DURING this function scope.
 	// y_new += (y_vel > 0 ? std::ceil(y_vel) : std::floor(y_vel));
 	// x_new += (x_vel > 0 ? std::ceil(x_vel) : std::floor(x_vel));
-	
+
 	P_Type colliding_type = world.atMap(y_new, x_new);
 	P_ptr &p = world.atMap_ptr(y_new, x_new);
 	// P_ptr &p = world.at(y_new, x_new);
@@ -166,7 +187,6 @@ void P::physics(World &world) {
 	// Then, generated p updates the prev map automatically.
 	// Axiom: last P in the list gets to APPEAR!
 	if (p && colliding_type != none && colliding_type != air && colliding_type != type) {
-		if(this->type == lightning) std::cerr << std::to_string(int(colliding_type));
 		this->touch(p, world);
 	}
 
@@ -176,67 +196,71 @@ void P::physics(World &world) {
 
 void Air::physics_spec(World &world) {
 	Pc x = get_col(), y = get_row();
-	//if there is nothing solid in front of the moving particle
+	// if there is nothing solid in front of the moving particle
 	if (!P::is_solid(world.atMap(get_y_vel() + y, get_x_vel() + x))) {
 		set_row(get_row() + get_y_vel());
 		set_col(get_col() + get_x_vel());
-	}
-	else {
-		//Flips the velocity sign 
-		if (P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x + 1))and P::is_solid(world.atMap(y, x - 1))) {
+	} else {
+		// Flips the velocity sign
+		if (P::is_solid(world.atMap(y + 1, x)) and
+			P::is_solid(world.atMap(y - 1, x)) and
+			P::is_solid(world.atMap(y, x + 1)) and
+			P::is_solid(world.atMap(y, x - 1))) {
 			set_y_vel(0);
 			set_x_vel(0);
-		}
-		else if (P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y - 1, x))) {
+		} else if (P::is_solid(world.atMap(y + 1, x)) and
+				   P::is_solid(world.atMap(y - 1, x))) {
 			set_y_vel(0);
-		}
-		else if (P::is_solid(world.atMap(y, x + 1)) and P::is_solid(world.atMap(y, x - 1))) {
+		} else if (P::is_solid(world.atMap(y, x + 1)) and
+				   P::is_solid(world.atMap(y, x - 1))) {
 			set_x_vel(0);
 		}
 		/*
 		//Top Right Corner
-		if (P::is_solid(world.atMap(y + 1, x + 1)) and P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y, x + 1))) {
+		if (P::is_solid(world.atMap(y + 1, x + 1)) and P::is_solid(world.atMap(y
+		+ 1, x)) and P::is_solid(world.atMap(y, x + 1))) {
 			set_y_vel(-(get_y_vel()));
 			set_x_vel(-(get_x_vel()));
 		}
 		//Bottom Right Corner
-		else if (P::is_solid(world.atMap(y - 1, x + 1)) and P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x + 1))) {
-			set_y_vel(-(get_y_vel()));
-			set_x_vel(-(get_x_vel()));
+		else if (P::is_solid(world.atMap(y - 1, x + 1)) and
+		P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x +
+		1))) { set_y_vel(-(get_y_vel())); set_x_vel(-(get_x_vel()));
 		}
 		//Top Left Corner
-		else if (P::is_solid(world.atMap(y + 1, x - 1)) and P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y, x - 1))) {
-			set_y_vel(-(get_y_vel()));
-			set_x_vel(-(get_x_vel()));
+		else if (P::is_solid(world.atMap(y + 1, x - 1)) and
+		P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y, x -
+		1))) { set_y_vel(-(get_y_vel())); set_x_vel(-(get_x_vel()));
 		}
 		//Bottom Left Corner
-		else if (P::is_solid(world.atMap(y - 1, x - 1)) and P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x - 1))) {
-			set_y_vel(-(get_y_vel()));
-			set_x_vel(-(get_x_vel()));
+		else if (P::is_solid(world.atMap(y - 1, x - 1)) and
+		P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x -
+		1))) { set_y_vel(-(get_y_vel())); set_x_vel(-(get_x_vel()));
 		}
-		else if (P::is_solid(world.atMap(y + 1, x)) or P::is_solid(world.atMap(y - 1, x))) {
-			set_y_vel(-(get_y_vel()));
+		else if (P::is_solid(world.atMap(y + 1, x)) or P::is_solid(world.atMap(y
+		- 1, x))) { set_y_vel(-(get_y_vel()));
 		}
-		else if (P::is_solid(world.atMap(y, x + 1)) or P::is_solid(world.atMap(y, x - 1))) {
-			set_x_vel(-(get_x_vel()));
+		else if (P::is_solid(world.atMap(y, x + 1)) or
+		P::is_solid(world.atMap(y, x - 1))) { set_x_vel(-(get_x_vel()));
 		}
 		*/
-		 if (P::is_solid(world.atMap(y + 1, x))) set_y_vel(-(get_y_vel()));
-		 if (P::is_solid(world.atMap(y - 1, x))) set_y_vel(-(get_y_vel()));
-		 if (P::is_solid(world.atMap(y, x + 1))) set_x_vel(-(get_x_vel()));
-		 if (P::is_solid(world.atMap(y, x - 1))) set_x_vel(-(get_x_vel()));
-		
+		if (P::is_solid(world.atMap(y + 1, x)))
+			set_y_vel(-(get_y_vel()));
+		if (P::is_solid(world.atMap(y - 1, x)))
+			set_y_vel(-(get_y_vel()));
+		if (P::is_solid(world.atMap(y, x + 1)))
+			set_x_vel(-(get_x_vel()));
+		if (P::is_solid(world.atMap(y, x - 1)))
+			set_x_vel(-(get_x_vel()));
 
-		//Moves the particle
+		// Moves the particle
 		set_row(y + get_y_vel());
 		set_col(x + get_x_vel());
 	}
 	return;
 }
 
-void Air::touch(const P_ptr &nbr, World &world) {
-	
-}
+void Air::touch(const P_ptr &nbr, World &world) {}
 
 void Dust::physics_spec(World &world) {
 	Pc gravity = 0.00025;
@@ -329,18 +353,15 @@ void Fire::touch(const P_ptr &nbr, World &world) {
 		// create new upwards Air
 		Air a(nbr->get_row(), nbr->get_col());
 		P_ptr p_a = std::make_shared<Air>(a);
-		world.add_particle(p_a);
-		world.updateMap(p_a);
 
-		world.updateMap(p_a);
 		// make it go upwards
 		// y starts at 0 and ends with world.height
 		// so going up means decreasing y.
-		nbr->set_y_vel(std::abs(get_y_vel()) * (-4));
-		nbr->set_lifetime(0);
+		p_a->set_y_vel(-std::abs(p_a->get_y_vel()));
+		p_a->set_lifetime(50);
 
-		// delete water? it has been "replaced"
-		std::cout << "Water touched\n";
+		world.add_particle(p_a);
+		world.updateMap(p_a);
 	}
 }
 
@@ -355,17 +376,19 @@ void Water::physics_spec(World &world) {
 	set_y_vel(new_vel - steps);
 	set_x_vel(0); // no lateral movement in air
 
-	if (steps == 0) return;
+	if (steps == 0)
+		return;
 	int r = get_row();
 	int c = get_col();
 	// initial velocity + acceleration due to gravity
-//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
-	
+	//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
+
 	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
 	// 	world.at(get_row() + 1, get_col()) == nullptr) {
-	//Above code errors. This handles OOB for you. The list that .at() searches is for actual particle types. None is a placeholder type
-	//for in bounds but no particle at location.
-	if(!P::is_solid(world.atMap(r + 1, c))) { 
+	// Above code errors. This handles OOB for you. The list that .at() searches
+	// is for actual particle types. None is a placeholder type for in bounds
+	// but no particle at location.
+	if (!P::is_solid(world.atMap(r + 1, c))) {
 		set_row(r + 1);
 		return;
 	}
@@ -373,25 +396,26 @@ void Water::physics_spec(World &world) {
 	else {
 		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
 		// 	world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		if(world.atMap(r + 1, c - 1) == none) {
+		if (world.atMap(r + 1, c - 1) == none) {
 			set_row(r + 1);
 			set_col(c - 1);
 			return;
-		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-		// 			none) &&
-		// 		   world.at(get_row() + 1, get_col() + 1) == nullptr) {
-		} 
-		else if(world.atMap(r + 1, c + 1) == none) {
+			// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
+			// 			none) &&
+			// 		   world.at(get_row() + 1, get_col() + 1) == nullptr) {
+		} else if (world.atMap(r + 1, c + 1) == none) {
 			set_row(r + 1);
 			set_col(c + 1);
 			return;
 		}
-		// if it can move left and there is something under the new potential position
-		else if (world.atMap(r, c - 1) == none && P::is_solid(world.atMap(r + 1, c - 1))) {
+		// if it can move left and there is something under the new potential
+		// position
+		else if (world.atMap(r, c - 1) == none &&
+				 P::is_solid(world.atMap(r + 1, c - 1))) {
 			set_col(c - 1);
 			return;
-		}
-		else if (world.atMap(r, c + 1) == none && P::is_solid(world.atMap(r + 1, c + 1))) {
+		} else if (world.atMap(r, c + 1) == none &&
+				   P::is_solid(world.atMap(r + 1, c + 1))) {
 			set_col(c + 1);
 			return;
 		}
@@ -416,7 +440,10 @@ void Water::touch(const P_ptr &nbr, World &world) {
 	// Every interaction between a certain particle type and water has already
 	// been taken care of in the other particle's touch function to my knowledge
 	if (nbr->get_type() == fire) {
-		set_lifetime(0);	
+		Pc row = nbr->get_row();
+		Pc col = nbr->get_col();
+		nbr->touch(world.atMap_ptr(row, col), world);
+		set_lifetime(0);
 	}
 }
 
@@ -439,38 +466,39 @@ void Dirt::physics_spec(World &world) {
 	set_y_vel(new_vel - steps);
 	set_x_vel(0); // no lateral movement in air
 
-	if (steps == 0) return;
+	if (steps == 0)
+		return;
 	int r = get_row();
 	int c = get_col();
 	//	set_y_vel(get_y_vel() + gravity);
-//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
+	//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
 	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
-		// world.at(get_row() + 1, get_col()) == nullptr) {
+	// world.at(get_row() + 1, get_col()) == nullptr) {
 	// checks below
-	if(!P::is_solid(world.atMap(r + 1, c))) { 
+	if (!P::is_solid(world.atMap(r + 1, c))) {
 		set_row(r + 1);
 		return;
 	}
-		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-			// world.at(get_row() + 1, get_col() - 1) == nullptr) {
-		// checks below and to the left
-	if(!P::is_solid(world.atMap(r + 1, c - 1))) {
-			set_row(r + 1);
-			set_col(c - 1);
-			return;
+	// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
+	// world.at(get_row() + 1, get_col() - 1) == nullptr) {
+	// checks below and to the left
+	if (!P::is_solid(world.atMap(r + 1, c - 1))) {
+		set_row(r + 1);
+		set_col(c - 1);
+		return;
 		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-					// none) &&
-				   // world.at(get_row() + 1, get_col() + 1) == nullptr) {
-		}
-		// checks below and to the right
-		if(!P::is_solid(world.atMap(r + 1, c + 1))) {
-			set_row(r + 1);
-			set_col(c + 1);
-			return;
-		}
-			// else it cant move
-			set_stationary(true);
+		// none) &&
+		// world.at(get_row() + 1, get_col() + 1) == nullptr) {
+	}
+	// checks below and to the right
+	if (!P::is_solid(world.atMap(r + 1, c + 1))) {
+		set_row(r + 1);
+		set_col(c + 1);
+		return;
+	}
+	// else it cant move
+	set_stationary(true);
 }
 
 // primitive touch for the time being, can revisit if causes problems
@@ -485,7 +513,6 @@ void Dirt::touch(const P_ptr &nbr, World &world) {
 		world.updateMap(p);
 	}
 }
-
 
 void Lightning::physics_spec(World &world) {
 	Pc x = this->get_col();
@@ -513,12 +540,11 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 		if (nbr->get_type() == earth) {
 			Dirt d(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Dirt>(d);
-
 		} else if (nbr->get_type() == water) {
 			Lightning l(nbr->get_row(), nbr->get_col());
 			p = std::make_shared<Lightning>(l);
 		}
-		
+
 		// A cautionary tale:
 		// Once upon a time, a ptr 'p' is born
 		// then it was added to his crib
@@ -529,20 +555,71 @@ void Lightning::touch(const P_ptr &nbr, World &world) {
 		// door is open, so sadly 'p' was mutilated
 		// Life lesson: let the killer mutilates his parents
 		// b4 bringing the child into a crib.
-		
-                // Particle "delete"
+
+		// Particle "delete"
 		// the order is improtant, read the fairy tale above
-                this->set_lifetime(0);
-                nbr->set_lifetime(0);
+		this->set_lifetime(0);
+		nbr->set_lifetime(0);
+
+		world.add_particle(p);
+		world.updateMap(p);
+  }
+}
+  
+void Confetti::physics_spec(World &world) {
+	Pc x = this->get_col();
+	Pc y = this->get_row();
+	Pc dx = this->get_x_vel();
+	Pc grav = 0.025;
+	Pc dy = this->get_y_vel() + grav;
+	this->set_y_vel(dy);
+
+	Pc x_dx = (x + dx);
+	Pc y_dy = (y + dy);
+	P_Type pt = world.atMap(y_dy, x_dx);
+
+	Tick lft = this->get_lifetime();
+
+	if (pt == fire || is_solid(pt))
+                set_lifetime(1);
+
+	if (lft % 3) {
+		this->set_r((P::bd(P::gen)) * 100 % 256);
+		this->set_g((P::bd(P::gen)) * 100 % 256);
+		this->set_b((P::bd(P::gen)) * 100 % 256);
+	}	
+
+	// spawn
+/*	if (lft % 60) {
+		Dirt d(x, y);
+		P_ptr p = std::make_shared<Dirt>(d);
 
 		world.add_particle(p);
 		world.updateMap(p);
 	}
+*/
+	if (!get_stationary()) {
+		set_col(x_dx);
+		set_row(y_dy);
+	}
 }
 
-void TBD_1::physics_spec(World &world) {}
-void TBD_1::touch(const P_ptr &nbr, World &world) {}
-void TBD_2::physics_spec(World &world) {}
-void TBD_2::touch(const P_ptr &nbr, World &world) {}
+void Confetti::touch(const P_ptr &nbr, World &world) {}
+
+void Life::physics_spec(World &world) {
+	mutate++;
+	if(mutate % 4) return;
+	Wc wRow = get_row(), wCol = get_col();
+	world.neighborCount[worldXY(wRow, wCol)] += 0; //in case this has no neighbors, its in the map to be culled
+	for(int i = -1; i <= 1; i++) {
+		for(int j = -1; j <= 1; j++) {
+			if(i == 0 && j == 0) continue;
+			Wc nbrRow = (wRow + i + world.get_rows()) % world.get_rows();
+			Wc nbrCol = (wCol + j + world.get_cols()) % world.get_cols();
+			world.neighborCount[worldXY(nbrRow, nbrCol)]++;
+		}
+	}
+}
+void Life::touch(const P_ptr &nbr, World &world) {}
 void TBD_3::physics_spec(World &world) {}
 void TBD_3::touch(const P_ptr &nbr, World &world) {}
