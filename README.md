@@ -8,6 +8,8 @@
 </p>
 
 ## Raymond
+### Particle class
+- Game of Life particle (extra credit)
 ### World class 
 - A map (rows x cols in size of chars) which indicates which particle type (or nothing) is at each place in the game world 
 - A .size() method which returns how many particles are in the world 
@@ -82,6 +84,7 @@
 - A .physics() method that gets the world map passed in by reference, that runs physics for the particle and updates the world map if it moved. If it runs into another particle, it calls .touch() on the other particle.
     - Physics also decrements .lifetime by one each frame
 - A .touch() method that gets called when another particle touches it.
+- Confetti particle (extra credit)
 ### BRIDGES (through Bifrost.h)
 - Read the BRIDGES documentation: https://bridgesuncc.github.io/ and comprehend it
 - Add in your username and API key
