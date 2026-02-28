@@ -9,7 +9,6 @@
 ## What is it?
 Our group made a C++-written, console-based particle simulator simulating 9 particle types. Complete with RGB color rendering, mouse input, and BRIDGES visualization.
 ### How to run?
-Copy-paste into terminal:
 ```bash
 git clone https://github.com/Forzalab/particle-raincheck.git && \
 cd particle-raincheck && \
