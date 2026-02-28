@@ -64,8 +64,7 @@
 
 ## Ho
 ### Particle class
-- A position (.row, .col float) which indicates where it is on
- the screen
+- A position (.row, .col float) which indicates where it is on the screen
 - A velocity (.x_vel and .y_vel float) indicating how many cells per tick it moves
 - A .type which must be an enum which indicates if it is air, dust, fire, water, earth, dirt, lightning
 - Each type has a different physics movement type:
@@ -82,17 +81,12 @@
     - Make the usual constructors, getters/setters, and so forth. You should use the Rule of 0
 - A .physics() method that gets the world map passed in by reference, that runs physics for the particle and updates the world map if it moved. If it runs into another particle, it calls .touch() on the other particle.
     - Physics also decrements .lifetime by one each frame
-- A .touch() method that gets called when another particle tou
-ches it.
+- A .touch() method that gets called when another particle touches it.
 ### BRIDGES (through Bifrost.h)
-- Read the BRIDGES documentation: https://bridgesuncc.github.i
-o/ and comprehend it
+- Read the BRIDGES documentation: https://bridgesuncc.github.io/ and comprehend it
 - Add in your username and API key
-- Make a ColorGrid class and fill it with the colors of the wo
-rld (or test data)
+- Make a ColorGrid class and fill it with the colors of the world (or test data)
 - Add in a call to bridges.setDataStructure() to tell BRIDGES
 to render the ColorGrid
-- Add in a call to bridges.visualize() to send it off to the w
-eb site
-    - This will give you a URL that you can use to visualize you
-r world in a browser
+- Add in a call to bridges.visualize() to send it off to the web site
+    - This will give you a URL that you can use to visualize your world in a browser
