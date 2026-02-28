@@ -175,12 +175,9 @@ void P::physics(World &world) {
 	// particle, we dont talk about Bruno) HAS the
 	// old particle type!!!!!! wtf
 	// Map wont be updated DURING this function scope.
-	// y_new += (y_vel > 0 ? std::ceil(y_vel) : std::floor(y_vel));
-	// x_new += (x_vel > 0 ? std::ceil(x_vel) : std::floor(x_vel));
 
 	P_Type colliding_type = world.atMap(y_new, x_new);
 	P_ptr &p = world.atMap_ptr(y_new, x_new);
-	// P_ptr &p = world.at(y_new, x_new);
 
 	// No-one? sprint ahead!
 	// Has one? ask first.
@@ -215,35 +212,7 @@ void Air::physics_spec(World &world) {
 				   P::is_solid(world.atMap(y, x - 1))) {
 			set_x_vel(0);
 		}
-		/*
-		//Top Right Corner
-		if (P::is_solid(world.atMap(y + 1, x + 1)) and P::is_solid(world.atMap(y
-		+ 1, x)) and P::is_solid(world.atMap(y, x + 1))) {
-			set_y_vel(-(get_y_vel()));
-			set_x_vel(-(get_x_vel()));
-		}
-		//Bottom Right Corner
-		else if (P::is_solid(world.atMap(y - 1, x + 1)) and
-		P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x +
-		1))) { set_y_vel(-(get_y_vel())); set_x_vel(-(get_x_vel()));
-		}
-		//Top Left Corner
-		else if (P::is_solid(world.atMap(y + 1, x - 1)) and
-		P::is_solid(world.atMap(y + 1, x)) and P::is_solid(world.atMap(y, x -
-		1))) { set_y_vel(-(get_y_vel())); set_x_vel(-(get_x_vel()));
-		}
-		//Bottom Left Corner
-		else if (P::is_solid(world.atMap(y - 1, x - 1)) and
-		P::is_solid(world.atMap(y - 1, x)) and P::is_solid(world.atMap(y, x -
-		1))) { set_y_vel(-(get_y_vel())); set_x_vel(-(get_x_vel()));
-		}
-		else if (P::is_solid(world.atMap(y + 1, x)) or P::is_solid(world.atMap(y
-		- 1, x))) { set_y_vel(-(get_y_vel()));
-		}
-		else if (P::is_solid(world.atMap(y, x + 1)) or
-		P::is_solid(world.atMap(y, x - 1))) { set_x_vel(-(get_x_vel()));
-		}
-		*/
+
 		if (P::is_solid(world.atMap(y + 1, x)))
 			set_y_vel(-(get_y_vel()));
 		if (P::is_solid(world.atMap(y - 1, x)))
@@ -380,29 +349,17 @@ void Water::physics_spec(World &world) {
 		return;
 	int r = get_row();
 	int c = get_col();
-	// initial velocity + acceleration due to gravity
-	//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
-	// 	world.at(get_row() + 1, get_col()) == nullptr) {
-	// Above code errors. This handles OOB for you. The list that .at() searches
-	// is for actual particle types. None is a placeholder type for in bounds
-	// but no particle at location.
 	if (!P::is_solid(world.atMap(r + 1, c))) {
 		set_row(r + 1);
 		return;
 	}
 	// only if something is below it do we now trst where it can slide
 	else {
-		// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-		// 	world.at(get_row() + 1, get_col() - 1) == nullptr) {
 		if (world.atMap(r + 1, c - 1) == none) {
 			set_row(r + 1);
 			set_col(c - 1);
 			return;
-			// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-			// 			none) &&
-			// 		   world.at(get_row() + 1, get_col() + 1) == nullptr) {
 		} else if (world.atMap(r + 1, c + 1) == none) {
 			set_row(r + 1);
 			set_col(c + 1);
@@ -419,15 +376,6 @@ void Water::physics_spec(World &world) {
 			set_col(c + 1);
 			return;
 		}
-		/*	else if (world.at(get_row(), get_col() - 1)->get_type() == none) {
-				set_col(get_col() - 1);
-				return;
-			}
-			else if (world.at(get_row(), get_col() + 1)->get_type() == none) {
-				set_col(get_col() + 1);
-				return;
-			}
-		*/
 		else {
 			set_stationary(true);
 			return;
@@ -470,27 +418,20 @@ void Dirt::physics_spec(World &world) {
 		return;
 	int r = get_row();
 	int c = get_col();
-	//	set_y_vel(get_y_vel() + gravity);
-	//	set_y_vel(std::clamp(float(get_y_vel() + gravity), 0.0f, 1.0f));
 
-	// if ((world.at(get_row() + 1, get_col())->get_type() == none) &&
-	// world.at(get_row() + 1, get_col()) == nullptr) {
 	// checks below
 	if (!P::is_solid(world.atMap(r + 1, c))) {
 		set_row(r + 1);
 		return;
 	}
-	// if ((world.at(get_row() + 1, get_col() - 1)->get_type() == none) &&
-	// world.at(get_row() + 1, get_col() - 1) == nullptr) {
+
 	// checks below and to the left
 	if (!P::is_solid(world.atMap(r + 1, c - 1))) {
 		set_row(r + 1);
 		set_col(c - 1);
 		return;
-		// } else if ((world.at(get_row() + 1, get_col() + 1)->get_type() ==
-		// none) &&
-		// world.at(get_row() + 1, get_col() + 1) == nullptr) {
 	}
+
 	// checks below and to the right
 	if (!P::is_solid(world.atMap(r + 1, c + 1))) {
 		set_row(r + 1);
@@ -589,15 +530,6 @@ void Confetti::physics_spec(World &world) {
 		this->set_b((P::bd(P::gen)) * 100 % 256);
 	}	
 
-	// spawn
-/*	if (lft % 60) {
-		Dirt d(x, y);
-		P_ptr p = std::make_shared<Dirt>(d);
-
-		world.add_particle(p);
-		world.updateMap(p);
-	}
-*/
 	if (!get_stationary()) {
 		set_col(x_dx);
 		set_row(y_dy);

@@ -6,8 +6,6 @@
 typedef uint32_t GameTick;
 
 const std::string SAVEFILE = "save.JSON";
-// const uint16_t ROWS_DFT = 50;
-// const uint16_t COLS_DFT = 70;
 
 Game::Game() : world() { 
 	const auto [ROWS, COLS] = get_terminal_size();
@@ -20,11 +18,6 @@ Game::Game() : world() {
 	world.updateVecs();
 }
 
-// Game::Game(const uint16_t &rows, const uint16_t &cols)
-	// : rows(rows), cols(cols), world(rows, cols) {
-	// world.load(SAVEFILE);
-// }
-
 GameTick Game::get_tickrate() const { return tickrate; }
 
 // Used for boundary checking fps when increasing and decreasing
@@ -36,8 +29,7 @@ std::string unrender(auto &prevPs);
 std::string printFPS(const auto &lastFrameStart, Wc rows, bool paused) {
 	std::string s;
 	int size = 0;
-	auto diff = std::chrono::duration<double>(std::chrono::steady_clock::now() -
-											  lastFrameStart);
+	auto diff = std::chrono::duration<double>(std::chrono::steady_clock::now() - lastFrameStart);
 	s += movecursor(rows + 5, 0);
 	s += std::to_string(int(1000.0 / diff.count()) / 1000.0);
 	s += " FPS";
@@ -113,37 +105,14 @@ void Game::run() {
 	fs.clear();
 	using clock = std::chrono::steady_clock;
 
-	// Placeholder vals. We can change these later.
 	{
-		// Draw a splash screen here.
-		// fs += clearscreen();
-		// std::cerr << fs;
-		// fs.clear();
 		system("figlet =======");
 		system("figlet Particles | lolcat");
 		system("figlet =======");
 		std::cerr << show_cursor(false);
 
-		// Options on splash screen- "Start,
-		// Load
-		// Draw on bridges
-		// Quit
-
-		// system("figlet =======");
-//		 system("figlet mode");
-		// system("figlet =======");
-
-		// system("figlet =======");
-		// system("figlet Load");
-		// system("figlet =======");
-
-		// system("figlet =======");
-		// system("figlet Quit");
-		// system("figlet =======");
-
 		// Add a time delay for users to see splash screen before game starts
 		sleep(1); // Pauses for two seconds
-		//std::cerr << "[ DEMO MODE ] (L) to load file." << endl;
 		
 		std::cerr << "|-----------------------------------------|" << endl;
 		std::cerr << "  |\t(S) to start.\t\t\t|" << endl;
@@ -169,26 +138,6 @@ void Game::run() {
 		std::cerr << clearscreen();
 	}
 
-	// load(); //Test
-	// save(); //Test
-	// incr_fps(); //Test
-	// dcrs_fps(); //Test
-
-	// start of non-blocking I/O
-//	set_raw_mode(true);
-	/*	while (true) {
-			int c = toupper(quick_read());
-			if (c == 'L') load();
-			if (c == 'S') save();
-			if (c == '=') incr_fps();
-			if (c == '-') dcrs_fps();
-			if (c == 'D') draw();
-			if (c == 'P') {
-				pause();
-				// WHOLE OTHER OPTIONS
-			}
-		}
-	*/
 	auto next_frame = clock::now();
 	auto prev_frame = clock::now();
 	std::vector<pair<Wc, Wc>> prevPs;
@@ -309,25 +258,7 @@ void Game::incr_fps() {
 	tickrate++;
 	tickrate = std::clamp(
 		tickrate, fps_min,
-		fps_max); // Makes sure tickrate doesnt leave its set boundary
-				  /*
-				  GameTick input = 0;
-				  cin >> input;
-				  std::cerr << clearscreen();
-				  if (!cin || input < 3 || input > 60) { // If input is bad
-					  cin.clear();
-					  GameTick s = 0; // New variable
-					  cin >> s;		// Stores the new input into new variable
-					  cout << "BAD INPUT!\n";
-					  sleep(1); // Gives time to read message
-				  } else if (input + get_tickrate() < 3 ||
-							 input + get_tickrate() > 60) { // If new tickrate is out of range
-					  cout << "INPUT OUT OF RANGE!!! (Keep FPS in between 3-60)\n";
-					  sleep(1); // Gives time to read message
-				  } else {
-					  tickrate = get_tickrate() + input;
-				  }
-				  */
+		fps_max);
 }
 void Game::dcrs_fps() {
 	tickrate--;

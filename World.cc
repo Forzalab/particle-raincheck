@@ -9,27 +9,15 @@ static_assert(sizeof(World) > 0);
 
 const std::string SAVEFILE = "save.JSON";
 
-// Reserve mem for map in construction.
-// World::World(const uint16_t &rows = 50, const uint16_t &cols = 70)
-	// : rows(rows), cols(cols) {
-	// map.resize(size_t(rows) * size_t(cols));
-	// map.assign(map.size(), none);
-// }
-
 const Ps &World::getParticles() { return ps; }
 
 void World::updateVecs() {
-	//the spread of cout debugging grows
-	// std::cout << std::endl;
-	// std::cout << rows << " " << cols << " " << size_t(rows) * size_t(cols) << endl;
 	map.resize(size_t(rows) * size_t(cols));
-	// cout << map.size();
 	map.assign(map.size(), none);
 
 	// yes i know.
         // i welcome all deref null efforts
 	map_ptr.resize(size_t(rows) * size_t(cols));
-//	map_ptr.assign(map_ptr.size(), nullp);
 }
 
 
@@ -259,37 +247,6 @@ Amt World::alive_count() const {
 void World::add_particle(P_ptr p) { ps.push_back(p); }
 void World::add_life(P_ptr p) { nextFrame.push_back(p); }
 
-// One preset save-file is enough?
-//	Yeah. Will be saved in JSON (IMMITATED) Format. If we want, we can implement
-// a way to save to a specific filename after finishing everything else.
-/*
-{
-	"key": val,
-	"key2": val,
-	.
-	.
-	.
-	"Ps": [
-		{
-			"key1": val,
-			"key2": val,
-			.
-			.
-			.
-			"keyN": val
-		},
-		{
-			"key1": val,
-			"key2": val,
-			.
-			.
-			.
-			"keyN": val
-		}
-	]
-}
-*/
-
 void insertOFS(std::ofstream &ofs, const std::string &val) { ofs << val; }
 
 // This will be interesting to write as it's been like 6 years since I've
@@ -398,9 +355,6 @@ P_ptr extractParticle(std::string &s) {
 	p->set_y_vel(stof(Pvals.at(3)));
 	// TODO: stretch goal -> custom particles use these V but default particles
 	// use default cstor vals.
-	//  p->set_r(stoi(Pvals.at(4)));
-	//  p->set_g(stoi(Pvals.at(5)));
-	//  p->set_b(stoi(Pvals.at(6)));
 	p->set_stationary((Pvals.at(7)) == "true");
 	p->set_lifetime(stoi(Pvals.at(8)));
 
@@ -440,21 +394,9 @@ int World::load(const std::string &str) {
 	// rows
 	std::getline(ifs, s, '\n');
 	//LOAD THROWS OUT ROWS, COLS. THESE ARE DETERMINED AT RUNTIME BY GET_TERMINAL_SIZE.
-	// try {
-		// rows = stoi(extractVal(s));
-	// } catch (std::exception &e) {
-		// std::cerr << "Val extracted for ROWS invalid.\n";
-		// exit(EXIT_FAILURE);
-	// }
+
 	// cols
 	std::getline(ifs, s, '\n');
-	// try {
-		// cols = stoi(extractVal(s));
-	// } catch (std::exception &e) {
-		// std::cerr << "Val extracted for COLS invalid.\n";
-		// exit(EXIT_FAILURE);
-	// }
-
 	updateVecs();
 
 	std::getline(ifs, s, '\n'); // "Ps": [ line
