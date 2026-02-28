@@ -2,9 +2,9 @@
 ## Project #1 for CSCI41
 
 <p align="center">
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgzszyTirXN8liej72-mGnYV0in9wQo7wDUgHHoGtoqw&s=10" alt="discord bad" width="600"/>
+  <img src="https://i.ibb.co/ns8GJqpc/Screenshot-20260227-204003-Termux.png" alt="discord bad" width="600"/>
   <br/>
-  <em>placeholder, ideally replace with console demo</em>
+  <em>Splash screen</em>
 </p>
 
 ## Raymond
